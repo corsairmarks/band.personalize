@@ -128,7 +128,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Band.Personalize.Common\Band.Personalize.Common.csproj">
-      <Project>{cac28e59-3e90-416f-9a3c-616b1a5f86bd}</Project>
+      <Project>{a4173ea9-44e8-4c1a-b729-c98ad529f34f}</Project>
       <Name>Band.Personalize.Common</Name>
     </ProjectReference>
   </ItemGroup>

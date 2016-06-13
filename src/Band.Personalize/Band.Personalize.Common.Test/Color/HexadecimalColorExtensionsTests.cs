@@ -2,12 +2,12 @@
 {
     using System;
     using Common.Color;
-    using NUnit.Framework;
+    using Data;
+    using Xunit;
 
     /// <summary>
     /// Unit tests for the <see cref="HexadecimalColorExtensions"/> class.
     /// </summary>
-    [TestFixture(TestOf = typeof(HexadecimalColorExtensions))]
     public class HexadecimalColorExtensionsTests
     {
         /// <summary>
@@ -15,26 +15,30 @@
         /// the correct fields from an instance of <see cref="HexadecimalColor"/> to an instance of
         /// <see cref="BandColor"/>.
         /// </summary>
-        [Test]
-        public void ToBandColor_CreatesInstanceWithSameValues()
+        /// <param name="red">The red channel color saturation to test.</param>
+        /// <param name="green">The green channel color saturation to test.</param>
+        /// <param name="blue">The blue channel color saturation to test.</param>
+        [Theory]
+        [ClassData(typeof(RgbColorByteData))]
+        public void ToBandColor_CreatesInstanceWithSameValues(byte red, byte green, byte blue)
         {
             // Arrange
-            var target = new HexadecimalColor(0x6A, 0x00, 0xFF);
+            var target = new HexadecimalColor(red, green, blue);
 
             // Act
             var result = target.ToBandColor();
 
             // Assert
-            Assert.That(result.R, Is.EqualTo(target.Red));
-            Assert.That(result.G, Is.EqualTo(target.Green));
-            Assert.That(result.B, Is.EqualTo(target.Blue));
+            Assert.Equal(target.Red, result.R);
+            Assert.Equal(target.Green, result.G);
+            Assert.Equal(target.Blue, result.B);
         }
 
         /// <summary>
         /// Verify the <see cref="HexadecimalColorExtensions.ToBandColor(HexadecimalColor)"/> method throws
         /// an <see cref="ArgumentNullException"/> when the color parameter is <c>null</c>.
         /// </summary>
-        [Test]
+        [Fact]
         public void ToBandColor_NullColor_Throws()
         {
             // Arrange
@@ -44,8 +48,8 @@
             var expected = Assert.Throws<ArgumentNullException>(() => target.ToBandColor());
 
             // Assert
-            Assert.That(expected, Is.Not.Null);
-            Assert.That(expected.ParamName, Is.EqualTo("color"));
+            Assert.NotNull(expected);
+            Assert.Equal("color", expected.ParamName);
         }
     }
 }
