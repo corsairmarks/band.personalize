@@ -15,7 +15,7 @@
         /// <summary>
         /// Gets the test data for the <see cref="HexadecimalColorTests.Luminance_ReturnsNewInstanceWithModifiedChannels(HexadecimalColor, decimal)"/> test.
         /// </summary>
-        private static IEnumerable<IEnumerable<object>> LuminanceBytes
+        public static IEnumerable<IEnumerable<object>> LuminanceBytes
         {
             get
             {
@@ -38,7 +38,7 @@
         /// <summary>
         /// Gets the test data for the <see cref="HexadecimalColorTests.Luminance_ReturnsNewInstanceWithModifiedChannels(HexadecimalColor, decimal)"/> test.
         /// </summary>
-        private static IEnumerable<IEnumerable<object>> LuminanceHexadecimalColors
+        public static IEnumerable<IEnumerable<object>> LuminanceHexadecimalColors
         {
             get
             {

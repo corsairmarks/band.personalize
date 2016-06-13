@@ -32,73 +32,70 @@
         /// <summary>
         /// Gets a collection of <see cref="HexadecimalColor"/> instances that are not equal to <see cref="DefaultColor"/>.
         /// </summary>
-        public static IEnumerable<HexadecimalColor> NotEqualHexadecimalColors
+        public static IEnumerable<IEnumerable<object>> NotEqualHexadecimalColors { get; } = new object[][]
         {
-            get
-            {
-                yield return null;
-                yield return new HexadecimalColor(0xDE, 0xAD, 0xBE); // none equal
-                yield return new HexadecimalColor(DefaultRed, 0xAD, 0xBE); // R equal
-                yield return new HexadecimalColor(0xDE, DefaultGreen, 0xBE); // G equal
-                yield return new HexadecimalColor(0xDE, 0xAD, DefaultBlue); // B equal
-                yield return new HexadecimalColor(DefaultRed, DefaultGreen, 0xBE); // RG equal
-                yield return new HexadecimalColor(DefaultRed, 0xAD, DefaultBlue); // RB equal
-                yield return new HexadecimalColor(0xDE, DefaultGreen, DefaultBlue); // BG equal
-            }
-        }
+            new object[] { null, },
+            new object[] { new HexadecimalColor(0xDE, 0xAD, 0xBE), }, // none equal
+            new object[] { new HexadecimalColor(DefaultRed, 0xAD, 0xBE), }, // R equal
+            new object[] { new HexadecimalColor(0xDE, DefaultGreen, 0xBE), }, // G equal
+            new object[] { new HexadecimalColor(0xDE, 0xAD, DefaultBlue), }, // B equal
+            new object[] { new HexadecimalColor(DefaultRed, DefaultGreen, 0xBE), }, // RG equal
+            new object[] { new HexadecimalColor(DefaultRed, 0xAD, DefaultBlue), }, // RB equal
+            new object[] { new HexadecimalColor(0xDE, DefaultGreen, DefaultBlue), }, // BG equal
+        };
 
         /// <summary>
         /// Gets a collection of <see cref="HexadecimalColor"/> instances including <see cref="NotEqualHexadecimalColors"/> and excluding <c>null</c>.
         /// </summary>
-        public static IEnumerable<HexadecimalColor> NonNullNotEqualHexadecimalColors => NotEqualHexadecimalColors.Where(hc => hc != null);
+        public static IEnumerable<IEnumerable<object>> NonNullNotEqualHexadecimalColors => NotEqualHexadecimalColors.Where(o => o.Single() != null);
 
         /// <summary>
         /// Gets a collection of <see cref="HexadecimalColor"/> instances including <see cref="NotEqualHexadecimalColors"/> and <see cref="DefaultColor"/>.
         /// </summary>
-        public static IEnumerable<HexadecimalColor> HexadecimalColorsWithDefault => NotEqualHexadecimalColors.Concat(new[]
+        public static IEnumerable<IEnumerable<object>> HexadecimalColorsWithDefault => NotEqualHexadecimalColors.Concat(new[]
         {
-            DefaultColor, // equal
+            new object[] { DefaultColor, }, // equal
         });
 
         /// <summary>
         /// Gets a collection of <see cref="HexadecimalColor"/> instances including <see cref="HexadecimalColorsWithDefault"/> and excluding <c>null</c>.
         /// </summary>
-        public static IEnumerable<HexadecimalColor> NonNullHexadecimalColorsWithDefault => HexadecimalColorsWithDefault.Where(hc => hc != null);
+        public static IEnumerable<IEnumerable<object>> NonNullHexadecimalColorsWithDefault => HexadecimalColorsWithDefault.Where(o => o.Single() != null);
 
         /// <summary>
         /// Gets a collection of <see cref="object"/> instances including <see cref="NotEqualHexadecimalColors"/> and an object of another type.
         /// </summary>
-        public static IEnumerable<object> NotEqualObjects => NotEqualHexadecimalColors.Concat(new[]
+        public static IEnumerable<IEnumerable<object>> NotEqualObjects => NotEqualHexadecimalColors.Concat(new[]
         {
-            new object(),
+            new[] {  new object(), },
         });
 
         /// <summary>
         /// Gets collection of invalid hexadecimal strings.
         /// </summary>
-        public static IEnumerable<string> InvalidHexadecimalColorStrings
+        public static IEnumerable<IEnumerable<string>> InvalidHexadecimalColorStrings
         {
             get
             {
-                yield return string.Empty;
-                yield return "#";
-                yield return "#0";
-                yield return "#00";
-                yield return "#0000";
-                yield return "#00000";
-                yield return "#0000000";
-                yield return "#ABG";
-                yield return "#ABCDEG";
-                yield return "0";
-                yield return "00";
-                yield return "0000";
-                yield return "00000";
-                yield return "0000000";
-                yield return "ABG";
-                yield return "ABCDEG";
-                yield return "#***";
-                yield return "#******";
-                yield return "#ABC 123";
+                yield return new[] { string.Empty, };
+                yield return new[] { "#", };
+                yield return new[] { "#0", };
+                yield return new[] { "#00", };
+                yield return new[] { "#0000", };
+                yield return new[] { "#00000", };
+                yield return new[] { "#0000000", };
+                yield return new[] { "#ABG", };
+                yield return new[] { "#ABCDEG", };
+                yield return new[] { "0", };
+                yield return new[] { "00", };
+                yield return new[] { "0000", };
+                yield return new[] { "00000", };
+                yield return new[] { "0000000", };
+                yield return new[] { "ABG", };
+                yield return new[] { "ABCDEG", };
+                yield return new[] { "#***", };
+                yield return new[] { "#******", };
+                yield return new[] { "#ABC 123", };
             }
         }
 
