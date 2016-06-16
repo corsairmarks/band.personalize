@@ -11,6 +11,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Band.Personalize.Common.Tes
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Development Configuration", "Development Configuration", "{2BCBB434-53A9-4CB6-959A-450806B20F92}"
 	ProjectSection(SolutionItems) = preProject
+		Band.Personalize.ruleset = Band.Personalize.ruleset
 		stylecop.json = stylecop.json
 	EndProjectSection
 EndProject
