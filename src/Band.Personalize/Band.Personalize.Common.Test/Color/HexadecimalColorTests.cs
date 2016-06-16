@@ -1,8 +1,21 @@
-﻿namespace Band.Personalize.Common.Test.Color
+﻿// Copyright 2016 Nicholas Butcher
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+namespace Band.Personalize.Common.Test.Color
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
     using Common.Color;
     using Data;
     using Xunit;
@@ -243,6 +256,7 @@
             var color = new HexadecimalColor(red, green, blue);
 
 #pragma warning disable CS1718 // disabled because the purpose of the test is to compare the object to itself
+
             // Act
             var result = color == color;
 #pragma warning restore CS1718
@@ -338,6 +352,7 @@
             // Act
             var result = color != color;
 #pragma warning restore CS1718
+
             // Assert
             Assert.False(result);
         }
@@ -356,6 +371,7 @@
             var color = new HexadecimalColor(red, green, blue);
 
 #pragma warning disable CS1718 // disabled because the purpose of the test is to compare the object to itself
+
             // Act
             var result = color != color;
 #pragma warning restore CS1718
@@ -576,6 +592,7 @@
             var color = new HexadecimalColor(red, green, blue);
 
 #pragma warning disable CS1718 // disabled because the purpose of the test is to compare the object to itself
+
             // Act
             var result = color == color;
 #pragma warning restore CS1718
