@@ -25,6 +25,7 @@ namespace Band.Personalize.App.Universal
     using Prism.Events;
     using Prism.Mvvm;
     using Prism.Unity.Windows;
+    using Prism.Windows;
     using Prism.Windows.AppModel;
     using Prism.Windows.Navigation;
     using Windows.ApplicationModel;
@@ -46,11 +47,6 @@ namespace Band.Personalize.App.Universal
     /// </summary>
     public sealed partial class App : PrismUnityApplication
     {
-        // Bootstrap: App singleton service declarations
-        private TileUpdater _tileUpdater;
-
-        public IEventAggregator EventAggregator { get; set; }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="App"/> class, which is the singleton application object.
         /// This is the first line of authored code executed, and as such is the logical equivalent of main() or WinMain().
@@ -60,6 +56,11 @@ namespace Band.Personalize.App.Universal
             this.InitializeComponent();
             this.Suspending += this.OnSuspending;
         }
+
+        /// <summary>
+        /// Gets the Event Aggregator.
+        /// </summary>
+        public IEventAggregator EventAggregator { get; private set; }
 
         /// <summary>
         /// Invoked when the application is launched normally by the end user.  Other entry points
@@ -87,7 +88,7 @@ namespace Band.Personalize.App.Universal
 
                 if (e.PreviousExecutionState == ApplicationExecutionState.Terminated)
                 {
-                    //TODO: Load state from previously suspended application
+                    // TODO: Load state from previously suspended application
                 }
 
                 // Place the frame in the current Window
@@ -109,6 +110,11 @@ namespace Band.Personalize.App.Universal
             }
         }
 
+        /// <summary>
+        /// Logic that will be performed after the application is initialized. For example, navigating to the application's home page.
+        /// </summary>
+        /// <param name="args">The <see cref="IActivatedEventArgs"/> instance containing the event data.</param>
+        /// <returns>The asynchronous task.</returns>
         protected override Task OnLaunchApplicationAsync(LaunchActivatedEventArgs args)
         {
             if (args != null && !string.IsNullOrEmpty(args.Arguments))
@@ -124,24 +130,33 @@ namespace Band.Personalize.App.Universal
             }
 
             Window.Current.Activate();
-            return Task.FromResult<object>(null);
+            return Task.CompletedTask;
         }
 
+        /// <summary>
+        ///  Used for setting up the list of known types for the <see cref="PrismApplication.SessionStateService"/>,
+        ///  using the <see cref="ISessionStateService.RegisterKnownType(Type)"/> method.
+        /// </summary>
         protected override void OnRegisterKnownTypesForSerialization()
         {
             // Set up the list of known types for the SuspensionManager
-            //SessionStateService.RegisterKnownType(typeof(Address));
-            //SessionStateService.RegisterKnownType(typeof(PaymentMethod));
-            //SessionStateService.RegisterKnownType(typeof(UserInfo));
-            //SessionStateService.RegisterKnownType(typeof(CheckoutDataViewModel));
-            //SessionStateService.RegisterKnownType(typeof(ObservableCollection<CheckoutDataViewModel>));
-            //SessionStateService.RegisterKnownType(typeof(ShippingMethod));
-            //SessionStateService.RegisterKnownType(typeof(Dictionary<string, Collection<string>>));
-            //SessionStateService.RegisterKnownType(typeof(Order));
-            //SessionStateService.RegisterKnownType(typeof(Product));
-            //SessionStateService.RegisterKnownType(typeof(Collection<Product>));
+            // this.SessionStateService.RegisterKnownType(typeof(Address));
+            // this.SessionStateService.RegisterKnownType(typeof(PaymentMethod));
+            // this.SessionStateService.RegisterKnownType(typeof(UserInfo));
+            // this.SessionStateService.RegisterKnownType(typeof(CheckoutDataViewModel));
+            // this.SessionStateService.RegisterKnownType(typeof(ObservableCollection<CheckoutDataViewModel>));
+            // this.SessionStateService.RegisterKnownType(typeof(ShippingMethod));
+            // this.SessionStateService.RegisterKnownType(typeof(Dictionary<string, Collection<string>>));
+            // this.SessionStateService.RegisterKnownType(typeof(Order));
+            // this.SessionStateService.RegisterKnownType(typeof(Product));
+            // this.SessionStateService.RegisterKnownType(typeof(Collection<Product>));
         }
 
+        /// <summary>
+        /// The initialization logic of the application. Here you can initialize services, repositories, and so on.
+        /// </summary>
+        /// <param name="args">The <see cref="IActivatedEventArgs"/> instance containing the event data.</param>
+        /// <returns>The asynchronous task.</returns>
         protected override Task OnInitializeAsync(IActivatedEventArgs args)
         {
             this.EventAggregator = new EventAggregator();
@@ -152,24 +167,23 @@ namespace Band.Personalize.App.Universal
             this.Container.RegisterInstance<IResourceLoader>(new ResourceLoaderAdapter(new ResourceLoader()));
 
             // Register services
-            //this.Container.RegisterType<IAccountService, AccountService>(new ContainerControlledLifetimeManager());
-            //this.Container.RegisterType<ICredentialStore, RoamingCredentialStore>(new ContainerControlledLifetimeManager());
-            //this.Container.RegisterType<ICacheService, TemporaryFolderCacheService>(new ContainerControlledLifetimeManager());
-            //this.Container.RegisterType<ISecondaryTileService, SecondaryTileService>(new ContainerControlledLifetimeManager());
-            //this.Container.RegisterType<IAlertMessageService, AlertMessageService>(new ContainerControlledLifetimeManager());
+            // this.Container.RegisterType<IAccountService, AccountService>(new ContainerControlledLifetimeManager());
+            // this.Container.RegisterType<ICredentialStore, RoamingCredentialStore>(new ContainerControlledLifetimeManager());
+            // this.Container.RegisterType<ICacheService, TemporaryFolderCacheService>(new ContainerControlledLifetimeManager());
+            // this.Container.RegisterType<ISecondaryTileService, SecondaryTileService>(new ContainerControlledLifetimeManager());
+            // this.Container.RegisterType<IAlertMessageService, AlertMessageService>(new ContainerControlledLifetimeManager());
 
             // Register repositories
-            //this.Container.RegisterType<IProductCatalogRepository, ProductCatalogRepository>(new ContainerControlledLifetimeManager());
-            //this.Container.RegisterType<IShoppingCartRepository, ShoppingCartRepository>(new ContainerControlledLifetimeManager());
-            //this.Container.RegisterType<ICheckoutDataRepository, CheckoutDataRepository>(new ContainerControlledLifetimeManager());
-            //this.Container.RegisterType<IOrderRepository, OrderRepository>(new ContainerControlledLifetimeManager());
+            // this.Container.RegisterType<IProductCatalogRepository, ProductCatalogRepository>(new ContainerControlledLifetimeManager());
+            // this.Container.RegisterType<IShoppingCartRepository, ShoppingCartRepository>(new ContainerControlledLifetimeManager());
+            // this.Container.RegisterType<ICheckoutDataRepository, CheckoutDataRepository>(new ContainerControlledLifetimeManager());
+            // this.Container.RegisterType<IOrderRepository, OrderRepository>(new ContainerControlledLifetimeManager());
 
             // Register child view models
-            //this.Container.RegisterType<IShippingAddressUserControlViewModel, ShippingAddressUserControlViewModel>();
-            //this.Container.RegisterType<IBillingAddressUserControlViewModel, BillingAddressUserControlViewModel>();
-            //this.Container.RegisterType<IPaymentMethodUserControlViewModel, PaymentMethodUserControlViewModel>();
-            //this.Container.RegisterType<ISignInUserControlViewModel, SignInUserControlViewModel>();
-
+            // this.Container.RegisterType<IShippingAddressUserControlViewModel, ShippingAddressUserControlViewModel>();
+            // this.Container.RegisterType<IBillingAddressUserControlViewModel, BillingAddressUserControlViewModel>();
+            // this.Container.RegisterType<IPaymentMethodUserControlViewModel, PaymentMethodUserControlViewModel>();
+            // this.Container.RegisterType<ISignInUserControlViewModel, SignInUserControlViewModel>();
             ViewModelLocationProvider.SetDefaultViewTypeToViewModelTypeResolver((viewType) =>
             {
                 var viewModelTypeName = string.Format(CultureInfo.InvariantCulture, "AdventureWorks.UILogic.ViewModels.{0}ViewModel, AdventureWorks.UILogic, Version=1.1.0.0, Culture=neutral", viewType.Name);
@@ -183,11 +197,7 @@ namespace Band.Personalize.App.Universal
                 return viewModelType;
             });
 
-            // Documentation on working with tiles can be found at http://go.microsoft.com/fwlink/?LinkID=288821&clcid=0x409
-            //_tileUpdater = TileUpdateManager.CreateTileUpdaterForApplication();
-            //_tileUpdater.StartPeriodicUpdate(new Uri(Constants.ServerAddress + "/api/TileNotification"), PeriodicUpdateRecurrence.HalfHour);
-            //var resourceLoader = Container.Resolve<IResourceLoader>();
-
+            // var resourceLoader = Container.Resolve<IResourceLoader>();
             return base.OnInitializeAsync(args);
         }
 
@@ -212,7 +222,7 @@ namespace Band.Personalize.App.Universal
         {
             var deferral = e.SuspendingOperation.GetDeferral();
 
-            //TODO: Save application state and stop any background activity
+            // TODO: Save application state and stop any background activity
             deferral.Complete();
         }
     }
