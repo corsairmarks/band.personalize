@@ -12,21 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Band.Personalize.App.Universal
+namespace Band.Personalize.App.Universal.ViewModels
 {
-    using Windows.UI.Xaml.Controls;
+    using Prism.Windows.Mvvm;
 
     /// <summary>
-    /// An empty page that can be used on its own or navigated to within a Frame.
+    /// The View Model for the Main Page.
     /// </summary>
-    public sealed partial class MainPage : Page
+    public class MainPageViewModel : ViewModelBase
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MainPage"/> class.
-        /// </summary>
-        public MainPage()
-        {
-            this.InitializeComponent();
-        }
     }
 }

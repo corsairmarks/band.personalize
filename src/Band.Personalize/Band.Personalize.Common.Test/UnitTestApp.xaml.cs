@@ -15,6 +15,7 @@
 namespace Band.Personalize.Common.Test
 {
     using System;
+    using System.Diagnostics;
     using Microsoft.VisualStudio.TestPlatform.TestExecutor;
     using Windows.ApplicationModel;
     using Windows.ApplicationModel.Activation;
@@ -45,7 +46,7 @@ namespace Band.Personalize.Common.Test
         protected override void OnLaunched(LaunchActivatedEventArgs e)
         {
 #if DEBUG
-            if (System.Diagnostics.Debugger.IsAttached)
+            if (Debugger.IsAttached)
             {
                 this.DebugSettings.EnableFrameRateCounter = true;
             }

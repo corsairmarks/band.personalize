@@ -16,6 +16,7 @@ namespace Band.Personalize.App.Universal
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Globalization;
     using System.IO;
     using System.Linq;
@@ -63,70 +64,40 @@ namespace Band.Personalize.App.Universal
         public IEventAggregator EventAggregator { get; private set; }
 
         /// <summary>
-        /// Invoked when the application is launched normally by the end user.  Other entry points
-        /// will be used such as when the application is launched to open a specific file.
+        /// Logic that will be performed after the application is initialized. For example, navigating to the application's home page.
         /// </summary>
-        /// <param name="e">Details about the launch request and process.</param>
-        protected override void OnLaunched(LaunchActivatedEventArgs e)
+        /// <param name="e">The <see cref="IActivatedEventArgs"/> instance containing the event data.</param>
+        /// <returns>The asynchronous task.</returns>
+        protected override Task OnLaunchApplicationAsync(LaunchActivatedEventArgs e)
         {
 #if DEBUG
-            if (System.Diagnostics.Debugger.IsAttached)
+            if (Debugger.IsAttached)
             {
                 this.DebugSettings.EnableFrameRateCounter = true;
             }
 #endif
-            Frame rootFrame = Window.Current.Content as Frame;
 
-            // Do not repeat app initialization when the Window already has content,
-            // just ensure that the window is active
-            if (rootFrame == null)
+            if (e != null)
             {
-                // Create a Frame to act as the navigation context and navigate to the first page
-                rootFrame = new Frame();
-
-                rootFrame.NavigationFailed += this.OnNavigationFailed;
-
-                if (e.PreviousExecutionState == ApplicationExecutionState.Terminated)
+                if (!string.IsNullOrWhiteSpace(e.Arguments))
+                {
+                    // The app was launched from a Secondary Tile
+                    // Navigate to the item's page
+                    this.NavigationService.Navigate("ItemDetail", e.Arguments);
+                }
+                else if (e.PreviousExecutionState == ApplicationExecutionState.Terminated)
                 {
                     // TODO: Load state from previously suspended application
+                    this.NavigationService.RestoreSavedNavigation();
                 }
-
-                // Place the frame in the current Window
-                Window.Current.Content = rootFrame;
-            }
-
-            if (e.PrelaunchActivated == false)
-            {
-                if (rootFrame.Content == null)
+                else
                 {
-                    // When the navigation stack isn't restored navigate to the first page,
-                    // configuring the new page by passing required information as a navigation
-                    // parameter
-                    rootFrame.Navigate(typeof(MainPage), e.Arguments);
+                    this.NavigateToDefaultPage();
                 }
-
-                // Ensure the current window is active
-                Window.Current.Activate();
-            }
-        }
-
-        /// <summary>
-        /// Logic that will be performed after the application is initialized. For example, navigating to the application's home page.
-        /// </summary>
-        /// <param name="args">The <see cref="IActivatedEventArgs"/> instance containing the event data.</param>
-        /// <returns>The asynchronous task.</returns>
-        protected override Task OnLaunchApplicationAsync(LaunchActivatedEventArgs args)
-        {
-            if (args != null && !string.IsNullOrEmpty(args.Arguments))
-            {
-                // The app was launched from a Secondary Tile
-                // Navigate to the item's page
-                this.NavigationService.Navigate("ItemDetail", args.Arguments);
             }
             else
             {
-                // Navigate to the initial page
-                this.NavigationService.Navigate("Hub", null);
+                this.NavigateToDefaultPage();
             }
 
             Window.Current.Activate();
@@ -155,16 +126,17 @@ namespace Band.Personalize.App.Universal
         /// <summary>
         /// The initialization logic of the application. Here you can initialize services, repositories, and so on.
         /// </summary>
-        /// <param name="args">The <see cref="IActivatedEventArgs"/> instance containing the event data.</param>
+        /// <param name="e">The <see cref="IActivatedEventArgs"/> instance containing the event data.</param>
         /// <returns>The asynchronous task.</returns>
-        protected override Task OnInitializeAsync(IActivatedEventArgs args)
+        protected override Task OnInitializeAsync(IActivatedEventArgs e)
         {
             this.EventAggregator = new EventAggregator();
 
             this.Container.RegisterInstance<INavigationService>(this.NavigationService);
             this.Container.RegisterInstance<ISessionStateService>(this.SessionStateService);
             this.Container.RegisterInstance<IEventAggregator>(this.EventAggregator);
-            this.Container.RegisterInstance<IResourceLoader>(new ResourceLoaderAdapter(new ResourceLoader()));
+
+            // this.Container.RegisterInstance<IResourceLoader>(new ResourceLoaderAdapter(new ResourceLoader()));
 
             // Register services
             // this.Container.RegisterType<IAccountService, AccountService>(new ContainerControlledLifetimeManager());
@@ -184,31 +156,18 @@ namespace Band.Personalize.App.Universal
             // this.Container.RegisterType<IBillingAddressUserControlViewModel, BillingAddressUserControlViewModel>();
             // this.Container.RegisterType<IPaymentMethodUserControlViewModel, PaymentMethodUserControlViewModel>();
             // this.Container.RegisterType<ISignInUserControlViewModel, SignInUserControlViewModel>();
-            ViewModelLocationProvider.SetDefaultViewTypeToViewModelTypeResolver((viewType) =>
-            {
-                var viewModelTypeName = string.Format(CultureInfo.InvariantCulture, "AdventureWorks.UILogic.ViewModels.{0}ViewModel, AdventureWorks.UILogic, Version=1.1.0.0, Culture=neutral", viewType.Name);
-                var viewModelType = Type.GetType(viewModelTypeName);
-                if (viewModelType == null)
-                {
-                    viewModelTypeName = string.Format(CultureInfo.InvariantCulture, "AdventureWorks.UILogic.ViewModels.{0}ViewModel, AdventureWorks.UILogic.Windows, Version=1.0.0.0, Culture=neutral", viewType.Name);
-                    viewModelType = Type.GetType(viewModelTypeName);
-                }
-
-                return viewModelType;
-            });
 
             // var resourceLoader = Container.Resolve<IResourceLoader>();
-            return base.OnInitializeAsync(args);
+            return base.OnInitializeAsync(e);
         }
 
         /// <summary>
-        /// Invoked when Navigation to a certain page fails
+        /// Navigate to the default page of the application.
         /// </summary>
-        /// <param name="sender">The Frame which failed navigation</param>
-        /// <param name="e">Details about the navigation failure</param>
-        private void OnNavigationFailed(object sender, NavigationFailedEventArgs e)
+        /// <returns>Returns <c>true</c> if navigation succeeds; otherwise, <c>false</c>.</returns>
+        private bool NavigateToDefaultPage()
         {
-            throw new Exception("Failed to load Page " + e.SourcePageType.FullName);
+            return this.NavigationService.Navigate("Main", null);
         }
 
         /// <summary>
@@ -223,6 +182,8 @@ namespace Band.Personalize.App.Universal
             var deferral = e.SuspendingOperation.GetDeferral();
 
             // TODO: Save application state and stop any background activity
+            this.NavigationService.Suspending();
+
             deferral.Complete();
         }
     }
