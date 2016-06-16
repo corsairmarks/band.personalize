@@ -16,13 +16,23 @@ namespace Band.Personalize.App.Universal
 {
     using System;
     using System.Collections.Generic;
+    using System.Globalization;
     using System.IO;
     using System.Linq;
     using System.Runtime.InteropServices.WindowsRuntime;
+    using System.Threading.Tasks;
+    using Microsoft.Practices.Unity;
+    using Prism.Events;
+    using Prism.Mvvm;
+    using Prism.Unity.Windows;
+    using Prism.Windows.AppModel;
+    using Prism.Windows.Navigation;
     using Windows.ApplicationModel;
     using Windows.ApplicationModel.Activation;
+    using Windows.ApplicationModel.Resources;
     using Windows.Foundation;
     using Windows.Foundation.Collections;
+    using Windows.UI.Notifications;
     using Windows.UI.Xaml;
     using Windows.UI.Xaml.Controls;
     using Windows.UI.Xaml.Controls.Primitives;
@@ -34,8 +44,13 @@ namespace Band.Personalize.App.Universal
     /// <summary>
     /// Provides application-specific behavior to supplement the default Application class.
     /// </summary>
-    public sealed partial class App : Application
+    public sealed partial class App : PrismUnityApplication
     {
+        // Bootstrap: App singleton service declarations
+        private TileUpdater _tileUpdater;
+
+        public IEventAggregator EventAggregator { get; set; }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="App"/> class, which is the singleton application object.
         /// This is the first line of authored code executed, and as such is the logical equivalent of main() or WinMain().
@@ -72,7 +87,7 @@ namespace Band.Personalize.App.Universal
 
                 if (e.PreviousExecutionState == ApplicationExecutionState.Terminated)
                 {
-                    // TODO: Load state from previously suspended application
+                    //TODO: Load state from previously suspended application
                 }
 
                 // Place the frame in the current Window
@@ -92,6 +107,88 @@ namespace Band.Personalize.App.Universal
                 // Ensure the current window is active
                 Window.Current.Activate();
             }
+        }
+
+        protected override Task OnLaunchApplicationAsync(LaunchActivatedEventArgs args)
+        {
+            if (args != null && !string.IsNullOrEmpty(args.Arguments))
+            {
+                // The app was launched from a Secondary Tile
+                // Navigate to the item's page
+                this.NavigationService.Navigate("ItemDetail", args.Arguments);
+            }
+            else
+            {
+                // Navigate to the initial page
+                this.NavigationService.Navigate("Hub", null);
+            }
+
+            Window.Current.Activate();
+            return Task.FromResult<object>(null);
+        }
+
+        protected override void OnRegisterKnownTypesForSerialization()
+        {
+            // Set up the list of known types for the SuspensionManager
+            //SessionStateService.RegisterKnownType(typeof(Address));
+            //SessionStateService.RegisterKnownType(typeof(PaymentMethod));
+            //SessionStateService.RegisterKnownType(typeof(UserInfo));
+            //SessionStateService.RegisterKnownType(typeof(CheckoutDataViewModel));
+            //SessionStateService.RegisterKnownType(typeof(ObservableCollection<CheckoutDataViewModel>));
+            //SessionStateService.RegisterKnownType(typeof(ShippingMethod));
+            //SessionStateService.RegisterKnownType(typeof(Dictionary<string, Collection<string>>));
+            //SessionStateService.RegisterKnownType(typeof(Order));
+            //SessionStateService.RegisterKnownType(typeof(Product));
+            //SessionStateService.RegisterKnownType(typeof(Collection<Product>));
+        }
+
+        protected override Task OnInitializeAsync(IActivatedEventArgs args)
+        {
+            this.EventAggregator = new EventAggregator();
+
+            this.Container.RegisterInstance<INavigationService>(this.NavigationService);
+            this.Container.RegisterInstance<ISessionStateService>(this.SessionStateService);
+            this.Container.RegisterInstance<IEventAggregator>(this.EventAggregator);
+            this.Container.RegisterInstance<IResourceLoader>(new ResourceLoaderAdapter(new ResourceLoader()));
+
+            // Register services
+            //this.Container.RegisterType<IAccountService, AccountService>(new ContainerControlledLifetimeManager());
+            //this.Container.RegisterType<ICredentialStore, RoamingCredentialStore>(new ContainerControlledLifetimeManager());
+            //this.Container.RegisterType<ICacheService, TemporaryFolderCacheService>(new ContainerControlledLifetimeManager());
+            //this.Container.RegisterType<ISecondaryTileService, SecondaryTileService>(new ContainerControlledLifetimeManager());
+            //this.Container.RegisterType<IAlertMessageService, AlertMessageService>(new ContainerControlledLifetimeManager());
+
+            // Register repositories
+            //this.Container.RegisterType<IProductCatalogRepository, ProductCatalogRepository>(new ContainerControlledLifetimeManager());
+            //this.Container.RegisterType<IShoppingCartRepository, ShoppingCartRepository>(new ContainerControlledLifetimeManager());
+            //this.Container.RegisterType<ICheckoutDataRepository, CheckoutDataRepository>(new ContainerControlledLifetimeManager());
+            //this.Container.RegisterType<IOrderRepository, OrderRepository>(new ContainerControlledLifetimeManager());
+
+            // Register child view models
+            //this.Container.RegisterType<IShippingAddressUserControlViewModel, ShippingAddressUserControlViewModel>();
+            //this.Container.RegisterType<IBillingAddressUserControlViewModel, BillingAddressUserControlViewModel>();
+            //this.Container.RegisterType<IPaymentMethodUserControlViewModel, PaymentMethodUserControlViewModel>();
+            //this.Container.RegisterType<ISignInUserControlViewModel, SignInUserControlViewModel>();
+
+            ViewModelLocationProvider.SetDefaultViewTypeToViewModelTypeResolver((viewType) =>
+            {
+                var viewModelTypeName = string.Format(CultureInfo.InvariantCulture, "AdventureWorks.UILogic.ViewModels.{0}ViewModel, AdventureWorks.UILogic, Version=1.1.0.0, Culture=neutral", viewType.Name);
+                var viewModelType = Type.GetType(viewModelTypeName);
+                if (viewModelType == null)
+                {
+                    viewModelTypeName = string.Format(CultureInfo.InvariantCulture, "AdventureWorks.UILogic.ViewModels.{0}ViewModel, AdventureWorks.UILogic.Windows, Version=1.0.0.0, Culture=neutral", viewType.Name);
+                    viewModelType = Type.GetType(viewModelTypeName);
+                }
+
+                return viewModelType;
+            });
+
+            // Documentation on working with tiles can be found at http://go.microsoft.com/fwlink/?LinkID=288821&clcid=0x409
+            //_tileUpdater = TileUpdateManager.CreateTileUpdaterForApplication();
+            //_tileUpdater.StartPeriodicUpdate(new Uri(Constants.ServerAddress + "/api/TileNotification"), PeriodicUpdateRecurrence.HalfHour);
+            //var resourceLoader = Container.Resolve<IResourceLoader>();
+
+            return base.OnInitializeAsync(args);
         }
 
         /// <summary>
@@ -115,7 +212,7 @@ namespace Band.Personalize.App.Universal
         {
             var deferral = e.SuspendingOperation.GetDeferral();
 
-            // TODO: Save application state and stop any background activity
+            //TODO: Save application state and stop any background activity
             deferral.Complete();
         }
     }
