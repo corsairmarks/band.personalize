@@ -20,12 +20,12 @@ namespace Band.Personalize.App.Universal.Views
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
-    public sealed partial class MainPage : SessionStateAwarePage
+    public sealed partial class BandPage : SessionStateAwarePage
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="MainPage"/> class.
+        /// Initializes a new instance of the <see cref="BandPage"/> class.
         /// </summary>
-        public MainPage()
+        public BandPage()
         {
             this.InitializeComponent();
         }

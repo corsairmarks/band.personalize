@@ -14,18 +14,17 @@
 
 namespace Band.Personalize.App.Universal.Views
 {
-    using Prism.Windows.Mvvm;
     using Windows.UI.Xaml.Controls;
 
     /// <summary>
-    /// An empty page that can be used on its own or navigated to within a Frame.
+    /// A User Control for editing the color theme.
     /// </summary>
-    public sealed partial class MainPage : SessionStateAwarePage
+    public sealed partial class ThemeUserControl : UserControl
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="MainPage"/> class.
+        /// Initializes a new instance of the <see cref="ThemeUserControl"/> class.
         /// </summary>
-        public MainPage()
+        public ThemeUserControl()
         {
             this.InitializeComponent();
         }

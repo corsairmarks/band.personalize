@@ -14,18 +14,17 @@
 
 namespace Band.Personalize.App.Universal.Views
 {
-    using Prism.Windows.Mvvm;
     using Windows.UI.Xaml.Controls;
 
     /// <summary>
-    /// An empty page that can be used on its own or navigated to within a Frame.
+    /// A User COntrol for changing the Me Tile image.
     /// </summary>
-    public sealed partial class MainPage : SessionStateAwarePage
+    public sealed partial class ImageUserControl : UserControl
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="MainPage"/> class.
+        /// Initializes a new instance of the <see cref="ImageUserControl"/> class.
         /// </summary>
-        public MainPage()
+        public ImageUserControl()
         {
             this.InitializeComponent();
         }
