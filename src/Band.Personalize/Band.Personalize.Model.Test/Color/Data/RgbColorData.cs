@@ -85,7 +85,7 @@ namespace Band.Personalize.Model.Test.Color.Data
         });
 
         /// <summary>
-        /// Gets collection of invalid hexadecimal strings.
+        /// Gets the test data for the <see cref="RgbColorTests.ParseHexadecimal_InvalidFormat_Throws(string)"/> test.
         /// </summary>
         public static IEnumerable<IEnumerable<string>> InvalidHexadecimalColorStrings
         {
@@ -114,7 +114,7 @@ namespace Band.Personalize.Model.Test.Color.Data
         }
 
         /// <summary>
-        /// Gets the test data for the <see cref="RgbColorTests.Parse_ValidFormat_ReturnsEquivalentRgbColor(string, RgbColor)"/> test.
+        /// Gets the test data for the <see cref="RgbColorTests.ParseHexadecimal_ValidFormat_ReturnsEquivalentRgbColor(string, RgbColor)"/> test.
         /// </summary>
         public static IEnumerable<IEnumerable<object>> ValidHexadecimalColorStrings
         {

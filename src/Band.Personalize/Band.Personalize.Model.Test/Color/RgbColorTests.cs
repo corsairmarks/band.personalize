@@ -381,16 +381,16 @@ namespace Band.Personalize.Model.Test.Color
         }
 
         /// <summary>
-        /// Verify the <see cref="RgbColor.Parse(string)"/> method throws an <see cref="ArgumentNullException"/> when it is passed <c>null</c>.
+        /// Verify the <see cref="RgbColor.ParseHexadecimal(string)"/> method throws an <see cref="ArgumentNullException"/> when it is passed <c>null</c>.
         /// </summary>
         [Fact]
-        public void Parse_NullInput_Throws()
+        public void ParseHexadecimal_NullInput_Throws()
         {
             // Arrange
             string target = null;
 
             // Act
-            var expected = Assert.Throws<ArgumentNullException>(() => RgbColor.Parse(target));
+            var expected = Assert.Throws<ArgumentNullException>(() => RgbColor.ParseHexadecimal(target));
 
             // Assert
             Assert.NotNull(expected);
@@ -398,31 +398,31 @@ namespace Band.Personalize.Model.Test.Color
         }
 
         /// <summary>
-        /// Verify the <see cref="RgbColor.Parse(string)"/> method throws a <see cref="FormatException"/> when it is passed string data it cannot parse.
+        /// Verify the <see cref="RgbColor.ParseHexadecimal(string)"/> method throws a <see cref="FormatException"/> when it is passed string data it cannot parse.
         /// </summary>
         /// <param name="target">The target string to parse.</param>
         [Theory]
         [MemberData("InvalidHexadecimalColorStrings", MemberType = typeof(RgbColorData))]
-        public void Parse_InvalidInput_Throws(string target)
+        public void ParseHexadecimal_InvalidFormat_Throws(string target)
         {
             // Act
-            var expected = Assert.Throws<FormatException>(() => RgbColor.Parse(target));
+            var expected = Assert.Throws<FormatException>(() => RgbColor.ParseHexadecimal(target));
 
             // Assert
             Assert.NotNull(expected);
         }
 
         /// <summary>
-        /// Verify the <see cref="RgbColor.Parse(string)"/> method throws a <see cref="FormatException"/> when it is passed string data it cannot parse.
+        /// Verify the <see cref="RgbColor.ParseHexadecimal(string)"/> method throws a <see cref="FormatException"/> when it is passed string data it cannot parse.
         /// </summary>
         /// <param name="target">The target string to parse.</param>
         /// <param name="expected">The expected result of parsing.</param>
         [Theory]
         [MemberData("ValidHexadecimalColorStrings", MemberType = typeof(RgbColorData))]
-        public void Parse_ValidFormat_ReturnsEquivalentRgbColor(string target, RgbColor expected)
+        public void ParseHexadecimal_ValidFormat_ReturnsEquivalentRgbColor(string target, RgbColor expected)
         {
             // Act
-            var result = RgbColor.Parse(target);
+            var result = RgbColor.ParseHexadecimal(target);
 
             // Assert
             Assert.Equal(expected, result);

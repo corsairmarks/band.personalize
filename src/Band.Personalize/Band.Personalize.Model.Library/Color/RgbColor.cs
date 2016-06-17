@@ -132,7 +132,7 @@ namespace Band.Personalize.Model.Library.Color
         /// <returns>A new instance of <see cref="RgbColor"/>.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="str"/> is <c>null</c>.</exception>
         /// <exception cref="FormatException"><paramref name="str"/> is not a hexadecimal color string.</exception>
-        public static RgbColor Parse(string str)
+        public static RgbColor ParseHexadecimal(string str)
         {
             if (str == null)
             {
