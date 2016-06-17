@@ -148,6 +148,10 @@
     </ApplicationDefinition>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Band.Personalize.Common.Library\Band.Personalize.Common.Library.csproj">
+      <Project>{7e456fa6-ea2a-41cb-a400-b31dc97eb892}</Project>
+      <Name>Band.Personalize.Common.Library</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Band.Personalize.Common\Band.Personalize.Common.csproj">
       <Project>{a4173ea9-44e8-4c1a-b729-c98ad529f34f}</Project>
       <Name>Band.Personalize.Common</Name>
