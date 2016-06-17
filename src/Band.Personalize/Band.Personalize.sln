@@ -5,9 +5,9 @@ VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Band.Personalize.App.Universal", "Band.Personalize.App.Universal\Band.Personalize.App.Universal.csproj", "{3F1FB9E7-AB52-4EE4-9C2F-C4969F1A80B0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Band.Personalize.Common", "Band.Personalize.Common\Band.Personalize.Common.csproj", "{A4173EA9-44E8-4C1A-B729-C98AD529F34F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Band.Personalize.Model.Implementation", "Band.Personalize.Model.Implementation\Band.Personalize.Model.Implementation.csproj", "{A4173EA9-44E8-4C1A-B729-C98AD529F34F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Band.Personalize.Common.Test", "Band.Personalize.Common.Test\Band.Personalize.Common.Test.csproj", "{D036A86B-D3D0-4673-BA5D-2139E87E22BF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Band.Personalize.Model.Test", "Band.Personalize.Model.Test\Band.Personalize.Model.Test.csproj", "{D036A86B-D3D0-4673-BA5D-2139E87E22BF}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Development Configuration", "Development Configuration", "{2BCBB434-53A9-4CB6-959A-450806B20F92}"
 	ProjectSection(SolutionItems) = preProject
@@ -15,7 +15,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Development Configuration",
 		stylecop.json = stylecop.json
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Band.Personalize.Common.Library", "Band.Personalize.Common.Library\Band.Personalize.Common.Library.csproj", "{7E456FA6-EA2A-41CB-A400-B31DC97EB892}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Band.Personalize.Model.Library", "Band.Personalize.Model.Library\Band.Personalize.Model.Library.csproj", "{7E456FA6-EA2A-41CB-A400-B31DC97EB892}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
