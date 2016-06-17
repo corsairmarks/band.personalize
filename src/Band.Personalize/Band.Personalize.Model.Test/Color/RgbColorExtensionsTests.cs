@@ -15,19 +15,19 @@
 namespace Band.Personalize.Model.Test.Color
 {
     using System;
-    using Model.Color;
     using Data;
+    using Library.Color;
     using Microsoft.Band;
     using Xunit;
 
     /// <summary>
-    /// Unit tests for the <see cref="HexadecimalColorExtensions"/> class.
+    /// Unit tests for the <see cref="RgbColorExtensions"/> class.
     /// </summary>
-    public class HexadecimalColorExtensionsTests
+    public class RgbColorExtensionsTests
     {
         /// <summary>
-        /// Verify the <see cref="HexadecimalColorExtensions.ToBandColor(HexadecimalColor)"/> method maps
-        /// the correct fields from an instance of <see cref="HexadecimalColor"/> to an instance of
+        /// Verify the <see cref="RgbColorExtensions.ToBandColor(RgbColor)"/> method maps
+        /// the correct fields from an instance of <see cref="RgbColor"/> to an instance of
         /// <see cref="BandColor"/>.
         /// </summary>
         /// <param name="red">The red channel color saturation to test.</param>
@@ -38,7 +38,7 @@ namespace Band.Personalize.Model.Test.Color
         public void ToBandColor_CreatesInstanceWithSameValues(byte red, byte green, byte blue)
         {
             // Arrange
-            var target = new HexadecimalColor(red, green, blue);
+            var target = new RgbColor(red, green, blue);
 
             // Act
             var result = target.ToBandColor();
@@ -50,14 +50,14 @@ namespace Band.Personalize.Model.Test.Color
         }
 
         /// <summary>
-        /// Verify the <see cref="HexadecimalColorExtensions.ToBandColor(HexadecimalColor)"/> method throws
+        /// Verify the <see cref="RgbColorExtensions.ToBandColor(RgbColor)"/> method throws
         /// an <see cref="ArgumentNullException"/> when the color parameter is <c>null</c>.
         /// </summary>
         [Fact]
         public void ToBandColor_NullColor_Throws()
         {
             // Arrange
-            HexadecimalColor target = null;
+            RgbColor target = null;
 
             // Act
             var expected = Assert.Throws<ArgumentNullException>(() => target.ToBandColor());

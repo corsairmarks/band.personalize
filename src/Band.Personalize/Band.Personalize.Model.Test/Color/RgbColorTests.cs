@@ -16,17 +16,17 @@ namespace Band.Personalize.Model.Test.Color
 {
     using System;
     using System.Collections.Generic;
-    using Model.Color;
     using Data;
+    using Library.Color;
     using Xunit;
 
     /// <summary>
-    /// Unit tests for the <see cref="HexadecimalColor"/> class.
+    /// Unit tests for the <see cref="RgbColor"/> class.
     /// </summary>
-    public class HexadecimalColorTests
+    public class RgbColorTests
     {
         /// <summary>
-        /// Gets the test data for the <see cref="HexadecimalColorTests.Luminance_ReturnsNewInstanceWithModifiedChannels(HexadecimalColor, decimal)"/> test.
+        /// Gets the test data for the <see cref="RgbColorTests.Luminance_ReturnsNewInstanceWithModifiedChannels(RgbColor, decimal)"/> test.
         /// </summary>
         public static IEnumerable<IEnumerable<object>> LuminanceBytes
         {
@@ -49,25 +49,25 @@ namespace Band.Personalize.Model.Test.Color
         }
 
         /// <summary>
-        /// Gets the test data for the <see cref="HexadecimalColorTests.Luminance_ReturnsNewInstanceWithModifiedChannels(HexadecimalColor, decimal)"/> test.
+        /// Gets the test data for the <see cref="RgbColorTests.Luminance_ReturnsNewInstanceWithModifiedChannels(RgbColor, decimal)"/> test.
         /// </summary>
-        public static IEnumerable<IEnumerable<object>> LuminanceHexadecimalColors
+        public static IEnumerable<IEnumerable<object>> LuminanceRgbColors
         {
             get
             {
-                yield return new object[] { new HexadecimalColor(0x00, 0x00, 0x00), 0.25M, };
-                yield return new object[] { new HexadecimalColor(0x00, 0x00, 0x00), -0.25M, };
-                yield return new object[] { new HexadecimalColor(0x00, 0x00, 0x00), 1.25M, };
-                yield return new object[] { new HexadecimalColor(0x00, 0x00, 0x00), -1.25M, };
-                yield return new object[] { new HexadecimalColor(0xFF, 0xFF, 0xFF), 0.25M, };
-                yield return new object[] { new HexadecimalColor(0xFF, 0xFF, 0xFF), -0.25M, };
-                yield return new object[] { new HexadecimalColor(0xFF, 0xFF, 0xFF), 1.25M, };
-                yield return new object[] { new HexadecimalColor(0xFF, 0xFF, 0xFF), -1.25M, };
-                yield return new object[] { new HexadecimalColor(0x04, 0x13, 0x84), decimal.Zero, };
-                yield return new object[] { new HexadecimalColor(0x04, 0x13, 0x84), 0.001953124M, };
-                yield return new object[] { new HexadecimalColor(0x04, 0x13, 0x84), -0.001953124M, };
-                yield return new object[] { new HexadecimalColor(0x04, 0x13, 0x84), 0.001953125M, };
-                yield return new object[] { new HexadecimalColor(0x04, 0x13, 0x84), -0.0019531251M, };
+                yield return new object[] { new RgbColor(0x00, 0x00, 0x00), 0.25M, };
+                yield return new object[] { new RgbColor(0x00, 0x00, 0x00), -0.25M, };
+                yield return new object[] { new RgbColor(0x00, 0x00, 0x00), 1.25M, };
+                yield return new object[] { new RgbColor(0x00, 0x00, 0x00), -1.25M, };
+                yield return new object[] { new RgbColor(0xFF, 0xFF, 0xFF), 0.25M, };
+                yield return new object[] { new RgbColor(0xFF, 0xFF, 0xFF), -0.25M, };
+                yield return new object[] { new RgbColor(0xFF, 0xFF, 0xFF), 1.25M, };
+                yield return new object[] { new RgbColor(0xFF, 0xFF, 0xFF), -1.25M, };
+                yield return new object[] { new RgbColor(0x04, 0x13, 0x84), decimal.Zero, };
+                yield return new object[] { new RgbColor(0x04, 0x13, 0x84), 0.001953124M, };
+                yield return new object[] { new RgbColor(0x04, 0x13, 0x84), -0.001953124M, };
+                yield return new object[] { new RgbColor(0x04, 0x13, 0x84), 0.001953125M, };
+                yield return new object[] { new RgbColor(0x04, 0x13, 0x84), -0.0019531251M, };
             }
         }
 
@@ -82,7 +82,7 @@ namespace Band.Personalize.Model.Test.Color
         public void Ctor_SetsProperties(byte red, byte green, byte blue)
         {
             // Act
-            var result = new HexadecimalColor(red, green, blue);
+            var result = new RgbColor(red, green, blue);
 
             // Assert
             Assert.Equal(red, result.Red);
@@ -91,8 +91,8 @@ namespace Band.Personalize.Model.Test.Color
         }
 
         /// <summary>
-        /// Verify the <see cref="HexadecimalColor.RedSaturation"/> property calculates the
-        /// correct saturation based on the <see cref="HexadecimalColor.Red"/> property.
+        /// Verify the <see cref="RgbColor.RedSaturation"/> property calculates the
+        /// correct saturation based on the <see cref="RgbColor.Red"/> property.
         /// </summary>
         /// <param name="colorChannel">The color channel to test.</param>
         [Theory]
@@ -100,8 +100,8 @@ namespace Band.Personalize.Model.Test.Color
         public void RedSaturation_CalculatesPercentage(byte colorChannel)
         {
             // Arrange
-            var target = new HexadecimalColor(colorChannel, 0x00, 0x00);
-            var expected = HexadecimalColor.PercentageOfMaximumSaturation(target.Red);
+            var target = new RgbColor(colorChannel, 0x00, 0x00);
+            var expected = RgbColor.PercentageOfMaximumSaturation(target.Red);
 
             // Act
             var result = target.RedSaturation;
@@ -111,8 +111,8 @@ namespace Band.Personalize.Model.Test.Color
         }
 
         /// <summary>
-        /// Verify the <see cref="HexadecimalColor.GreenSaturation"/> property calculates the
-        /// correct saturation based on the <see cref="HexadecimalColor.Green"/> property.
+        /// Verify the <see cref="RgbColor.GreenSaturation"/> property calculates the
+        /// correct saturation based on the <see cref="RgbColor.Green"/> property.
         /// </summary>
         /// <param name="colorChannel">The color channel to test.</param>
         [Theory]
@@ -120,8 +120,8 @@ namespace Band.Personalize.Model.Test.Color
         public void GreenSaturation_CalculatesPercentage(byte colorChannel)
         {
             // Arrange
-            var target = new HexadecimalColor(0x00, colorChannel, 0x00);
-            var expected = HexadecimalColor.PercentageOfMaximumSaturation(target.Green);
+            var target = new RgbColor(0x00, colorChannel, 0x00);
+            var expected = RgbColor.PercentageOfMaximumSaturation(target.Green);
 
             // Act
             var result = target.GreenSaturation;
@@ -131,8 +131,8 @@ namespace Band.Personalize.Model.Test.Color
         }
 
         /// <summary>
-        /// Verify the <see cref="HexadecimalColor.BlueSaturation"/> property calculates the
-        /// correct saturation based on the <see cref="HexadecimalColor.Blue"/> property.
+        /// Verify the <see cref="RgbColor.BlueSaturation"/> property calculates the
+        /// correct saturation based on the <see cref="RgbColor.Blue"/> property.
         /// </summary>
         /// <param name="colorChannel">The color channel to test.</param>
         [Theory]
@@ -140,8 +140,8 @@ namespace Band.Personalize.Model.Test.Color
         public void BlueSaturation_CalculatesPercentage(byte colorChannel)
         {
             // Arrange
-            var target = new HexadecimalColor(0x00, 0x00, colorChannel);
-            var expected = HexadecimalColor.PercentageOfMaximumSaturation(target.Blue);
+            var target = new RgbColor(0x00, 0x00, colorChannel);
+            var expected = RgbColor.PercentageOfMaximumSaturation(target.Blue);
 
             // Act
             var result = target.BlueSaturation;
@@ -151,15 +151,15 @@ namespace Band.Personalize.Model.Test.Color
         }
 
         /// <summary>
-        /// Verify the equality operator (==) for <see cref="HexadecimalColor"/> does returns <c>false</c> if <paramref name="notEqual"/> is not an instance of <see cref="HexadecimalColor"/> where all color saturation channels are equal.
+        /// Verify the equality operator (==) for <see cref="RgbColor"/> does returns <c>false</c> if <paramref name="notEqual"/> is not an instance of <see cref="RgbColor"/> where all color saturation channels are equal.
         /// </summary>
         /// <param name="notEqual">A value that is expected the be not equal to the default test color.</param>
         [Theory]
-        [MemberData("NonNullNotEqualHexadecimalColors", MemberType = typeof(HexadecimalColorData))]
-        public void EqualityOperator_ChannelsNotEqual_IsFalse(HexadecimalColor notEqual)
+        [MemberData("NonNullNotEqualRgbColors", MemberType = typeof(RgbColorData))]
+        public void EqualityOperator_ChannelsNotEqual_IsFalse(RgbColor notEqual)
         {
             // Arrange
-            var target = HexadecimalColorData.DefaultColor;
+            var target = RgbColorData.DefaultColor;
 
             // Act
             var result = target == notEqual;
@@ -169,7 +169,7 @@ namespace Band.Personalize.Model.Test.Color
         }
 
         /// <summary>
-        /// Verify the equality operator (==) for <see cref="HexadecimalColor"/> returns <c>true</c> when the argument is another instance of <see cref="HexadecimalColor"/> where all color saturation channels are equal.
+        /// Verify the equality operator (==) for <see cref="RgbColor"/> returns <c>true</c> when the argument is another instance of <see cref="RgbColor"/> where all color saturation channels are equal.
         /// </summary>
         /// <param name="red">The red channel color saturation to test.</param>
         /// <param name="green">The green channel color saturation to test.</param>
@@ -179,8 +179,8 @@ namespace Band.Personalize.Model.Test.Color
         public void EqualityOperator_AllChannelsEqual_IsTrue(byte red, byte green, byte blue)
         {
             // Arrange
-            var equal = new HexadecimalColor(red, green, blue);
-            var target = new HexadecimalColor(red, green, blue);
+            var equal = new RgbColor(red, green, blue);
+            var target = new RgbColor(red, green, blue);
 
             // Act
             var result = target == equal;
@@ -190,14 +190,14 @@ namespace Band.Personalize.Model.Test.Color
         }
 
         /// <summary>
-        /// Verify the equality operator (==) for <see cref="HexadecimalColor"/> returns <c>true</c> when both operands are <c>null</c>.
+        /// Verify the equality operator (==) for <see cref="RgbColor"/> returns <c>true</c> when both operands are <c>null</c>.
         /// </summary>
         [Fact]
         public void EqualityOperator_BothOperandsNull_IsTrue()
         {
             // Arrange
-            HexadecimalColor equal = null;
-            HexadecimalColor target = null;
+            RgbColor equal = null;
+            RgbColor target = null;
 
             // Act
             var result = target == equal;
@@ -207,15 +207,15 @@ namespace Band.Personalize.Model.Test.Color
         }
 
         /// <summary>
-        /// Verify the equality operator (==) is commutative for <see cref="HexadecimalColor"/> instances and <c>null</c>.
+        /// Verify the equality operator (==) is commutative for <see cref="RgbColor"/> instances and <c>null</c>.
         /// </summary>
-        /// <param name="compare">The <see cref="HexadecimalColor"/> to verify for commutative equality.</param>
+        /// <param name="compare">The <see cref="RgbColor"/> to verify for commutative equality.</param>
         [Theory]
-        [MemberData("HexadecimalColorsWithDefault", MemberType = typeof(HexadecimalColorData))]
-        public void EqualityOperator_IsCommutative(HexadecimalColor compare)
+        [MemberData("RgbColorsWithDefault", MemberType = typeof(RgbColorData))]
+        public void EqualityOperator_IsCommutative(RgbColor compare)
         {
             // Arrange
-            var target = HexadecimalColorData.DefaultColor;
+            var target = RgbColorData.DefaultColor;
 
             // Act
             var result1 = target == compare;
@@ -226,12 +226,12 @@ namespace Band.Personalize.Model.Test.Color
         }
 
         /// <summary>
-        /// Verify the equality operator (==) is reflexive for <see cref="HexadecimalColor"/> instances and <c>null</c>.
+        /// Verify the equality operator (==) is reflexive for <see cref="RgbColor"/> instances and <c>null</c>.
         /// </summary>
-        /// <param name="color">The <see cref="HexadecimalColor"/> to verify for reflexive equality.</param>
+        /// <param name="color">The <see cref="RgbColor"/> to verify for reflexive equality.</param>
         [Theory]
-        [MemberData("HexadecimalColorsWithDefault", MemberType = typeof(HexadecimalColorData))]
-        public void EqualityOperator_IsReflexive(HexadecimalColor color)
+        [MemberData("RgbColorsWithDefault", MemberType = typeof(RgbColorData))]
+        public void EqualityOperator_IsReflexive(RgbColor color)
         {
 #pragma warning disable CS1718 // disabled because the purpose of the test is to compare the object to itself
             // Act
@@ -243,7 +243,7 @@ namespace Band.Personalize.Model.Test.Color
         }
 
         /// <summary>
-        /// Verify the equality operator (==) is reflexive for the same instance of <see cref="HexadecimalColor"/>.
+        /// Verify the equality operator (==) is reflexive for the same instance of <see cref="RgbColor"/>.
         /// </summary>
         /// <param name="red">The red channel color saturation to test.</param>
         /// <param name="green">The green channel color saturation to test.</param>
@@ -253,7 +253,7 @@ namespace Band.Personalize.Model.Test.Color
         public void EqualityOperator_SameInstance_IsReflexive(byte red, byte green, byte blue)
         {
             // Arrange
-            var color = new HexadecimalColor(red, green, blue);
+            var color = new RgbColor(red, green, blue);
 
 #pragma warning disable CS1718 // disabled because the purpose of the test is to compare the object to itself
 
@@ -266,15 +266,15 @@ namespace Band.Personalize.Model.Test.Color
         }
 
         /// <summary>
-        /// Verify the inequality operator (!=) for <see cref="HexadecimalColor"/> returns <c>true</c> if <paramref name="notEqual"/> is not an instance of <see cref="HexadecimalColor"/> where all color saturation channels are equal.
+        /// Verify the inequality operator (!=) for <see cref="RgbColor"/> returns <c>true</c> if <paramref name="notEqual"/> is not an instance of <see cref="RgbColor"/> where all color saturation channels are equal.
         /// </summary>
         /// <param name="notEqual">A value that is expected the be not equal to the default test color.</param>
         [Theory]
-        [MemberData("NonNullNotEqualHexadecimalColors", MemberType = typeof(HexadecimalColorData))]
-        public void InequalityOperator_ChannelsNotEqual_IsTrue(HexadecimalColor notEqual)
+        [MemberData("NonNullNotEqualRgbColors", MemberType = typeof(RgbColorData))]
+        public void InequalityOperator_ChannelsNotEqual_IsTrue(RgbColor notEqual)
         {
             // Arrange
-            var target = HexadecimalColorData.DefaultColor;
+            var target = RgbColorData.DefaultColor;
 
             // Act
             var result = target == notEqual;
@@ -284,7 +284,7 @@ namespace Band.Personalize.Model.Test.Color
         }
 
         /// <summary>
-        /// Verify the inequality operator (!=) for <see cref="HexadecimalColor"/> returns <c>false</c> when the argument is another instance of <see cref="HexadecimalColor"/> where all color saturation channels are equal.
+        /// Verify the inequality operator (!=) for <see cref="RgbColor"/> returns <c>false</c> when the argument is another instance of <see cref="RgbColor"/> where all color saturation channels are equal.
         /// </summary>
         /// <param name="red">The red channel color saturation to test.</param>
         /// <param name="green">The green channel color saturation to test.</param>
@@ -294,8 +294,8 @@ namespace Band.Personalize.Model.Test.Color
         public void InequalityOperator_AllChannelsEqual_IsFalse(byte red, byte green, byte blue)
         {
             // Arrange
-            var equal = new HexadecimalColor(red, green, blue);
-            var target = new HexadecimalColor(red, green, blue);
+            var equal = new RgbColor(red, green, blue);
+            var target = new RgbColor(red, green, blue);
 
             // Act
             var result = target != equal;
@@ -305,14 +305,14 @@ namespace Band.Personalize.Model.Test.Color
         }
 
         /// <summary>
-        /// Verify the inequality operator (!=) for <see cref="HexadecimalColor"/> returns <c>false</c> when both operands are <c>null</c>.
+        /// Verify the inequality operator (!=) for <see cref="RgbColor"/> returns <c>false</c> when both operands are <c>null</c>.
         /// </summary>
         [Fact]
         public void InequalityOperator_BothOperandsNull_IsFalse()
         {
             // Arrange
-            HexadecimalColor equal = null;
-            HexadecimalColor target = null;
+            RgbColor equal = null;
+            RgbColor target = null;
 
             // Act
             var result = target != equal;
@@ -322,15 +322,15 @@ namespace Band.Personalize.Model.Test.Color
         }
 
         /// <summary>
-        /// Verify the inequality operator (!=) is commutative for <see cref="HexadecimalColor"/> instances and <c>null</c>.
+        /// Verify the inequality operator (!=) is commutative for <see cref="RgbColor"/> instances and <c>null</c>.
         /// </summary>
-        /// <param name="compare">The <see cref="HexadecimalColor"/> to verify for commutative equality.</param>
+        /// <param name="compare">The <see cref="RgbColor"/> to verify for commutative equality.</param>
         [Theory]
-        [MemberData("HexadecimalColorsWithDefault", MemberType = typeof(HexadecimalColorData))]
-        public void InequalityOperator_IsCommutative(HexadecimalColor compare)
+        [MemberData("RgbColorsWithDefault", MemberType = typeof(RgbColorData))]
+        public void InequalityOperator_IsCommutative(RgbColor compare)
         {
             // Arrange
-            var target = HexadecimalColorData.DefaultColor;
+            var target = RgbColorData.DefaultColor;
 
             // Act
             var result1 = target != compare;
@@ -341,12 +341,12 @@ namespace Band.Personalize.Model.Test.Color
         }
 
         /// <summary>
-        /// Verify the inequality operator (!=) is reflexive for <see cref="HexadecimalColor"/> instances and <c>null</c>.
+        /// Verify the inequality operator (!=) is reflexive for <see cref="RgbColor"/> instances and <c>null</c>.
         /// </summary>
-        /// <param name="color">The <see cref="HexadecimalColor"/> to verify for reflexive equality.</param>
+        /// <param name="color">The <see cref="RgbColor"/> to verify for reflexive equality.</param>
         [Theory]
-        [MemberData("HexadecimalColorsWithDefault", MemberType = typeof(HexadecimalColorData))]
-        public void InequalityOperator_IsReflexive(HexadecimalColor color)
+        [MemberData("RgbColorsWithDefault", MemberType = typeof(RgbColorData))]
+        public void InequalityOperator_IsReflexive(RgbColor color)
         {
 #pragma warning disable CS1718 // disabled because the purpose of the test is to compare the object to itself
             // Act
@@ -358,7 +358,7 @@ namespace Band.Personalize.Model.Test.Color
         }
 
         /// <summary>
-        /// Verify the inequality operator (!=) is reflexive for the same instance of <see cref="HexadecimalColor"/>.
+        /// Verify the inequality operator (!=) is reflexive for the same instance of <see cref="RgbColor"/>.
         /// </summary>
         /// <param name="red">The red channel color saturation to test.</param>
         /// <param name="green">The green channel color saturation to test.</param>
@@ -368,7 +368,7 @@ namespace Band.Personalize.Model.Test.Color
         public void InequalityOperator_SameInstance_IsReflexive(byte red, byte green, byte blue)
         {
             // Arrange
-            var color = new HexadecimalColor(red, green, blue);
+            var color = new RgbColor(red, green, blue);
 
 #pragma warning disable CS1718 // disabled because the purpose of the test is to compare the object to itself
 
@@ -381,7 +381,7 @@ namespace Band.Personalize.Model.Test.Color
         }
 
         /// <summary>
-        /// Verify the <see cref="HexadecimalColor.Parse(string)"/> method throws an <see cref="ArgumentNullException"/> when it is passed <c>null</c>.
+        /// Verify the <see cref="RgbColor.Parse(string)"/> method throws an <see cref="ArgumentNullException"/> when it is passed <c>null</c>.
         /// </summary>
         [Fact]
         public void Parse_NullInput_Throws()
@@ -390,7 +390,7 @@ namespace Band.Personalize.Model.Test.Color
             string target = null;
 
             // Act
-            var expected = Assert.Throws<ArgumentNullException>(() => HexadecimalColor.Parse(target));
+            var expected = Assert.Throws<ArgumentNullException>(() => RgbColor.Parse(target));
 
             // Assert
             Assert.NotNull(expected);
@@ -398,38 +398,38 @@ namespace Band.Personalize.Model.Test.Color
         }
 
         /// <summary>
-        /// Verify the <see cref="HexadecimalColor.Parse(string)"/> method throws a <see cref="FormatException"/> when it is passed string data it cannot parse.
+        /// Verify the <see cref="RgbColor.Parse(string)"/> method throws a <see cref="FormatException"/> when it is passed string data it cannot parse.
         /// </summary>
         /// <param name="target">The target string to parse.</param>
         [Theory]
-        [MemberData("InvalidHexadecimalColorStrings", MemberType = typeof(HexadecimalColorData))]
+        [MemberData("InvalidHexadecimalColorStrings", MemberType = typeof(RgbColorData))]
         public void Parse_InvalidInput_Throws(string target)
         {
             // Act
-            var expected = Assert.Throws<FormatException>(() => HexadecimalColor.Parse(target));
+            var expected = Assert.Throws<FormatException>(() => RgbColor.Parse(target));
 
             // Assert
             Assert.NotNull(expected);
         }
 
         /// <summary>
-        /// Verify the <see cref="HexadecimalColor.Parse(string)"/> method throws a <see cref="FormatException"/> when it is passed string data it cannot parse.
+        /// Verify the <see cref="RgbColor.Parse(string)"/> method throws a <see cref="FormatException"/> when it is passed string data it cannot parse.
         /// </summary>
         /// <param name="target">The target string to parse.</param>
         /// <param name="expected">The expected result of parsing.</param>
         [Theory]
-        [MemberData("ValidHexadecimalColorStrings", MemberType = typeof(HexadecimalColorData))]
-        public void Parse_ValidFormat_ReturnsEquivalentHexadecimalColor(string target, HexadecimalColor expected)
+        [MemberData("ValidHexadecimalColorStrings", MemberType = typeof(RgbColorData))]
+        public void Parse_ValidFormat_ReturnsEquivalentRgbColor(string target, RgbColor expected)
         {
             // Act
-            var result = HexadecimalColor.Parse(target);
+            var result = RgbColor.Parse(target);
 
             // Assert
             Assert.Equal(expected, result);
         }
 
         /// <summary>
-        /// Verify the <see cref="HexadecimalColor.PercentageOfMaximumSaturation(byte)"/> method calculates the
+        /// Verify the <see cref="RgbColor.PercentageOfMaximumSaturation(byte)"/> method calculates the
         /// percentage of <see cref="byte.MaxValue"/> of the specified <paramref name="colorChannel"/>.
         /// </summary>
         /// <param name="colorChannel">The color channel to test.</param>
@@ -441,14 +441,14 @@ namespace Band.Personalize.Model.Test.Color
             var expected = colorChannel / (decimal)byte.MaxValue;
 
             // Act
-            var result = HexadecimalColor.PercentageOfMaximumSaturation(colorChannel);
+            var result = RgbColor.PercentageOfMaximumSaturation(colorChannel);
 
             // Assert
             Assert.Equal(expected, result);
         }
 
         /// <summary>
-        /// Verify the <see cref="HexadecimalColor.Luminance(byte, decimal)"/> method returns a byte modified brighter or darker by the
+        /// Verify the <see cref="RgbColor.Luminance(byte, decimal)"/> method returns a byte modified brighter or darker by the
         /// specified <paramref name="percentage"/>.
         /// </summary>
         /// <param name="colorChannel">The color channel to test.</param>
@@ -459,34 +459,34 @@ namespace Band.Personalize.Model.Test.Color
         public void Luminance_Static_ReturnsModifiedByte(byte colorChannel, decimal percentage, byte expected)
         {
             // Act
-            var result = HexadecimalColor.Luminance(colorChannel, percentage);
+            var result = RgbColor.Luminance(colorChannel, percentage);
 
             // Assert
             Assert.Equal(expected, result);
         }
 
         /// <summary>
-        /// Verify the <see cref="HexadecimalColor.Luminance(decimal)"/> method returns a new instance of <see cref="HexadecimalColor"/> with
+        /// Verify the <see cref="RgbColor.Luminance(decimal)"/> method returns a new instance of <see cref="RgbColor"/> with
         /// each channel modified brighter or darker by the specified <paramref name="percentage"/>.
         /// </summary>
         /// <param name="target">The color to test.</param>
         /// <param name="percentage">The percentage of maximum by which to brighten/darken each channel on the <paramref name="target"/>.</param>
         [Theory]
-        [MemberData("LuminanceHexadecimalColors")]
-        public void Luminance_ReturnsNewInstanceWithModifiedChannels(HexadecimalColor target, decimal percentage)
+        [MemberData("LuminanceRgbColors")]
+        public void Luminance_ReturnsNewInstanceWithModifiedChannels(RgbColor target, decimal percentage)
         {
             // Act
             var result = target.Luminance(percentage);
 
             // Assert
             Assert.NotSame(target, result);
-            Assert.Equal(HexadecimalColor.Luminance(target.Red, percentage), result.Red);
-            Assert.Equal(HexadecimalColor.Luminance(target.Green, percentage), result.Green);
-            Assert.Equal(HexadecimalColor.Luminance(target.Blue, percentage), result.Blue);
+            Assert.Equal(RgbColor.Luminance(target.Red, percentage), result.Red);
+            Assert.Equal(RgbColor.Luminance(target.Green, percentage), result.Green);
+            Assert.Equal(RgbColor.Luminance(target.Blue, percentage), result.Blue);
         }
 
         /// <summary>
-        /// Verify the <see cref="HexadecimalColor.ToString"/> method formats its output as a hexadecimal string with a leading '#' character.
+        /// Verify the <see cref="RgbColor.ToString"/> method formats its output as a hexadecimal string with a leading '#' character.
         /// </summary>
         /// <param name="red">The red channel color saturation to test.</param>
         /// <param name="green">The green channel color saturation to test.</param>
@@ -496,7 +496,7 @@ namespace Band.Personalize.Model.Test.Color
         public void ToString_FormatsAsHexString(byte red, byte green, byte blue)
         {
             // Arrange
-            var target = new HexadecimalColor(red, green, blue);
+            var target = new RgbColor(red, green, blue);
 
             // Act
             var result = target.ToString();
@@ -506,15 +506,15 @@ namespace Band.Personalize.Model.Test.Color
         }
 
         /// <summary>
-        /// Verify the <see cref="HexadecimalColor.Equals(object)"/> method returns <c>false</c> if <paramref name="notEqual"/> is not an instance of <see cref="HexadecimalColor"/> where all color saturation channels are equal.
+        /// Verify the <see cref="RgbColor.Equals(object)"/> method returns <c>false</c> if <paramref name="notEqual"/> is not an instance of <see cref="RgbColor"/> where all color saturation channels are equal.
         /// </summary>
         /// <param name="notEqual">A value that is expected the be not equal to the default test color.</param>
         [Theory]
-        [MemberData("NotEqualObjects", MemberType = typeof(HexadecimalColorData))]
+        [MemberData("NotEqualObjects", MemberType = typeof(RgbColorData))]
         public void EqualsMethod_ChannelsNotEqual_IsFalse(object notEqual)
         {
             // Arrange
-            var target = HexadecimalColorData.DefaultColor;
+            var target = RgbColorData.DefaultColor;
 
             // Act
             var result = target.Equals(notEqual);
@@ -524,7 +524,7 @@ namespace Band.Personalize.Model.Test.Color
         }
 
         /// <summary>
-        /// Verify the <see cref="HexadecimalColor.Equals(object)"/> method returns <c>true</c> when the argument is another instance of <see cref="HexadecimalColor"/> where all color saturation channels are equal to the original.
+        /// Verify the <see cref="RgbColor.Equals(object)"/> method returns <c>true</c> when the argument is another instance of <see cref="RgbColor"/> where all color saturation channels are equal to the original.
         /// </summary>
         /// <param name="red">The red channel color saturation to test.</param>
         /// <param name="green">The green channel color saturation to test.</param>
@@ -534,8 +534,8 @@ namespace Band.Personalize.Model.Test.Color
         public void EqualsMethod_AllChannelsEqual_IsTrue(byte red, byte green, byte blue)
         {
             // Arrange
-            var equal = new HexadecimalColor(red, green, blue);
-            var target = new HexadecimalColor(red, green, blue);
+            var equal = new RgbColor(red, green, blue);
+            var target = new RgbColor(red, green, blue);
 
             // Act
             var result = target.Equals(equal);
@@ -545,15 +545,15 @@ namespace Band.Personalize.Model.Test.Color
         }
 
         /// <summary>
-        /// Verify the <see cref="HexadecimalColor.Equals(object)"/> method is commutative for non-<c>null</c> <see cref="HexadecimalColor"/> instances.
+        /// Verify the <see cref="RgbColor.Equals(object)"/> method is commutative for non-<c>null</c> <see cref="RgbColor"/> instances.
         /// </summary>
-        /// <param name="compare">The <see cref="HexadecimalColor"/> to verify for commutative equality.</param>
+        /// <param name="compare">The <see cref="RgbColor"/> to verify for commutative equality.</param>
         [Theory]
-        [MemberData("NonNullHexadecimalColorsWithDefault", MemberType = typeof(HexadecimalColorData))]
-        public void EqualsMethod_IsCommutative(HexadecimalColor compare)
+        [MemberData("NonNullRgbColorsWithDefault", MemberType = typeof(RgbColorData))]
+        public void EqualsMethod_IsCommutative(RgbColor compare)
         {
             // Arrange
-            var target = HexadecimalColorData.DefaultColor;
+            var target = RgbColorData.DefaultColor;
 
             // Act
             var result1 = target.Equals(compare);
@@ -564,12 +564,12 @@ namespace Band.Personalize.Model.Test.Color
         }
 
         /// <summary>
-        /// Verify the <see cref="HexadecimalColor.Equals(object)"/> method is reflexive for non-<c>null</c> <see cref="HexadecimalColor"/> instances.
+        /// Verify the <see cref="RgbColor.Equals(object)"/> method is reflexive for non-<c>null</c> <see cref="RgbColor"/> instances.
         /// </summary>
-        /// <param name="color">The <see cref="HexadecimalColor"/> to verify for reflexive equality.</param>
+        /// <param name="color">The <see cref="RgbColor"/> to verify for reflexive equality.</param>
         [Theory]
-        [MemberData("NonNullHexadecimalColorsWithDefault", MemberType = typeof(HexadecimalColorData))]
-        public void EqualsMethod_IsReflexive(HexadecimalColor color)
+        [MemberData("NonNullRgbColorsWithDefault", MemberType = typeof(RgbColorData))]
+        public void EqualsMethod_IsReflexive(RgbColor color)
         {
             // Act
             var result = color.Equals(color);
@@ -579,7 +579,7 @@ namespace Band.Personalize.Model.Test.Color
         }
 
         /// <summary>
-        /// Verify the <see cref="HexadecimalColor.Equals(object)"/> method is reflexive for the same instance of <see cref="HexadecimalColor"/>.
+        /// Verify the <see cref="RgbColor.Equals(object)"/> method is reflexive for the same instance of <see cref="RgbColor"/>.
         /// </summary>
         /// <param name="red">The red channel color saturation to test.</param>
         /// <param name="green">The green channel color saturation to test.</param>
@@ -589,7 +589,7 @@ namespace Band.Personalize.Model.Test.Color
         public void EqualsMethod_SameInstance_IsReflexive(byte red, byte green, byte blue)
         {
             // Arrange
-            var color = new HexadecimalColor(red, green, blue);
+            var color = new RgbColor(red, green, blue);
 
 #pragma warning disable CS1718 // disabled because the purpose of the test is to compare the object to itself
 
@@ -602,7 +602,7 @@ namespace Band.Personalize.Model.Test.Color
         }
 
         /// <summary>
-        /// Verify the <see cref="HexadecimalColor.GetHashCode"/> method returns a value based on the sum of the color channels,
+        /// Verify the <see cref="RgbColor.GetHashCode"/> method returns a value based on the sum of the color channels,
         /// with red being offset by 0x1000, green being offset 0x100, and blue with no offset.
         /// </summary>
         /// <param name="red">The red channel color saturation to test.</param>
@@ -613,7 +613,7 @@ namespace Band.Personalize.Model.Test.Color
         public void GetHashCode_IsSumOfChannelsWithOffset(byte red, byte green, byte blue)
         {
             // Arrange
-            var target = new HexadecimalColor(red, green, blue);
+            var target = new RgbColor(red, green, blue);
 
             // Act
             var result = target.GetHashCode();
@@ -623,7 +623,7 @@ namespace Band.Personalize.Model.Test.Color
         }
 
         /// <summary>
-        /// Verify the <see cref="HexadecimalColor.GetHashCode"/> method returns the same value for <see cref="HexadecimalColor"/> instances that are equal.
+        /// Verify the <see cref="RgbColor.GetHashCode"/> method returns the same value for <see cref="RgbColor"/> instances that are equal.
         /// </summary>
         /// <param name="red">The red channel color saturation to test.</param>
         /// <param name="green">The green channel color saturation to test.</param>
@@ -633,8 +633,8 @@ namespace Band.Personalize.Model.Test.Color
         public void GetHashCode_ColorsAreEqual_AreEqual(byte red, byte green, byte blue)
         {
             // Arrange
-            var target1 = new HexadecimalColor(red, green, blue);
-            var target2 = new HexadecimalColor(red, green, blue);
+            var target1 = new RgbColor(red, green, blue);
+            var target2 = new RgbColor(red, green, blue);
 
             // Act
             var result1 = target1.GetHashCode();

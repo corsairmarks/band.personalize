@@ -14,8 +14,8 @@
 
 namespace Band.Personalize.Model.Test.Color
 {
-    using Model.Color;
     using Data;
+    using Library.Color;
     using Microsoft.Band;
     using Xunit;
 
@@ -25,22 +25,22 @@ namespace Band.Personalize.Model.Test.Color
     public class BandColorExtensionsTests
     {
         /// <summary>
-        /// Verify the <see cref="BandColorExtensions.ToHexadecimalColor(BandColor)"/> method maps
+        /// Verify the <see cref="BandColorExtensions.ToRgbColor(BandColor)"/> method maps
         /// the correct fields from an instance of <see cref="BandColor"/> to an instance of
-        /// <see cref="HexadecimalColor"/>.
+        /// <see cref="RgbColor"/>.
         /// </summary>
         /// <param name="red">The red channel color saturation to test.</param>
         /// <param name="green">The green channel color saturation to test.</param>
         /// <param name="blue">The blue channel color saturation to test.</param>
         [Theory]
         [ClassData(typeof(RgbColorByteData))]
-        public void ToHexadecimalColor_CreatesInstanceWithSameValues(byte red, byte green, byte blue)
+        public void ToRgbColor_CreatesInstanceWithSameValues(byte red, byte green, byte blue)
         {
             // Arrange
             var target = new BandColor(red, green, blue);
 
             // Act
-            var result = target.ToHexadecimalColor();
+            var result = target.ToRgbColor();
 
             // Assert
             Assert.Equal(target.R, result.Red);

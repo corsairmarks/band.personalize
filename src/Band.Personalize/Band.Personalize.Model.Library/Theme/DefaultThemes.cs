@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Band.Personalize.Model.Theme
+namespace Band.Personalize.Model.Library.Theme
 {
     using Microsoft.Band;
 

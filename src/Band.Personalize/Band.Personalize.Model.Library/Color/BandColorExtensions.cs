@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Band.Personalize.Model.Color
+namespace Band.Personalize.Model.Library.Color
 {
     using Microsoft.Band;
 
@@ -22,13 +22,13 @@ namespace Band.Personalize.Model.Color
     public static class BandColorExtensions
     {
         /// <summary>
-        /// Convert the <paramref name="color"/> to a new instance of <see cref="HexadecimalColor"/>.
+        /// Convert the <paramref name="color"/> to a new instance of <see cref="RgbColor"/>.
         /// </summary>
         /// <param name="color">The <see cref="BandColor"/> to convert.</param>
-        /// <returns>A new instance of <see cref="HexadecimalColor"/></returns>
-        public static HexadecimalColor ToHexadecimalColor(this BandColor color)
+        /// <returns>A new instance of <see cref="RgbColor"/></returns>
+        public static RgbColor ToRgbColor(this BandColor color)
         {
-            return new HexadecimalColor(color.R, color.G, color.B);
+            return new RgbColor(color.R, color.G, color.B);
         }
     }
 }

@@ -19,16 +19,16 @@ namespace Band.Personalize.Model.Test.Color.Data
     using System.Linq;
 
     /// <summary>
-    /// Test byte data for hexadecimal colors.
+    /// Test byte data for RGB colors.
     /// </summary>
     public class RgbColorByteData : IEnumerable<object[]>
     {
         /// <summary>
-        /// Gets a collection of valid RGB hexadecimal color channel byte triplets.
+        /// Gets a collection of valid RGB color channel byte triplets.
         /// </summary>
-        private static IEnumerable<IEnumerable<byte>> HexadecimalByteTriplets { get; } = new[]
+        private static IEnumerable<IEnumerable<byte>> RgbByteTriplets { get; } = new[]
         {
-            new byte[] { HexadecimalColorData.DefaultRed, HexadecimalColorData.DefaultGreen, HexadecimalColorData.DefaultBlue, }
+            new byte[] { RgbColorData.DefaultRed, RgbColorData.DefaultGreen, RgbColorData.DefaultBlue, }
         };
 
         #region IEnumerable<object[]> Members
@@ -39,7 +39,7 @@ namespace Band.Personalize.Model.Test.Color.Data
         /// <returns>An enumerator that can be used to iterate through the collection.</returns>
         public IEnumerator<object[]> GetEnumerator()
         {
-            return HexadecimalByteTriplets.Select(o => o.Cast<object>().ToArray()).GetEnumerator();
+            return RgbByteTriplets.Select(o => o.Cast<object>().ToArray()).GetEnumerator();
         }
 
         #endregion

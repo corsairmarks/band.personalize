@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Band.Personalize.Model.Color
+namespace Band.Personalize.Model.Library.Color
 {
     using System;
     using System.Globalization;
@@ -21,20 +21,20 @@ namespace Band.Personalize.Model.Color
     /// <summary>
     /// A class representing a 8-bit-per-channel RGB color, with supporting methods for manipulating the color.
     /// </summary>
-    public class HexadecimalColor
+    public class RgbColor
     {
         /// <summary>
-        /// A regular expression defining the allowable formats for hexadecimal color string.
+        /// A regular expression defining the allowable formats for a hexadecimal color string.
         /// </summary>
         private static readonly Regex HexadecimalStringPattern = new Regex("^\\s*#?(?:[0-9a-f]{3}){1,2}\\s*$", RegexOptions.IgnoreCase);
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="HexadecimalColor"/> class.
+        /// Initializes a new instance of the <see cref="RgbColor"/> class.
         /// </summary>
         /// <param name="red">The red channel color saturation.</param>
         /// <param name="green">The green channel color saturation.</param>
         /// <param name="blue">The blue channel color saturation.</param>
-        public HexadecimalColor(byte red, byte green, byte blue)
+        public RgbColor(byte red, byte green, byte blue)
         {
             this.Red = red;
             this.Green = green;
@@ -95,7 +95,7 @@ namespace Band.Personalize.Model.Color
         /// <param name="lhs">The left-hand operand of the operator.</param>
         /// <param name="rhs">The right-hand operand of the operator.</param>
         /// <returns><c>true</c> if <paramref name="lhs"/> and <paramref name="rhs"/> are equal; otherwise, <c>false</c>.</returns>
-        public static bool operator ==(HexadecimalColor lhs, HexadecimalColor rhs)
+        public static bool operator ==(RgbColor lhs, RgbColor rhs)
         {
             var isLhsNull = (object)lhs == null;
             var isRhsNull = (object)rhs == null;
@@ -119,20 +119,20 @@ namespace Band.Personalize.Model.Color
         /// <param name="lhs">The left-hand operand of the operator.</param>
         /// <param name="rhs">The right-hand operand of the operator.</param>
         /// <returns><c>true</c> if <paramref name="lhs"/> and <paramref name="rhs"/> not are equal; otherwise, <c>false</c>.</returns>
-        public static bool operator !=(HexadecimalColor lhs, HexadecimalColor rhs)
+        public static bool operator !=(RgbColor lhs, RgbColor rhs)
         {
             return !(lhs == rhs);
         }
 
         /// <summary>
-        /// Parse a well-formatted hexadecimal color string into a instance of <see cref="HexadecimalColor"/>.
+        /// Parse a well-formatted hexadecimal color string into a instance of <see cref="RgbColor"/>.
         /// The accepted formats are either 3 or 6 hexadecimal digits, optionally preceded by #.
         /// </summary>
         /// <param name="str">The string to parse.</param>
-        /// <returns>A new instance of <see cref="HexadecimalColor"/>.</returns>
+        /// <returns>A new instance of <see cref="RgbColor"/>.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="str"/> is <c>null</c>.</exception>
         /// <exception cref="FormatException"><paramref name="str"/> is not a hexadecimal color string.</exception>
-        public static HexadecimalColor Parse(string str)
+        public static RgbColor Parse(string str)
         {
             if (str == null)
             {
@@ -159,7 +159,7 @@ namespace Band.Personalize.Model.Color
                     });
             }
 
-            return new HexadecimalColor(byte.Parse(hexStr.Substring(0, 2), NumberStyles.HexNumber), byte.Parse(hexStr.Substring(2, 2), NumberStyles.HexNumber), byte.Parse(hexStr.Substring(4, 2), NumberStyles.HexNumber));
+            return new RgbColor(byte.Parse(hexStr.Substring(0, 2), NumberStyles.HexNumber), byte.Parse(hexStr.Substring(2, 2), NumberStyles.HexNumber), byte.Parse(hexStr.Substring(4, 2), NumberStyles.HexNumber));
         }
 
         /// <summary>
@@ -185,19 +185,19 @@ namespace Band.Personalize.Model.Color
         }
 
         /// <summary>
-        /// Create a new <see cref="HexadecimalColor"/> by altering the luminance by a <paramref name="percentage"/> of the maximum.
+        /// Create a new <see cref="RgbColor"/> by altering the luminance by a <paramref name="percentage"/> of the maximum.
         /// </summary>
         /// <param name="percentage">The percentage of maximum saturation brighter or dimmer the new color should be.  Positive increases luminance, while negative reduces.</param>
-        /// <returns>A new instance of <see cref="HexadecimalColor"/> that is the specified <paramref name="percentage"/> brighter or darker than the original.</returns>
-        public HexadecimalColor Luminance(decimal percentage)
+        /// <returns>A new instance of <see cref="RgbColor"/> that is the specified <paramref name="percentage"/> brighter or darker than the original.</returns>
+        public RgbColor Luminance(decimal percentage)
         {
-            return new HexadecimalColor(Luminance(this.Red, percentage), Luminance(this.Green, percentage), Luminance(this.Blue, percentage));
+            return new RgbColor(Luminance(this.Red, percentage), Luminance(this.Green, percentage), Luminance(this.Blue, percentage));
         }
 
         /// <summary>
-        /// Returns a <see cref="string"/> that represents the current <see cref="HexadecimalColor"/>.
+        /// Returns a <see cref="string"/> that represents the current <see cref="RgbColor"/>.
         /// </summary>
-        /// <returns>A <see cref="string"/> that represents the current <see cref="HexadecimalColor"/>.</returns>
+        /// <returns>A <see cref="string"/> that represents the current <see cref="RgbColor"/>.</returns>
         public override string ToString()
         {
             return string.Format("#{0:X2}{1:X2}{2:X2}", this.Red, this.Green, this.Blue);
@@ -205,7 +205,7 @@ namespace Band.Personalize.Model.Color
 
         /// <summary>
         /// Returns a <see cref="bool"/> that indicates whether <paramref name="obj"/> is equal to this instance.
-        /// Equal <see cref="HexadecimalColor"/> instances have equal values for <see cref="Red"/>, <see cref="Green"/>, and <see cref="Blue"/>.
+        /// Equal <see cref="RgbColor"/> instances have equal values for <see cref="Red"/>, <see cref="Green"/>, and <see cref="Blue"/>.
         /// </summary>
         /// <param name="obj">The <see cref="object"/> to test for equality.</param>
         /// <returns><c>true</c> if the <paramref name="obj"/> is equal to this instance, otherwise <c>false</c>.</returns>
@@ -216,9 +216,9 @@ namespace Band.Personalize.Model.Color
                 return true;
             }
 
-            if (obj != null && obj is HexadecimalColor)
+            if (obj != null && obj is RgbColor)
             {
-                var other = obj as HexadecimalColor;
+                var other = obj as RgbColor;
                 return other.Red == this.Red && other.Green == this.Green && other.Blue == this.Blue;
             }
 
@@ -228,7 +228,7 @@ namespace Band.Personalize.Model.Color
         /// <summary>
         /// Serves as a hash function.
         /// </summary>
-        /// <returns>A hash code for the current <see cref="HexadecimalColor"/>.</returns>
+        /// <returns>A hash code for the current <see cref="RgbColor"/>.</returns>
         public override int GetHashCode()
         {
             return (this.Red * 0x10000) + (this.Green * 0x100) + this.Blue;
