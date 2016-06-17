@@ -16,7 +16,7 @@ namespace Band.Personalize.Model.Library.Repository
 {
     using System.Threading.Tasks;
     using Band;
-    using Microsoft.Band;
+    using Theme;
     using Windows.Storage.Streams;
     using Windows.UI.Xaml.Media.Imaging;
 
@@ -26,24 +26,17 @@ namespace Band.Personalize.Model.Library.Repository
     public interface IBandPersonalizer
     {
         /// <summary>
-        /// Create a Band theme from a base color.
-        /// </summary>
-        /// <param name="color">The color from which to generate the theme.</param>
-        /// <returns>A Band theme based on shades and tints of the base <paramref name="color"/>.</returns>
-        BandTheme CreateThemeFromBaseColor(BandColor color);
-
-        /// <summary>
         /// Sets the <paramref name="theme"/> of the current Band.
         /// </summary>
         /// <param name="theme">The theme to set.</param>
         /// <returns>An asynchronous task that returns when work is complete.</returns>
-        Task SetTheme(BandTheme theme);
+        Task SetTheme(RgbColorTheme theme);
 
         /// <summary>
         /// Gets the current color theme of the current Band.
         /// </summary>
         /// <returns>An asynchronous task that returns the current color theme when it completes.</returns>
-        Task<BandTheme> GetTheme();
+        Task<RgbColorTheme> GetTheme();
 
         /// <summary>
         /// Sets the Me Tile image to the image contained in the <paramref name="stream"/>, sizing it for the specified Band hardware.
