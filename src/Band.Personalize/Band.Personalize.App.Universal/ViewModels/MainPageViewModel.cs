@@ -16,10 +16,10 @@ namespace Band.Personalize.App.Universal.ViewModels
 {
     using System;
     using System.Collections.Generic;
-    using System.Collections.ObjectModel;
     using System.Threading;
     using System.Threading.Tasks;
     using System.Windows.Input;
+    using Model.Library.Repository;
     using Prism.Commands;
     using Prism.Windows.Mvvm;
 
@@ -29,9 +29,9 @@ namespace Band.Personalize.App.Universal.ViewModels
     public class MainPageViewModel : ViewModelBase, IDisposable
     {
         /// <summary>
-        /// A lock object for managing access to <see cref="refreshCancellationTokenSource"/>.
+        /// The Band repository.
         /// </summary>
-        private readonly object padlock = new object();
+        private readonly IBandRepository bandRepository;
 
         /// <summary>
         /// A read-only collection of connected Bands.
@@ -43,16 +43,29 @@ namespace Band.Personalize.App.Universal.ViewModels
         /// </summary>
         private bool isBusy;
 
+        /// <summary>
+        /// A semaphore to control access to <see cref="refreshCancellationTokenSource"/>.
+        /// </summary>
         private SemaphoreSlim refreshCancellationTokenSourceSemaphore = new SemaphoreSlim(1);
 
+        /// <summary>
+        /// A source for <see cref="CancellationToken"/> instances used when executing a "Refresh" operation.
+        /// </summary>
         private CancellationTokenSource refreshCancellationTokenSource;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MainPageViewModel"/> class.
         /// </summary>
-        public MainPageViewModel()
+        /// <param name="bandRepository">The Band repository.</param>
+        public MainPageViewModel(IBandRepository bandRepository)
         {
-            // TODO: take dependencies
+            if (bandRepository == null)
+            {
+                throw new ArgumentNullException(nameof(bandRepository));
+            }
+
+            this.bandRepository = bandRepository;
+
             var cancelRefreshConnectedBandsCommand = new CompositeCommand();
             cancelRefreshConnectedBandsCommand.RegisterCommand(DelegateCommand.FromAsyncHandler(this.CancelRefreshConnectedBands, () => this.IsBusy));
             cancelRefreshConnectedBandsCommand.RegisterCommand(new DelegateCommand(() => this.IsBusy = false));
@@ -152,9 +165,7 @@ namespace Band.Personalize.App.Universal.ViewModels
                 cancellationToken = this.refreshCancellationTokenSource.Token;
             });
 
-            // TODO: refresh bands, passing the cancellationToken
-            // TODO: be sure await a resource nicely
-            return await Task.FromResult(new ReadOnlyCollection<object>(new List<object>()));
+            return await this.bandRepository.GetBands(cancellationToken);
         }
 
         /// <summary>

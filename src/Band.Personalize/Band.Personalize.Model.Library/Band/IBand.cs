@@ -15,18 +15,28 @@
 namespace Band.Personalize.Model.Library.Band
 {
     /// <summary>
-    /// The hardware versions available for the Band.
+    /// Information about a Microsoft Band.
     /// </summary>
-    public enum HardwareVersion
+    public interface IBand
     {
         /// <summary>
-        /// The original Microsoft Band.
+        /// Gets the name.
         /// </summary>
-        Band,
+        string Name { get; }
 
         /// <summary>
-        /// The Microsoft Band 2.
+        /// Gets the hardware major revision level.
         /// </summary>
-        Band2,
+        HardwareRevision HardwareRevision { get; }
+
+        /// <summary>
+        /// Gets the actual hardware version.
+        /// </summary>
+        int HardwareVersion { get; }
+
+        /// <summary>
+        /// Gets the connection type between the application host and the Microsoft Band.
+        /// </summary>
+        ConnectionType ConnectionType { get; }
     }
 }

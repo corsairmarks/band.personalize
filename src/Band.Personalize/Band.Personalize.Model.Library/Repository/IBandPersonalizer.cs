@@ -44,7 +44,7 @@ namespace Band.Personalize.Model.Library.Repository
         /// <param name="stream">A stream that contains the image to set.</param>
         /// <param name="hardwareSizingFor">The band version to determine the allowable Me Tile image dimensions.</param>
         /// <returns>An asynchronous task that returns when work is complete.</returns>
-        Task SetMeTileImage(IRandomAccessStream stream, HardwareVersion hardwareSizingFor);
+        Task SetMeTileImage(IRandomAccessStream stream, HardwareRevision hardwareSizingFor);
 
         /// <summary>
         /// Gets the current Me Tile image of the current Band.
