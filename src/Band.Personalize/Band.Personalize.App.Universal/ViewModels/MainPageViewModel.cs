@@ -19,6 +19,7 @@ namespace Band.Personalize.App.Universal.ViewModels
     using System.Threading;
     using System.Threading.Tasks;
     using System.Windows.Input;
+    using Model.Library.Band;
     using Model.Library.Repository;
     using Prism.Commands;
     using Prism.Windows.Mvvm;
@@ -36,7 +37,7 @@ namespace Band.Personalize.App.Universal.ViewModels
         /// <summary>
         /// A read-only collection of connected Bands.
         /// </summary>
-        private IReadOnlyList<object> connectedBands;
+        private IReadOnlyList<IBand> connectedBands;
 
         /// <summary>
         /// A value indicationg whether the <see cref="RefreshConnectedBandsCommand"/> is busy.
@@ -98,21 +99,21 @@ namespace Band.Personalize.App.Universal.ViewModels
         public ICommand CancelRefreshConnectedBandsCommand { get; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether the "Refresh" command is busy.
+        /// Gets a value indicating whether the "Refresh" command is busy.
         /// </summary>
         public bool IsBusy
         {
             get { return this.isBusy; }
-            set { this.SetProperty(ref this.isBusy, value); }
+            private set { this.SetProperty(ref this.isBusy, value); }
         }
 
         /// <summary>
-        /// Gets or sets a read-only collection of connected Bands.
+        /// Gets a read-only collection of connected Microsoft Bands.
         /// </summary>
-        public IReadOnlyList<object> ConnectedBands
+        public IReadOnlyList<IBand> ConnectedBands
         {
             get { return this.connectedBands; }
-            set { this.SetProperty(ref this.connectedBands, value); }
+            private set { this.SetProperty(ref this.connectedBands, value); }
         }
 
         /// <summary>
@@ -151,7 +152,7 @@ namespace Band.Personalize.App.Universal.ViewModels
         /// Refreshes the list of connected Bands.
         /// </summary>
         /// <returns>An asynchronous task that returns a read-only collection of connected Bands when it completes.</returns>
-        private async Task<IReadOnlyList<object>> RefreshConnectedBands()
+        private async Task<IReadOnlyList<IBand>> RefreshConnectedBands()
         {
             CancellationToken cancellationToken;
 
