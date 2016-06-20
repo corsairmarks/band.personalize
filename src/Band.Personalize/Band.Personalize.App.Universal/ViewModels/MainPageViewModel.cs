@@ -65,9 +65,14 @@ namespace Band.Personalize.App.Universal.ViewModels
         /// </summary>
         /// <param name="navigationService">The navigation service.</param>
         /// <param name="bandRepository">The Band repository.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="navigationService"/> or <paramref name="bandRepository"/> is <c>null</c>.</exception>
         public MainPageViewModel(INavigationService navigationService, IBandRepository bandRepository)
         {
-            if (bandRepository == null)
+            if (navigationService == null)
+            {
+                throw new ArgumentNullException(nameof(navigationService));
+            }
+            else if (bandRepository == null)
             {
                 throw new ArgumentNullException(nameof(bandRepository));
             }
