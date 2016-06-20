@@ -17,7 +17,7 @@ namespace Band.Personalize.App.Universal.Views
     using Windows.UI.Xaml.Controls;
 
     /// <summary>
-    /// A User COntrol for changing the Me Tile image.
+    /// A User Control for changing the Me Tile image.
     /// </summary>
     public sealed partial class ImageUserControl : UserControl
     {
