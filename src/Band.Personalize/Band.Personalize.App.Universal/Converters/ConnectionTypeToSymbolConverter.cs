@@ -51,7 +51,7 @@ namespace Band.Personalize.App.Universal.Converters
         /// <param name="language">The language to use for localization.</param>
         /// <returns>A <paramref name="targetType"/> representation of the <paramref name="value"/>.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="value"/> or <paramref name="targetType"/> is <c>null</c>.</exception>
-        /// <exception cref="ArgumentException"><paramref name="value"/> is not an instance of <see cref="object"/> or <paramref name="targetType"/> is not <see cref="Symbol"/>.</exception>
+        /// <exception cref="ArgumentException"><paramref name="value"/> is not an instance of <see cref="ConnectionType"/> or <paramref name="targetType"/> is not <see cref="Symbol"/>.</exception>
         /// <remarks><paramref name="parameter"/> and <paramref name="language"/> are ignored.</remarks>
         public object Convert(object value, Type targetType, object parameter, string language)
         {
@@ -93,7 +93,7 @@ namespace Band.Personalize.App.Universal.Converters
         /// <param name="language">The language to use for localization.</param>
         /// <returns>A <paramref name="targetType"/> representation of the <paramref name="value"/>.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="value"/> or <paramref name="targetType"/> is <c>null</c>.</exception>
-        /// <exception cref="ArgumentException"><paramref name="value"/> is not an instance of <see cref="Symbol"/> or <paramref name="targetType"/> is not <see cref="object"/>.</exception>
+        /// <exception cref="ArgumentException"><paramref name="value"/> is not an instance of <see cref="Symbol"/> or <paramref name="targetType"/> is not <see cref="ConnectionType"/>.</exception>
         /// <remarks><paramref name="parameter"/> and <paramref name="language"/> are ignored.</remarks>
         public object ConvertBack(object value, Type targetType, object parameter, string language)
         {
