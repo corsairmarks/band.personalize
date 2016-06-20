@@ -72,6 +72,7 @@ namespace Band.Personalize.App.Universal.ViewModels
                 throw new ArgumentNullException(nameof(bandRepository));
             }
 
+            this.navigationService = navigationService;
             this.bandRepository = bandRepository;
 
             var cancelRefreshConnectedBandsCommand = new CompositeCommand();
