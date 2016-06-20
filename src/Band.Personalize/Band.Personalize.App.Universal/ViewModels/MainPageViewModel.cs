@@ -23,12 +23,18 @@ namespace Band.Personalize.App.Universal.ViewModels
     using Model.Library.Repository;
     using Prism.Commands;
     using Prism.Windows.Mvvm;
+    using Prism.Windows.Navigation;
 
     /// <summary>
     /// The View Model for the Main Page.
     /// </summary>
     public class MainPageViewModel : ViewModelBase, IDisposable
     {
+        /// <summary>
+        /// The navigation service.
+        /// </summary>
+        private readonly INavigationService navigationService;
+
         /// <summary>
         /// The Band repository.
         /// </summary>
@@ -57,8 +63,9 @@ namespace Band.Personalize.App.Universal.ViewModels
         /// <summary>
         /// Initializes a new instance of the <see cref="MainPageViewModel"/> class.
         /// </summary>
+        /// <param name="navigationService">The navigation service.</param>
         /// <param name="bandRepository">The Band repository.</param>
-        public MainPageViewModel(IBandRepository bandRepository)
+        public MainPageViewModel(INavigationService navigationService, IBandRepository bandRepository)
         {
             if (bandRepository == null)
             {
@@ -78,6 +85,8 @@ namespace Band.Personalize.App.Universal.ViewModels
             refreshConnectedBandsCommand.RegisterCommand(DelegateCommand.FromAsyncHandler(async () => this.ConnectedBands = await this.RefreshConnectedBands()));
             refreshConnectedBandsCommand.RegisterCommand(new DelegateCommand(() => this.IsBusy = false));
             this.RefreshConnectedBandsCommand = refreshConnectedBandsCommand;
+
+            this.NavigateToBandPageCommand = new DelegateCommand<IBand>(b => this.navigationService.Navigate("BandPage", b));
         }
 
         /// <summary>
@@ -97,6 +106,11 @@ namespace Band.Personalize.App.Universal.ViewModels
         /// Gets the "Cancel" command.
         /// </summary>
         public ICommand CancelRefreshConnectedBandsCommand { get; }
+
+        /// <summary>
+        /// Gets the "Band Page" navigation command.
+        /// </summary>
+        public ICommand NavigateToBandPageCommand { get; }
 
         /// <summary>
         /// Gets a value indicating whether the "Refresh" command is busy.

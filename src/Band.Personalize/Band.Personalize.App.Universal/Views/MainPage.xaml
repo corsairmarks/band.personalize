@@ -17,11 +17,11 @@
         <GridView Grid.Row="0" ItemsSource="{Binding Path=ConnectedBands}">
             <GridView.ItemTemplate>
                 <DataTemplate>
-                    <Button Width="150" Height="150" Background="{ThemeResource SystemAccentColor}" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch">
+                    <Button Width="150" Height="150" Background="{ThemeResource SystemControlHighlightAccentBrush}" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Command="{Binding BandPageNavigationCommand}" CommandParameter="{Binding Path=DataContext}">
                         <RelativePanel>
                             <TextBlock Text="{Binding Name}" TextWrapping="Wrap" RelativePanel.AlignTopWithPanel="True" RelativePanel.AlignLeftWithPanel="True" />
                             <Ellipse Height="50" Width="50" Fill="White"  RelativePanel.AlignVerticalCenterWithPanel="True" RelativePanel.AlignHorizontalCenterWithPanel="True" />
-                            <SymbolIcon Symbol="{Binding ConnectionType, Converter={StaticResource ConnectionTypeToSymbolConverter}}" RenderTransformOrigin="0.5,0.5" Foreground="{ThemeResource SystemAccentColor}"  RelativePanel.AlignVerticalCenterWithPanel="True" RelativePanel.AlignHorizontalCenterWithPanel="True">
+                            <SymbolIcon Symbol="{Binding ConnectionType, Converter={StaticResource ConnectionTypeToSymbolConverter}}" RenderTransformOrigin="0.5,0.5" Foreground="{ThemeResource SystemControlHighlightAccentBrush}"  RelativePanel.AlignVerticalCenterWithPanel="True" RelativePanel.AlignHorizontalCenterWithPanel="True">
                                 <SymbolIcon.RenderTransform>
                                     <CompositeTransform ScaleX="1.5" ScaleY="1.5" />
                                 </SymbolIcon.RenderTransform>
