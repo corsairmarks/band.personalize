@@ -136,7 +136,7 @@ namespace Band.Personalize.App.Universal
             this.Container.RegisterInstance<ISessionStateService>(this.SessionStateService);
             this.Container.RegisterInstance<IEventAggregator>(this.EventAggregator);
 
-            // this.Container.RegisterInstance<IResourceLoader>(new ResourceLoaderAdapter(new ResourceLoader()));
+            this.Container.RegisterInstance<IResourceLoader>(new ResourceLoaderAdapter(new ResourceLoader()));
 
             // Register services
             // this.Container.RegisterType<IAccountService, AccountService>(new ContainerControlledLifetimeManager());
