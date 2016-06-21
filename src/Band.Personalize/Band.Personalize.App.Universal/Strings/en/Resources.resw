@@ -120,11 +120,20 @@
   <data name="ApplyButton.Content" xml:space="preserve">
     <value>Apply</value>
   </data>
+  <data name="BandVersionToggle.Header" xml:space="preserve">
+    <value>Use original Band height (102px)</value>
+  </data>
   <data name="BrowseButton.Content" xml:space="preserve">
     <value>Browse</value>
   </data>
   <data name="CancelAppBarButton.Label" xml:space="preserve">
     <value>Cancel</value>
+  </data>
+  <data name="HardwareRevision.Band" xml:space="preserve">
+    <value>Band</value>
+  </data>
+  <data name="HardwareRevision.Band2" xml:space="preserve">
+    <value>Band 2</value>
   </data>
   <data name="ImagePivotItem.Header" xml:space="preserve">
     <value>Image</value>

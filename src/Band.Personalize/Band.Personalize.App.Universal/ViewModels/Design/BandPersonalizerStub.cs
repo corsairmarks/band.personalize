@@ -12,31 +12,60 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Band.Personalize.Model.Library.Repository
+namespace Band.Personalize.App.Universal.ViewModels.Design
 {
+    using System;
     using System.Threading.Tasks;
-    using Band;
-    using Theme;
+    using Model.Library.Band;
+    using Model.Library.Repository;
+    using Model.Library.Theme;
+    using Windows.Storage;
     using Windows.Storage.Streams;
     using Windows.UI.Xaml.Media.Imaging;
 
     /// <summary>
-    /// A facade that limits available band operations to personalization.
+    /// A stub for a fake <see cref="IBandPersonalizer"/>.
     /// </summary>
-    public interface IBandPersonalizer
+    internal class BandPersonalizerStub : IBandPersonalizer
     {
+        /// <summary>
+        /// The lazy-initialized singleton instanxe of <see cref="BandPersonalizerStub"/>.
+        /// </summary>
+        private static readonly Lazy<BandPersonalizerStub> LazyInstance = new Lazy<BandPersonalizerStub>(() => new BandPersonalizerStub());
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BandPersonalizerStub"/> class.
+        /// </summary>
+        private BandPersonalizerStub()
+        {
+        }
+
+        /// <summary>
+        /// Gets the singleton instance of <see cref="BandPersonalizerStub"/>.
+        /// </summary>
+        public static IBandPersonalizer Instance
+        {
+            get { return LazyInstance.Value; }
+        }
+
         /// <summary>
         /// Sets the <paramref name="theme"/> of the current Band.
         /// </summary>
         /// <param name="theme">The theme to set.</param>
         /// <returns>An asynchronous task that returns when work is complete.</returns>
-        Task SetTheme(RgbColorTheme theme);
+        public async Task SetTheme(RgbColorTheme theme)
+        {
+            await Task.CompletedTask;
+        }
 
         /// <summary>
         /// Gets the current color theme of the current Band.
         /// </summary>
         /// <returns>An asynchronous task that returns the current color theme when it completes.</returns>
-        Task<RgbColorTheme> GetTheme();
+        public async Task<RgbColorTheme> GetTheme()
+        {
+            return await Task.FromResult(DefaultThemes.Band2.Electric);
+        }
 
         /// <summary>
         /// Sets the Me Tile image to the image contained in the <paramref name="stream"/>, sizing it for the specified Band hardware.
@@ -44,12 +73,18 @@ namespace Band.Personalize.Model.Library.Repository
         /// <param name="stream">A stream that contains the image to set.</param>
         /// <param name="hardwareSizingFor">The band version to determine the allowable Me Tile image dimensions.</param>
         /// <returns>An asynchronous task that returns when work is complete.</returns>
-        Task SetMeTileImage(IRandomAccessStream stream, HardwareRevision hardwareSizingFor);
+        public async Task SetMeTileImage(IRandomAccessStream stream, HardwareRevision hardwareSizingFor)
+        {
+            await Task.CompletedTask;
+        }
 
         /// <summary>
         /// Gets the current Me Tile image of the current Band.
         /// </summary>
         /// <returns>An asynchronous task that returns the current Me Tile image when it completes.</returns>
-        Task<BitmapSource> GetMeTileImage();
+        public async Task<BitmapSource> GetMeTileImage()
+        {
+            return await Task.FromResult(new BitmapImage(new Uri("ms-appx:///Assets/band2.png")));
+        }
     }
 }

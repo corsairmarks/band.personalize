@@ -14,18 +14,25 @@
 
 namespace Band.Personalize.App.Universal.ViewModels.Design
 {
+    using Prism.Windows.Navigation;
+
     /// <summary>
-    /// The design View Model for the Main Page.
+    /// The design View Model for the Band Page.
     /// </summary>
-    public class DesignMainPageViewModel : MainPageViewModel
+    public class DesignBandPageViewModel : BandPageViewModel
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="DesignMainPageViewModel"/> class.
+        /// Initializes a new instance of the <see cref="DesignBandPageViewModel"/> class.
         /// </summary>
-        public DesignMainPageViewModel()
-            : base(NavigationServiceStub.Instance, BandRepositoryStub.Instance)
+        public DesignBandPageViewModel()
+            : base(BandPersonalizerStub.Instance)
         {
-            this.RefreshConnectedBandsCommand.Execute(null);
+            this.OnNavigatedTo(
+                new NavigatedToEventArgs
+                {
+                    Parameter = null,
+                },
+                null);
         }
     }
 }

@@ -2,26 +2,36 @@
     x:Class="Band.Personalize.App.Universal.Views.BandPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:Band.Personalize.App.Universal.Views"
+    xmlns:designViewModels="using:Band.Personalize.App.Universal.ViewModels.Design"
     xmlns:prismMvvm="using:Prism.Windows.Mvvm"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    d:DataContext="{d:DesignInstance designViewModels:DesignBandPageViewModel, IsDesignTimeCreatable=True}"
     mc:Ignorable="d">
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <Pivot>
-            <PivotItem Header="Theme" x:Uid="ThemePivotItem">
-                <local:ThemeUserControl />
+        <Pivot Name="Pivot">
+            <PivotItem Header="Theme" x:Uid="ThemePivotItem" Margin="12">
+                <RelativePanel>
+                    <Button x:Uid="ApplyButton" Content="Apply" RelativePanel.AlignBottomWithPanel="True" RelativePanel.AlignRightWithPanel="True" Command="{Binding ApplyThemeCommand}" />
+                </RelativePanel>
             </PivotItem>
-            <PivotItem Header="Image" x:Uid="ImagePivotItem">
-                <local:ImageUserControl />
+            <PivotItem Header="Image" x:Uid="ImagePivotItem" Margin="12">
+                <RelativePanel>
+                    <StackPanel>
+                        <Image Source="{Binding CurrentMeTileImage}" Stretch="None" />
+                        <Button x:Uid="BrowseButton" Content="Browse" Command="{Binding BrowserForMeTileImageCommand}" Margin="0,7" />
+                        <ToggleSwitch x:Uid="BandVersionToggle" Header="Use original Band height (102px)" IsOn="{Binding UseOriginalBandHeight}" Visibility="{Binding Path=Band.HardwareRevision}" IsEnabled="{Binding Path=Band.HardwareRevision}" />
+                    </StackPanel>
+                    <Button x:Uid="ApplyButton" Content="Apply" RelativePanel.AlignBottomWithPanel="True" RelativePanel.AlignRightWithPanel="True" Command="{Binding ApplyMeTileImageCommand}" />
+                </RelativePanel>
             </PivotItem>
         </Pivot>
         <CommandBar Grid.Row="1">
-            <AppBarButton x:Uid="RefreshAppBarButton" Icon="Refresh" Label="Refresh" />
+            <AppBarButton x:Uid="RefreshAppBarButton" Icon="Refresh" Label="Refresh" Command="{Binding RefreshPersonalizationDataCommand}" CommandParameter="{Binding SelectedItem, ElementName=Pivot}" />
         </CommandBar>
     </Grid>
 </prismMvvm:SessionStateAwarePage>
