@@ -8,30 +8,66 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     d:DataContext="{d:DesignInstance designViewModels:DesignBandPageViewModel, IsDesignTimeCreatable=True}"
     mc:Ignorable="d">
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    <Grid x:Name="TheGrid" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Grid.RowDefinitions>
-            <RowDefinition Height="*" />
-            <RowDefinition Height="Auto" />
+            <RowDefinition x:Name="TopGridRow" />
+            <RowDefinition x:Name="BottomGridRow" />
         </Grid.RowDefinitions>
-        <Pivot Name="Pivot">
+        <Pivot Name="ThePivot">
             <PivotItem Header="Theme" x:Uid="ThemePivotItem" Margin="12">
                 <RelativePanel>
-                    <Button x:Uid="ApplyButton" Content="Apply" RelativePanel.AlignBottomWithPanel="True" RelativePanel.AlignRightWithPanel="True" Command="{Binding ApplyThemeCommand}" />
                 </RelativePanel>
             </PivotItem>
             <PivotItem Header="Image" x:Uid="ImagePivotItem" Margin="12">
-                <RelativePanel>
-                    <StackPanel>
-                        <Image Source="{Binding CurrentMeTileImage}" Stretch="None" />
-                        <Button x:Uid="BrowseButton" Content="Browse" Command="{Binding BrowserForMeTileImageCommand}" Margin="0,7" />
-                        <ToggleSwitch x:Uid="BandVersionToggle" Header="Use original Band height (102px)" IsOn="{Binding UseOriginalBandHeight}" Visibility="{Binding Path=Band.HardwareRevision}" IsEnabled="{Binding Path=Band.HardwareRevision}" />
-                    </StackPanel>
-                    <Button x:Uid="ApplyButton" Content="Apply" RelativePanel.AlignBottomWithPanel="True" RelativePanel.AlignRightWithPanel="True" Command="{Binding ApplyMeTileImageCommand}" />
-                </RelativePanel>
+                <StackPanel>
+                    <Image Source="{Binding CurrentMeTileImage}" Stretch="None" HorizontalAlignment="Left" />
+                    <Button x:Uid="BrowseButton" Content="Browse" Command="{Binding BrowserForMeTileImageCommand}" Margin="0,7" />
+                    <ToggleSwitch
+                            x:Uid="BandVersionToggle"
+                            Header="Use original Band height (102px)"
+                            IsOn="{Binding IsUseOriginalBandHeight}"
+                            Visibility="{Binding CurrentBand.HardwareRevision, Converter={StaticResource HardwareRevisionToVisibilityConverter}}"
+                            IsEnabled="{Binding CurrentBand.HardwareRevision, Converter={StaticResource HardwareRevisionToBooleanConverter}}" />
+                </StackPanel>
             </PivotItem>
         </Pivot>
-        <CommandBar Grid.Row="1">
-            <AppBarButton x:Uid="RefreshAppBarButton" Icon="Refresh" Label="Refresh" Command="{Binding RefreshPersonalizationDataCommand}" CommandParameter="{Binding SelectedItem, ElementName=Pivot}" />
+        <CommandBar Name="TheCommandBar">
+            <CommandBar.Content>
+                <StackPanel Orientation="Horizontal" Margin="12,12">
+                    <SymbolIcon Symbol="{Binding CurrentBand.ConnectionType, Converter={StaticResource ConnectionTypeToSymbolConverter}}" Foreground="{StaticResource SystemControlHighlightListAccentMediumBrush}" />
+                    <TextBlock Text="{Binding CurrentBand.Name}" Foreground="{StaticResource SystemControlHighlightListAccentMediumBrush}" />
+                </StackPanel>
+            </CommandBar.Content>
+            <CommandBar.PrimaryCommands>
+                <AppBarButton x:Uid="RefreshAppBarButton" Icon="Refresh" Label="Refresh" Command="{Binding RefreshPersonalizationCommand}" CommandParameter="{Binding SelectedIndex, ElementName=ThePivot}" IsEnabled="{Binding IsNotBusy}" />
+                <AppBarButton x:Uid="ApplyAppBarButton" Icon="Save" Label="Apply" Command="{Binding ApplyPersonalizationCommand}" CommandParameter="{Binding SelectedIndex, ElementName=ThePivot}" IsEnabled="{Binding IsNotBusy}" />
+            </CommandBar.PrimaryCommands>
         </CommandBar>
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup>
+                <VisualState x:Name="DefaultLayout">
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="641" />
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="ThePivot.(Grid.Row)" Value="1" />
+                        <Setter Target="TheCommandBar.(Grid.Row)" Value="0" />
+                        <Setter Target="TopGridRow.Height" Value="Auto" />
+                        <Setter Target="BottomGridRow.Height" Value="*" />
+                    </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="MinimalLayout">
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="0" />
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="ThePivot.(Grid.Row)" Value="0" />
+                        <Setter Target="TheCommandBar.(Grid.Row)" Value="1" />
+                        <Setter Target="TopGridRow.Height" Value="*" />
+                        <Setter Target="BottomGridRow.Height" Value="Auto" />
+                    </VisualState.Setters>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
     </Grid>
 </prismMvvm:SessionStateAwarePage>

@@ -24,11 +24,7 @@ namespace Band.Personalize.App.Universal.ViewModels
     using Prism.Commands;
     using Prism.Windows.Mvvm;
     using Prism.Windows.Navigation;
-    using Windows.ApplicationModel;
-    using Windows.Storage;
     using Windows.Storage.Pickers;
-    using Windows.UI.Xaml.Controls;
-    using Windows.UI.Xaml.Media;
     using Windows.UI.Xaml.Media.Imaging;
 
     /// <summary>
@@ -47,7 +43,12 @@ namespace Band.Personalize.App.Universal.ViewModels
         private IBand currentBand;
 
         /// <summary>
-        /// A value indicationg whether the <see cref="RefreshPersonalizationDataCommand"/> is busy.
+        /// A value indicating whether to use the Me Tile image height for the original Microsoft Band.  The only applies when <see cref="CurrentBand"/> is not <see cref="HardwareRevision.Band"/>.
+        /// </summary>
+        private bool isUseOriginalBandHeight;
+
+        /// <summary>
+        /// A value indicationg whether the <see cref="RefreshPersonalizationCommand"/> is busy.
         /// </summary>
         private bool isBusy;
 
@@ -75,14 +76,17 @@ namespace Band.Personalize.App.Universal.ViewModels
 
             this.bandPersonalizer = bandPersonalizer;
 
-            var refreshPersonalizationDataCommand = new CompositeCommand();
-            refreshPersonalizationDataCommand.RegisterCommand(new DelegateCommand(() => this.IsBusy = true, () => this.IsBusy));
-            refreshPersonalizationDataCommand.RegisterCommand(DelegateCommand<PivotItem>.FromAsyncHandler(async pi => this.CurrentTheme = await this.bandPersonalizer.GetTheme())); // TODO: pivot conditions
-            refreshPersonalizationDataCommand.RegisterCommand(DelegateCommand<PivotItem>.FromAsyncHandler(async pi => this.CurrentMeTileImage = await this.bandPersonalizer.GetMeTileImage())); // TODO
-            refreshPersonalizationDataCommand.RegisterCommand(new DelegateCommand(() => this.IsBusy = false));
-            this.RefreshPersonalizationDataCommand = refreshPersonalizationDataCommand;
+            var refreshPersonalizationCommand = new CompositeCommand();
+            refreshPersonalizationCommand.RegisterCommand(new DelegateCommand(() => this.IsBusy = true, () => !this.IsBusy));
+            refreshPersonalizationCommand.RegisterCommand(DelegateCommand<int>.FromAsyncHandler(this.RefreshPersonalization));
+            refreshPersonalizationCommand.RegisterCommand(new DelegateCommand(() => this.IsBusy = false));
+            this.RefreshPersonalizationCommand = refreshPersonalizationCommand;
 
-            this.ApplyThemeCommand = DelegateCommand.FromAsyncHandler(async () => await this.bandPersonalizer.SetTheme(this.CurrentTheme), () => this.CurrentTheme != null);
+            var applyPersonalizationCommand = new CompositeCommand();
+            applyPersonalizationCommand.RegisterCommand(new DelegateCommand(() => this.IsBusy = true, () => !this.IsBusy));
+            applyPersonalizationCommand.RegisterCommand(DelegateCommand<int>.FromAsyncHandler(this.ApplyPersonalization));
+            applyPersonalizationCommand.RegisterCommand(new DelegateCommand(() => this.IsBusy = false));
+            this.ApplyPersonalizationCommand = applyPersonalizationCommand;
 
             this.BrowserForMeTileImageCommand = DelegateCommand.FromAsyncHandler(async () =>
             {
@@ -106,29 +110,22 @@ namespace Band.Personalize.App.Universal.ViewModels
                     this.CurrentMeTileImage = bitmap;
                 }
             });
-
-            this.ApplyMeTileImageCommand = DelegateCommand.FromAsyncHandler(async () => await this.bandPersonalizer.SetMeTileImage(null, HardwareRevision.Band2), () => this.CurrentMeTileImage != null); // TODO
         }
 
         /// <summary>
         /// Gets the "Refresh" command
         /// </summary>
-        public ICommand RefreshPersonalizationDataCommand { get; }
+        public ICommand RefreshPersonalizationCommand { get; }
 
         /// <summary>
         /// Gets the "Apply" command for them theme.
         /// </summary>
-        public ICommand ApplyThemeCommand { get; }
+        public ICommand ApplyPersonalizationCommand { get; }
 
         /// <summary>
         /// Gets the "Browser" command for the Me Tile image.
         /// </summary>
         public ICommand BrowserForMeTileImageCommand { get; }
-
-        /// <summary>
-        /// Gets the "Apply" command for the Me Tile image.
-        /// </summary>
-        public ICommand ApplyMeTileImageCommand { get; }
 
         /// <summary>
         /// Gets the current Band.
@@ -143,12 +140,30 @@ namespace Band.Personalize.App.Universal.ViewModels
         }
 
         /// <summary>
+        /// Gets or sets a value indicating whether to use the Me Tile image height for the original Microsoft Band.  The only applies when <see cref="CurrentBand"/> is not <see cref="HardwareRevision.Band"/>.
+        /// </summary>
+        public bool IsUseOriginalBandHeight
+        {
+            get { return this.isUseOriginalBandHeight; }
+            set { this.SetProperty(ref this.isUseOriginalBandHeight, value); }
+        }
+
+        /// <summary>
         /// Gets a value indicating whether the "Refresh" command is busy.
         /// </summary>
         public bool IsBusy
         {
             get { return this.isBusy; }
             private set { this.SetProperty(ref this.isBusy, value); }
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether the "Refresh" command is busy.
+        /// </summary>
+        public bool IsNotBusy
+        {
+            get { return !this.isBusy; }
+            private set { this.SetProperty(ref this.isBusy, !value); }
         }
 
         /// <summary>
@@ -191,7 +206,52 @@ namespace Band.Personalize.App.Universal.ViewModels
 
             this.CurrentBand = e.Parameter as IBand;
 
-            this.RefreshPersonalizationDataCommand.Execute(null);
+            this.RefreshPersonalizationCommand.Execute(0);
+            this.RefreshPersonalizationCommand.Execute(1);
+
+            this.IsUseOriginalBandHeight = this.CurrentBand.HardwareRevision != HardwareRevision.Band
+                ? this.CurrentMeTileImage.PixelHeight <= 102
+                : true;
+        }
+
+        /// <summary>
+        /// Refresh the dislayed personalization options to display the values for the current Band, based on the section of the pivot that is sending the command.
+        /// </summary>
+        /// <param name="selectedPivotIndex">The index of the active pivot view.</param>
+        /// <returns>An asynchronous task that returns when work is complete.</returns>
+        private async Task RefreshPersonalization(int selectedPivotIndex)
+        {
+            switch (selectedPivotIndex)
+            {
+                case 0:
+                    this.CurrentTheme = await this.bandPersonalizer.GetTheme();
+                    break;
+                case 1:
+                    this.CurrentMeTileImage = await this.bandPersonalizer.GetMeTileImage();
+                    break;
+                default:
+                    throw new ArgumentNullException($"Unhandled pivot index: {selectedPivotIndex}");
+            }
+        }
+
+        /// <summary>
+        /// Apply the dislayed personalization options the current Band, based on the section of the pivot that is sending the command.
+        /// </summary>
+        /// <param name="selectedPivotIndex">The index of the active pivot view.</param>
+        /// <returns>An asynchronous task that returns when work is complete.</returns>
+        private async Task ApplyPersonalization(int selectedPivotIndex)
+        {
+            switch (selectedPivotIndex)
+            {
+                case 0:
+                    await this.bandPersonalizer.SetTheme(this.CurrentTheme);
+                    break;
+                case 1:
+                    await this.bandPersonalizer.SetMeTileImage(null, HardwareRevision.Band2);
+                    break;
+                default:
+                    throw new ArgumentNullException($"Unhandled pivot index: {selectedPivotIndex}");
+            }
         }
     }
 }
