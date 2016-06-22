@@ -15,7 +15,6 @@
 namespace Band.Personalize.App.Universal.Views
 {
     using Prism.Windows.Mvvm;
-    using Windows.UI.Xaml.Controls;
 
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
