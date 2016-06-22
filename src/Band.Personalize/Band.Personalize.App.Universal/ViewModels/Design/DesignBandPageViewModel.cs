@@ -14,6 +14,7 @@
 
 namespace Band.Personalize.App.Universal.ViewModels.Design
 {
+    using Model.Library.Band;
     using Prism.Windows.Navigation;
 
     /// <summary>
@@ -30,7 +31,13 @@ namespace Band.Personalize.App.Universal.ViewModels.Design
             this.OnNavigatedTo(
                 new NavigatedToEventArgs
                 {
-                    Parameter = null,
+                    Parameter = new BandStub
+                    {
+                        Name = "Band F0:F0",
+                        ConnectionType = ConnectionType.Usb,
+                        HardwareRevision = HardwareRevision.Band,
+                        HardwareVersion = 21,
+                    },
                 },
                 null);
         }
