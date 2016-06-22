@@ -10,6 +10,8 @@
                 <ResourceDictionary Source="Themes/AppStyles.xaml" />
             </ResourceDictionary.MergedDictionaries>
             <converters:ConnectionTypeToSymbolConverter x:Key="ConnectionTypeToSymbolConverter" />
+            <converters:HardwareRevisionToBooleanConverter x:Key="HardwareRevisionToBooleanConverter" />
+            <converters:HardwareRevisionToVisibilityConverter x:Key="HardwareRevisionToVisibilityConverter" />
         </ResourceDictionary>
     </Application.Resources>
 </prismUnity:PrismUnityApplication>

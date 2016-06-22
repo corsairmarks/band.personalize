@@ -97,31 +97,5 @@ namespace Band.Personalize.App.Universal.ViewModels.Design
         }
 
         #endregion
-
-        /// <summary>
-        /// A stub for fake <see cref="IBand"/> data.
-        /// </summary>
-        private class BandStub : IBand
-        {
-            /// <summary>
-            /// Gets or sets the name.
-            /// </summary>
-            public string Name { get; set; }
-
-            /// <summary>
-            /// Gets or sets the hardware major revision level.
-            /// </summary>
-            public ConnectionType ConnectionType { get; set; }
-
-            /// <summary>
-            /// Gets or sets the actual hardware version.
-            /// </summary>
-            public HardwareRevision HardwareRevision { get; set; }
-
-            /// <summary>
-            /// Gets or sets the connection type between the application host and the Microsoft Band.
-            /// </summary>
-            public int HardwareVersion { get; set; }
-        }
     }
 }

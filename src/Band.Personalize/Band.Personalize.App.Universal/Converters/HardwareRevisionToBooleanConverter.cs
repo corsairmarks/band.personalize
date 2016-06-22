@@ -16,29 +16,13 @@ namespace Band.Personalize.App.Universal.Converters
 {
     using System;
     using Model.Library.Band;
-    using Windows.UI.Xaml.Controls;
     using Windows.UI.Xaml.Data;
 
     /// <summary>
-    /// Value converter that translates a Band <see cref="ConnectionType"/> to a <see cref="char"/>.
+    /// Value converter that translates a Band <see cref="HardwareRevision"/> to a <see cref="bool"/>.
     /// </summary>
-    public sealed class ConnectionTypeToSymbolConverter : IValueConverter
+    public class HardwareRevisionToBooleanConverter : IValueConverter
     {
-        /// <summary>
-        /// Gets the character for Bluetooth in the Segoe MDL2 Assets font.
-        /// </summary>
-        public const Symbol Bluetooth = (Symbol)0xE702; // or EC41
-
-        /// <summary>
-        /// The character for a USB cord in the Segoe MDL2 Assets font.
-        /// </summary>
-        public const Symbol Usb = (Symbol)0xECF0;
-
-        /// <summary>
-        /// The character for a question mark in the Segoe MDL2 Assets font.
-        /// </summary>
-        public const Symbol QuestionMark = (Symbol)0xE897; // or E11B
-
         #region IValueConverter Members
 
         /// <summary>
@@ -51,7 +35,7 @@ namespace Band.Personalize.App.Universal.Converters
         /// <param name="language">The language to use for localization.</param>
         /// <returns>A <paramref name="targetType"/> representation of the <paramref name="value"/>.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="value"/> or <paramref name="targetType"/> is <c>null</c>.</exception>
-        /// <exception cref="ArgumentException"><paramref name="value"/> is not an instance of <see cref="ConnectionType"/> or <paramref name="targetType"/> is not <see cref="Symbol"/>.</exception>
+        /// <exception cref="ArgumentException"><paramref name="value"/> is not an instance of <see cref="HardwareRevision"/> or <paramref name="targetType"/> is not <see cref="bool"/>.</exception>
         /// <remarks><paramref name="parameter"/> and <paramref name="language"/> are ignored.</remarks>
         public object Convert(object value, Type targetType, object parameter, string language)
         {
@@ -59,27 +43,27 @@ namespace Band.Personalize.App.Universal.Converters
             {
                 throw new ArgumentNullException(nameof(value));
             }
-            else if (!Enum.IsDefined(typeof(ConnectionType), value))
+            else if (!Enum.IsDefined(typeof(HardwareRevision), value))
             {
-                throw new ArgumentException($"Must be a valid member of {typeof(ConnectionType)}", nameof(value));
+                throw new ArgumentException($"Must be a valid member of {typeof(HardwareRevision)}", nameof(value));
             }
             else if (targetType == null)
             {
                 throw new ArgumentNullException(nameof(targetType));
             }
-            else if (targetType != typeof(Symbol))
+            else if (targetType != typeof(bool))
             {
-                throw new ArgumentException($"Can only convert to {typeof(Symbol)}", nameof(targetType));
+                throw new ArgumentException($"Can only convert to {typeof(bool)}", nameof(targetType));
             }
 
-            switch ((ConnectionType)value)
+            switch ((HardwareRevision)value)
             {
-                case ConnectionType.Usb:
-                    return Usb;
-                case ConnectionType.Bluetooth:
-                    return Bluetooth;
+                case HardwareRevision.Band:
+                    return false;
+                case HardwareRevision.Band2:
+                    return true;
                 default:
-                    return QuestionMark;
+                    throw new NotImplementedException($"No conversion for {value} ({value.GetType()})");
             }
         }
 
@@ -92,37 +76,10 @@ namespace Band.Personalize.App.Universal.Converters
         /// <param name="parameter">A custom parameter for the conversion back operation.</param>
         /// <param name="language">The language to use for localization.</param>
         /// <returns>A <paramref name="targetType"/> representation of the <paramref name="value"/>.</returns>
-        /// <exception cref="ArgumentNullException"><paramref name="value"/> or <paramref name="targetType"/> is <c>null</c>.</exception>
-        /// <exception cref="ArgumentException"><paramref name="value"/> is not an instance of <see cref="Symbol"/> or <paramref name="targetType"/> is not <see cref="ConnectionType"/>.</exception>
-        /// <remarks><paramref name="parameter"/> and <paramref name="language"/> are ignored.</remarks>
+        /// <exception cref="NotImplementedException">Always thrown.</exception>
         public object ConvertBack(object value, Type targetType, object parameter, string language)
         {
-            if (value == null)
-            {
-                throw new ArgumentNullException(nameof(value));
-            }
-            else if (value.GetType() != typeof(Symbol))
-            {
-                throw new ArgumentException($"Must be a {typeof(Symbol)}", nameof(value));
-            }
-            else if (targetType == null)
-            {
-                throw new ArgumentNullException(nameof(targetType));
-            }
-            else if (targetType != typeof(ConnectionType))
-            {
-                throw new ArgumentException($"Can only convert to {typeof(ConnectionType)}", nameof(targetType));
-            }
-
-            switch ((Symbol)value)
-            {
-                case Usb:
-                    return ConnectionType.Usb;
-                case Bluetooth:
-                    return ConnectionType.Bluetooth;
-                default:
-                    return ConnectionType.Unknown;
-            }
+            throw new NotImplementedException();
         }
 
         #endregion
