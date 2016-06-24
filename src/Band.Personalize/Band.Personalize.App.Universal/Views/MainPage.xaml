@@ -9,37 +9,83 @@
     d:DataContext="{d:DesignInstance designViewModels:DesignMainPageViewModel, IsDesignTimeCreatable=True}"
     prismMvvm:ViewModelLocator.AutoWireViewModel="True"
     mc:Ignorable="d">
-    <Grid x:Name="TheGridView" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Grid.RowDefinitions>
-            <RowDefinition Height="*" />
-            <RowDefinition Height="Auto" />
+            <RowDefinition x:Name="TopGridRow" />
+            <RowDefinition x:Name="BottomGridRow" />
         </Grid.RowDefinitions>
-        <GridView Grid.Row="0" ItemsSource="{Binding Path=ConnectedBands}">
+        <GridView x:Name="TheGridView" ItemsSource="{Binding Path=ConnectedBands}">
+            <GridView.Header>
+                <TextBlock x:Uid="BandGridViewHeaderTextBlock" Text="Connected Bands" FontWeight="Bold" Margin="2" />
+            </GridView.Header>
+            <GridView.ItemContainerStyle>
+                <Style TargetType="GridViewItem">
+                    <Setter Property="HorizontalAlignment" Value="Stretch" />
+                    <Setter Property="VerticalAlignment" Value="Stretch" />
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                    <Setter Property="VerticalContentAlignment" Value="Stretch" />
+                    <Setter Property="Margin" Value="2" />
+                </Style>
+            </GridView.ItemContainerStyle>
+            <GridView.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <ItemsWrapGrid MaximumRowsOrColumns="4" Orientation="Horizontal" ItemHeight="{Binding RelativeSource={RelativeSource Self}, Path=ItemWidth}" ItemWidth="180">
+                    </ItemsWrapGrid>
+                </ItemsPanelTemplate>
+            </GridView.ItemsPanel>
             <GridView.ItemTemplate>
                 <DataTemplate>
-                    <Button Width="150" Height="150" Background="{StaticResource SystemControlForegroundAccentBrush}" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Command="{Binding DataContext.NavigateToBandPageCommand, ElementName=TheGridView}" CommandParameter="{Binding}">
+                    <Button Style="{ThemeResource BandTile}"
+                        Command="{Binding DataContext.NavigateToBandPageCommand, ElementName=TheGridView}"
+                        CommandParameter="{Binding}">
                         <RelativePanel>
-                            <TextBlock Text="{Binding Name}" TextWrapping="Wrap" RelativePanel.AlignTopWithPanel="True" RelativePanel.AlignLeftWithPanel="True" Foreground="{ThemeResource SystemControlForegroundChromeWhiteBrush}" />
+                            <TextBlock Text="{Binding Name}" TextWrapping="Wrap" RelativePanel.AlignTopWithPanel="True" RelativePanel.AlignLeftWithPanel="True" />
                             <Ellipse Height="50" Width="50" Fill="{ThemeResource SystemControlForegroundChromeWhiteBrush}"  RelativePanel.AlignVerticalCenterWithPanel="True" RelativePanel.AlignHorizontalCenterWithPanel="True" />
-                            <SymbolIcon Symbol="{Binding ConnectionType, Converter={StaticResource ConnectionTypeToSymbolConverter}}" RenderTransformOrigin="0.5,0.5" Foreground="{StaticResource SystemControlForegroundAccentBrush}"  RelativePanel.AlignVerticalCenterWithPanel="True" RelativePanel.AlignHorizontalCenterWithPanel="True">
+                            <SymbolIcon Symbol="{Binding ConnectionType, Converter={StaticResource ConnectionTypeToSymbolConverter}}" RenderTransformOrigin="0.5,0.5" Foreground="{ThemeResource SystemControlForegroundAccentBrush}"  RelativePanel.AlignVerticalCenterWithPanel="True" RelativePanel.AlignHorizontalCenterWithPanel="True">
                                 <SymbolIcon.RenderTransform>
                                     <CompositeTransform ScaleX="1.5" ScaleY="1.5" />
                                 </SymbolIcon.RenderTransform>
                             </SymbolIcon>
                             <StackPanel Orientation="Horizontal" RelativePanel.AlignBottomWithPanel="True" RelativePanel.AlignLeftWithPanel="True">
-                                <TextBlock Text="{Binding HardwareRevision}" Margin="0,0,2,0" Foreground="{ThemeResource SystemControlForegroundChromeWhiteBrush}" />
-                                <TextBlock Text="(" Foreground="{ThemeResource SystemControlForegroundChromeWhiteBrush}" />
-                                <TextBlock Text="{Binding HardwareVersion}" Foreground="{ThemeResource SystemControlForegroundChromeWhiteBrush}" />
-                                <TextBlock Text=")" Foreground="{ThemeResource SystemControlForegroundChromeWhiteBrush}" />
+                                <TextBlock Text="{Binding HardwareRevision}" Margin="0,0,2,0" />
+                                <TextBlock Text="(" />
+                                <TextBlock Text="{Binding HardwareVersion}" />
+                                <TextBlock Text=")" />
                             </StackPanel>
                         </RelativePanel>
                     </Button>
                 </DataTemplate>
             </GridView.ItemTemplate>
         </GridView>
-        <CommandBar Grid.Row="1">
+        <CommandBar Name="TheCommandBar" Grid.Row="2">
             <AppBarButton x:Uid="RefreshAppBarButton" Icon="Refresh" Label="Refresh" Command="{Binding Path=RefreshConnectedBandsCommand}" />
             <AppBarButton x:Uid="CancelAppBarButton" Icon="Cancel" Label="Cancel" Command="{Binding Path=CancelRefreshConnectedBandsCommand}" IsEnabled="{Binding Path=IsBusy}" />
         </CommandBar>
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup>
+                <VisualState x:Name="DefaultLayout">
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="641" />
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="TheGridView.(Grid.Row)" Value="1" />
+                        <Setter Target="TheCommandBar.(Grid.Row)" Value="0" />
+                        <Setter Target="TopGridRow.Height" Value="Auto" />
+                        <Setter Target="BottomGridRow.Height" Value="*" />
+                    </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="MinimalLayout">
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="0" />
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="TheGridView.(Grid.Row)" Value="0" />
+                        <Setter Target="TheCommandBar.(Grid.Row)" Value="1" />
+                        <Setter Target="TopGridRow.Height" Value="*" />
+                        <Setter Target="BottomGridRow.Height" Value="Auto" />
+                    </VisualState.Setters>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
     </Grid>
 </prismMvvm:SessionStateAwarePage>

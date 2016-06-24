@@ -120,6 +120,9 @@
   <data name="ApplyAppBarButton.Label" xml:space="preserve">
     <value>Apply</value>
   </data>
+  <data name="BandGridViewHeaderTextBlock.Text" xml:space="preserve">
+    <value>Connected Bands</value>
+  </data>
   <data name="BandVersionToggle.Header" xml:space="preserve">
     <value>Use original Band height (102px)</value>
   </data>

@@ -9,7 +9,7 @@
     d:DataContext="{d:DesignInstance designViewModels:DesignBandPageViewModel, IsDesignTimeCreatable=True}"
     prismMvvm:ViewModelLocator.AutoWireViewModel="True"
     mc:Ignorable="d">
-    <Grid x:Name="TheGrid" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Grid.RowDefinitions>
             <RowDefinition x:Name="TopGridRow" />
             <RowDefinition x:Name="BottomGridRow" />
