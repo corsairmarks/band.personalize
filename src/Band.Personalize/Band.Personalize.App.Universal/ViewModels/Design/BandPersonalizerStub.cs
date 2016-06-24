@@ -19,7 +19,6 @@ namespace Band.Personalize.App.Universal.ViewModels.Design
     using Model.Library.Band;
     using Model.Library.Repository;
     using Model.Library.Theme;
-    using Windows.Storage;
     using Windows.Storage.Streams;
     using Windows.UI.Xaml.Media.Imaging;
 

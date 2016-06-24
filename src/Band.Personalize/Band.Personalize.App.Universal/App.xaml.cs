@@ -15,33 +15,19 @@
 namespace Band.Personalize.App.Universal
 {
     using System;
-    using System.Collections.Generic;
     using System.Diagnostics;
-    using System.Globalization;
-    using System.IO;
-    using System.Linq;
-    using System.Runtime.InteropServices.WindowsRuntime;
     using System.Threading.Tasks;
     using Microsoft.Practices.Unity;
+    using Model.Library.Repository;
     using Prism.Events;
-    using Prism.Mvvm;
     using Prism.Unity.Windows;
     using Prism.Windows;
     using Prism.Windows.AppModel;
     using Prism.Windows.Navigation;
+    using ViewModels.Design;
     using Windows.ApplicationModel;
     using Windows.ApplicationModel.Activation;
-    using Windows.ApplicationModel.Resources;
-    using Windows.Foundation;
-    using Windows.Foundation.Collections;
-    using Windows.UI.Notifications;
     using Windows.UI.Xaml;
-    using Windows.UI.Xaml.Controls;
-    using Windows.UI.Xaml.Controls.Primitives;
-    using Windows.UI.Xaml.Data;
-    using Windows.UI.Xaml.Input;
-    using Windows.UI.Xaml.Media;
-    using Windows.UI.Xaml.Navigation;
 
     /// <summary>
     /// Provides application-specific behavior to supplement the default Application class.
@@ -146,18 +132,14 @@ namespace Band.Personalize.App.Universal
             // this.Container.RegisterType<IAlertMessageService, AlertMessageService>(new ContainerControlledLifetimeManager());
 
             // Register repositories
-            // this.Container.RegisterType<IProductCatalogRepository, ProductCatalogRepository>(new ContainerControlledLifetimeManager());
-            // this.Container.RegisterType<IShoppingCartRepository, ShoppingCartRepository>(new ContainerControlledLifetimeManager());
-            // this.Container.RegisterType<ICheckoutDataRepository, CheckoutDataRepository>(new ContainerControlledLifetimeManager());
-            // this.Container.RegisterType<IOrderRepository, OrderRepository>(new ContainerControlledLifetimeManager());
+            this.Container.RegisterInstance<IBandPersonalizer>(BandPersonalizerStub.Instance);
+            this.Container.RegisterInstance<IBandRepository>(BandRepositoryStub.Instance);
 
             // Register child view models
             // this.Container.RegisterType<IShippingAddressUserControlViewModel, ShippingAddressUserControlViewModel>();
             // this.Container.RegisterType<IBillingAddressUserControlViewModel, BillingAddressUserControlViewModel>();
             // this.Container.RegisterType<IPaymentMethodUserControlViewModel, PaymentMethodUserControlViewModel>();
             // this.Container.RegisterType<ISignInUserControlViewModel, SignInUserControlViewModel>();
-
-            // var resourceLoader = Container.Resolve<IResourceLoader>();
             return base.OnInitializeAsync(e);
         }
 
