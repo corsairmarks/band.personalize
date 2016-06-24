@@ -92,7 +92,7 @@ namespace Band.Personalize.App.Universal.ViewModels
             refreshConnectedBandsCommand.RegisterCommand(new DelegateCommand(() => this.IsBusy = false));
             this.RefreshConnectedBandsCommand = refreshConnectedBandsCommand;
 
-            this.NavigateToBandPageCommand = new DelegateCommand<IBand>(b => this.navigationService.Navigate("BandPage", b));
+            this.NavigateToBandPageCommand = new DelegateCommand<IBand>(b => this.navigationService.Navigate("Band", b));
         }
 
         /// <summary>

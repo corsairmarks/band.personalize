@@ -9,7 +9,7 @@
     d:DataContext="{d:DesignInstance designViewModels:DesignMainPageViewModel, IsDesignTimeCreatable=True}"
     prismMvvm:ViewModelLocator.AutoWireViewModel="True"
     mc:Ignorable="d">
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    <Grid x:Name="TheGridView" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
@@ -17,20 +17,20 @@
         <GridView Grid.Row="0" ItemsSource="{Binding Path=ConnectedBands}">
             <GridView.ItemTemplate>
                 <DataTemplate>
-                    <Button Width="150" Height="150" Background="{StaticResource SystemControlHighlightAccentBrush}" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Command="{Binding BandPageNavigationCommand}" CommandParameter="{Binding Path=DataContext}">
+                    <Button Width="150" Height="150" Background="{StaticResource SystemControlForegroundAccentBrush}" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Command="{Binding DataContext.NavigateToBandPageCommand, ElementName=TheGridView}" CommandParameter="{Binding}">
                         <RelativePanel>
-                            <TextBlock Text="{Binding Name}" TextWrapping="Wrap" RelativePanel.AlignTopWithPanel="True" RelativePanel.AlignLeftWithPanel="True" />
-                            <Ellipse Height="50" Width="50" Fill="White"  RelativePanel.AlignVerticalCenterWithPanel="True" RelativePanel.AlignHorizontalCenterWithPanel="True" />
-                            <SymbolIcon Symbol="{Binding ConnectionType, Converter={StaticResource ConnectionTypeToSymbolConverter}}" RenderTransformOrigin="0.5,0.5" Foreground="{StaticResource SystemControlHighlightAccentBrush}"  RelativePanel.AlignVerticalCenterWithPanel="True" RelativePanel.AlignHorizontalCenterWithPanel="True">
+                            <TextBlock Text="{Binding Name}" TextWrapping="Wrap" RelativePanel.AlignTopWithPanel="True" RelativePanel.AlignLeftWithPanel="True" Foreground="{ThemeResource SystemControlForegroundChromeWhiteBrush}" />
+                            <Ellipse Height="50" Width="50" Fill="{ThemeResource SystemControlForegroundChromeWhiteBrush}"  RelativePanel.AlignVerticalCenterWithPanel="True" RelativePanel.AlignHorizontalCenterWithPanel="True" />
+                            <SymbolIcon Symbol="{Binding ConnectionType, Converter={StaticResource ConnectionTypeToSymbolConverter}}" RenderTransformOrigin="0.5,0.5" Foreground="{StaticResource SystemControlForegroundAccentBrush}"  RelativePanel.AlignVerticalCenterWithPanel="True" RelativePanel.AlignHorizontalCenterWithPanel="True">
                                 <SymbolIcon.RenderTransform>
                                     <CompositeTransform ScaleX="1.5" ScaleY="1.5" />
                                 </SymbolIcon.RenderTransform>
                             </SymbolIcon>
                             <StackPanel Orientation="Horizontal" RelativePanel.AlignBottomWithPanel="True" RelativePanel.AlignLeftWithPanel="True">
-                                <TextBlock Text="{Binding HardwareRevision}" Margin="0,0,2,0" />
-                                <TextBlock Text="(" />
-                                <TextBlock Text="{Binding HardwareVersion}" />
-                                <TextBlock Text=")" />
+                                <TextBlock Text="{Binding HardwareRevision}" Margin="0,0,2,0" Foreground="{ThemeResource SystemControlForegroundChromeWhiteBrush}" />
+                                <TextBlock Text="(" Foreground="{ThemeResource SystemControlForegroundChromeWhiteBrush}" />
+                                <TextBlock Text="{Binding HardwareVersion}" Foreground="{ThemeResource SystemControlForegroundChromeWhiteBrush}" />
+                                <TextBlock Text=")" Foreground="{ThemeResource SystemControlForegroundChromeWhiteBrush}" />
                             </StackPanel>
                         </RelativePanel>
                     </Button>
