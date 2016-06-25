@@ -109,6 +109,7 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\UniformItemsWrapGrid.cs" />
     <Compile Include="Converters\HardwareRevisionToBooleanConverter.cs" />
     <Compile Include="Converters\ConnectionTypeToSymbolConverter.cs" />
     <Compile Include="Converters\HardwareRevisionToVisibilityConverter.cs" />

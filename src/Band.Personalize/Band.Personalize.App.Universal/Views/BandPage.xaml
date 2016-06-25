@@ -46,7 +46,7 @@
         </CommandBar>
         <VisualStateManager.VisualStateGroups>
             <VisualStateGroup>
-                <VisualState x:Name="DefaultLayout">
+                <VisualState x:Name="MediumLayout">
                     <VisualState.StateTriggers>
                         <AdaptiveTrigger MinWindowWidth="641" />
                     </VisualState.StateTriggers>
@@ -57,7 +57,7 @@
                         <Setter Target="BottomGridRow.Height" Value="*" />
                     </VisualState.Setters>
                 </VisualState>
-                <VisualState x:Name="MinimalLayout">
+                <VisualState x:Name="NarrowLayout">
                     <VisualState.StateTriggers>
                         <AdaptiveTrigger MinWindowWidth="0" />
                     </VisualState.StateTriggers>
