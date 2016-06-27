@@ -15,13 +15,13 @@
 namespace Band.Personalize.App.Universal.Controls
 {
     using System;
+    using Windows.ApplicationModel;
     using Windows.Foundation;
+    using Windows.UI.ViewManagement;
     using Windows.UI.Xaml;
     using Windows.UI.Xaml.Controls;
 
     /// <summary>
-    /// <see cref="ItemsWrapGrid"/>
-    ///
     /// Positions child elements sequentially from left to right or top to bottom. When
     /// elements in a row (horizontal) or column (vertical) exceed the maximum, elements
     /// are positioned in the next row or column. Elements are scaled to fill available
@@ -78,36 +78,59 @@ namespace Band.Personalize.App.Universal.Controls
         /// </returns>
         protected override Size MeasureOverride(Size availableSize)
         {
-            // TODO: deal with "if desired one is infinity"
-            // what if infinity x infinity?
-            double finalWidth, finalHeight;
+            bool isInfiniteHeight = double.IsInfinity(availableSize.Height);
+            bool isInfiniteWidth = double.IsInfinity(availableSize.Width);
+
+            // HACK: disable during design, attempting to retrieve the ApplicationView causes access violations
+            if (!DesignMode.DesignModeEnabled)
+            {
+                var appView = ApplicationView.GetForCurrentView();
+
+                // TODO: what if infinity x infinity? MaxItemWidthAndHeight...?
+                if (isInfiniteHeight && isInfiniteWidth)
+                {
+                    availableSize = new Size(appView.VisibleBounds.Width, appView.VisibleBounds.Height);
+                }
+            }
+
+            double finalWidth, finalHeight, itemWidthHeight;
             if (this.Orientation == Orientation.Horizontal)
             {
-                var itemWidth = Math.Floor(availableSize.Width / this.MaximumRowsOrColumns);
-                var tileSize = new Size(itemWidth, itemWidth);
-                finalWidth = availableSize.Width;
-                var actualRows = Math.Ceiling((double)this.Children.Count / this.MaximumRowsOrColumns);
-                var actualHeight = itemWidth * actualRows;
-                foreach (var child in this.Children)
+                if (isInfiniteWidth)
                 {
-                    child.Measure(tileSize);
+                    // TODO: fix - assumes NOT infinite height
+                    finalHeight = itemWidthHeight = availableSize.Height;
+                    finalWidth = itemWidthHeight * this.Children.Count;
                 }
-
-                finalHeight = actualHeight;
+                else
+                {
+                    itemWidthHeight = Math.Floor(availableSize.Width / this.MaximumRowsOrColumns);
+                    var rowCount = Math.Ceiling((double)this.Children.Count / this.MaximumRowsOrColumns);
+                    finalHeight = itemWidthHeight * rowCount;
+                    finalWidth = availableSize.Width; // * cols
+                }
             }
             else
             {
-                var itemHeight = Math.Floor(availableSize.Height / this.MaximumRowsOrColumns);
-                var tileSize = new Size(itemHeight, itemHeight);
-                finalHeight = availableSize.Height;
-                var actualColumns = Math.Ceiling((double)this.Children.Count / this.MaximumRowsOrColumns);
-                var actualWidth = itemHeight * actualColumns;
-                foreach (var child in this.Children)
+                if (isInfiniteHeight)
                 {
-                    child.Measure(tileSize);
+                    // TODO: fix - assumes NOT infinite width
+                    finalWidth = itemWidthHeight = availableSize.Width;
+                    finalHeight = itemWidthHeight * this.Children.Count;
                 }
+                else
+                {
+                    itemWidthHeight = Math.Floor(availableSize.Height / this.MaximumRowsOrColumns);
+                    var columnCount = Math.Ceiling((double)this.Children.Count / this.MaximumRowsOrColumns);
+                    finalWidth = itemWidthHeight * columnCount;
+                    finalHeight = availableSize.Height; // * rows
+                }
+            }
 
-                finalWidth = itemHeight * actualColumns;
+            var itemSize = new Size(itemWidthHeight, itemWidthHeight);
+            foreach (var child in this.Children)
+            {
+                child.Measure(itemSize);
             }
 
             return new Size(finalWidth, finalHeight);
@@ -130,7 +153,7 @@ namespace Band.Personalize.App.Universal.Controls
                 var cellWidth = Math.Floor(finalSize.Width / this.MaximumRowsOrColumns);
                 Size cellSize = new Size(cellWidth, cellWidth);
                 int row = 0, col = 0;
-                foreach (UIElement child in this.Children)
+                foreach (var child in this.Children)
                 {
                     child.Arrange(new Rect(new Point(cellSize.Width * col, cellSize.Height * row), cellSize));
                     var element = child as FrameworkElement;
@@ -153,7 +176,7 @@ namespace Band.Personalize.App.Universal.Controls
                 var cellHeight = Math.Floor(finalSize.Height / this.MaximumRowsOrColumns);
                 var cellSize = new Size(cellHeight, cellHeight);
                 int row = 0, col = 0;
-                foreach (UIElement child in this.Children)
+                foreach (var child in this.Children)
                 {
                     child.Arrange(new Rect(new Point(cellSize.Width * col, cellSize.Height * row), cellSize));
                     var element = child as FrameworkElement;

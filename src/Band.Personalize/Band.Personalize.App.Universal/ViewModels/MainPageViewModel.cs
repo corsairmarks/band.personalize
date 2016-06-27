@@ -16,6 +16,8 @@ namespace Band.Personalize.App.Universal.ViewModels
 {
     using System;
     using System.Collections.Generic;
+    using System.Collections.ObjectModel;
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using System.Windows.Input;
@@ -88,8 +90,19 @@ namespace Band.Personalize.App.Universal.ViewModels
             var refreshConnectedBandsCommand = new CompositeCommand();
             refreshConnectedBandsCommand.RegisterCommand(new DelegateCommand(() => this.IsBusy = true));
             refreshConnectedBandsCommand.RegisterCommand(DelegateCommand.FromAsyncHandler(this.CancelRefreshConnectedBands));
-            refreshConnectedBandsCommand.RegisterCommand(DelegateCommand.FromAsyncHandler(async () => this.ConnectedBands = await this.RefreshConnectedBands()));
+            refreshConnectedBandsCommand.RegisterCommand(DelegateCommand.FromAsyncHandler(this.RefreshConnectedBands));
             refreshConnectedBandsCommand.RegisterCommand(new DelegateCommand(() => this.IsBusy = false));
+            refreshConnectedBandsCommand.RegisterCommand(new DelegateCommand(() =>
+            {
+                this.ConnectedBands.Clear();
+                if (this.connectedBands != null && this.connectedBands.Any())
+                {
+                    foreach (var band in this.connectedBands)
+                    {
+                        this.ConnectedBands.Add(band);
+                    }
+                }
+            }));
             this.RefreshConnectedBandsCommand = refreshConnectedBandsCommand;
 
             this.NavigateToBandPageCommand = new DelegateCommand<IBand>(b => this.navigationService.Navigate("Band", b));
@@ -130,11 +143,7 @@ namespace Band.Personalize.App.Universal.ViewModels
         /// <summary>
         /// Gets a read-only collection of connected Microsoft Bands.
         /// </summary>
-        public IReadOnlyList<IBand> ConnectedBands
-        {
-            get { return this.connectedBands; }
-            private set { this.SetProperty(ref this.connectedBands, value); }
-        }
+        public ObservableCollection<IBand> ConnectedBands { get; } = new ObservableCollection<IBand>();
 
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
@@ -172,7 +181,7 @@ namespace Band.Personalize.App.Universal.ViewModels
         /// Refreshes the list of connected Bands.
         /// </summary>
         /// <returns>An asynchronous task that returns a read-only collection of connected Bands when it completes.</returns>
-        private async Task<IReadOnlyList<IBand>> RefreshConnectedBands()
+        private async Task RefreshConnectedBands()
         {
             CancellationToken cancellationToken;
 
@@ -186,7 +195,7 @@ namespace Band.Personalize.App.Universal.ViewModels
                 cancellationToken = this.refreshCancellationTokenSource.Token;
             });
 
-            return await this.bandRepository.GetBands(cancellationToken);
+            this.connectedBands = await this.bandRepository.GetBands(cancellationToken);
         }
 
         /// <summary>
