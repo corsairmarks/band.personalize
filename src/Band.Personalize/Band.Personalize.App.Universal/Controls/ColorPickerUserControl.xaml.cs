@@ -547,16 +547,6 @@ namespace Band.Personalize.App.Universal.Controls
         }
 
         /// <summary>
-        /// Handler for changing the picker point. TODO: remove, should be bound to the x/y coords.
-        /// </summary>
-        private void OnPickPointChanged()
-        {
-            var updated = new RgbColor(this.Hue, this.PointX / this.PickerCanvas.ActualWidth, 1 - (this.PointY / this.PickerCanvas.ActualHeight)).ToColor();
-            updated.A = this.Color.A;
-            this.Color = updated;
-        }
-
-        /// <summary>
         /// Pick color
         /// </summary>
         /// <param name="point">pick point</param>
@@ -571,7 +561,9 @@ namespace Band.Personalize.App.Universal.Controls
                 Y = Math.Round(py, MidpointRounding.AwayFromZero),
             };
 
-            this.OnPickPointChanged();
+            var updated = new RgbColor(this.Hue, this.PointX / this.PickerCanvas.ActualWidth, 1 - (this.PointY / this.PickerCanvas.ActualHeight)).ToColor();
+            updated.A = this.Color.A;
+            this.Color = updated;
         }
     }
 }
