@@ -9,7 +9,7 @@
     mc:Ignorable="d"
     d:DataContext="{d:DesignInstance Type=designViewModels:DesignColorPickerViewModel, IsDesignTimeCreatable=True}"
     d:DesignHeight="640"
-    d:DesignWidth="1360">
+    d:DesignWidth="360">
     <UserControl.Resources>
         <x:Double x:Key="SliderTrackThemeHeight">8</x:Double>
     </UserControl.Resources>
