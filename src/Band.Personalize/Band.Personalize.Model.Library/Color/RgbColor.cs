@@ -39,6 +39,49 @@ namespace Band.Personalize.Model.Library.Color
             this.Red = red;
             this.Green = green;
             this.Blue = blue;
+
+            var hsv = ToHsv(red, green, blue);
+
+            this.Hue = hsv.Item1;
+            this.Saturation = hsv.Item2;
+            this.Value = hsv.Item3;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RgbColor"/> class from HSV/HSB data.
+        /// </summary>
+        /// <param name="hue">The hue in degrees.</param>
+        /// <param name="saturation">The saturation.</param>
+        /// <param name="value">The value (brightness).</param>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <paramref name="hue"/> is less than 0 or greater than or equal to 360,
+        /// <paramref name="saturation"/> is less than 0 or greater than 1,
+        /// or <paramref name="value"/> is less than 0 or greater than 1.
+        /// </exception>
+        public RgbColor(double hue, double saturation, double value)
+        {
+            if (hue < 0 || hue >= 360)
+            {
+                throw new ArgumentOutOfRangeException(nameof(hue), hue, "Must be between 0 (inclusive) through 360 (exclusive)");
+            }
+            else if (saturation < 0 || saturation > 1)
+            {
+                throw new ArgumentOutOfRangeException(nameof(saturation), saturation, "Must be between 0 and 1, inclusive");
+            }
+            else if (value < 0 || value > 1)
+            {
+                throw new ArgumentOutOfRangeException(nameof(value), value, "Must be between 0 and 1, inclusive");
+            }
+
+            this.Hue = hue;
+            this.Saturation = saturation;
+            this.Value = value;
+
+            var rgb = FromHsv(hue, saturation, value);
+
+            this.Red = rgb.Item1;
+            this.Green = rgb.Item2;
+            this.Blue = rgb.Item3;
         }
 
         /// <summary>
@@ -88,6 +131,21 @@ namespace Band.Personalize.Model.Library.Color
                 return PercentageOfMaximumSaturation(this.Blue);
             }
         }
+
+        /// <summary>
+        /// Gets the hue of this color (HSV/HSB model).
+        /// </summary>
+        public double Hue { get; }
+
+        /// <summary>
+        /// Gets the saturation of this color (HSV/HSB model).
+        /// </summary>
+        public double Saturation { get; }
+
+        /// <summary>
+        /// Gets the value (brightness) of this color (HSV/HSB model).
+        /// </summary>
+        public double Value { get; }
 
         /// <summary>
         /// Operator overload for equality (==).
@@ -232,6 +290,146 @@ namespace Band.Personalize.Model.Library.Color
         public override int GetHashCode()
         {
             return (this.Red * 0x10000) + (this.Green * 0x100) + this.Blue;
+        }
+
+        /// <summary>
+        /// Converts a triplet of RGB color channels to an HSV/HSB triplet.
+        /// </summary>
+        /// <param name="red">The red color channel.</param>
+        /// <param name="green">The green color channel.</param>
+        /// <param name="blue">The blue color channel.</param>
+        /// <returns>
+        /// An instance of <see cref="Tuple{Double,Double,Double}"/> where
+        /// <see cref="Tuple{Double,Double,Double}.Item1"/> is hue,
+        /// <see cref="Tuple{Double,Double,Double}.Item2"/> is saturation,
+        /// and <see cref="Tuple{Double,Double,Double}.Item3"/> is value (brightness).
+        /// </returns>
+        internal static Tuple<double, double, double> ToHsv(byte red, byte green, byte blue)
+        {
+            var redPrime = red / (double)byte.MaxValue;
+            var greenPrime = green / (double)byte.MaxValue;
+            var bluePrime = blue / (double)byte.MaxValue;
+
+            var chromaMax = Math.Max(Math.Max(redPrime, greenPrime), bluePrime);
+            var chromaMin = Math.Min(Math.Min(redPrime, greenPrime), bluePrime);
+            var delta = chromaMax - chromaMin;
+
+            double huePrime = 0;
+            if (delta == 0)
+            {
+                huePrime = 0;
+            }
+            else if (chromaMax == redPrime)
+            {
+                huePrime = ((greenPrime - bluePrime) / delta) % 6;
+            }
+            else if (chromaMax == greenPrime)
+            {
+                huePrime = ((bluePrime - redPrime) / delta) + 2;
+            }
+            else if (chromaMax == bluePrime)
+            {
+                huePrime = ((redPrime - greenPrime) / delta) + 4;
+            }
+
+            var hue = huePrime * 60;
+            if (hue < 0)
+            {
+                hue += 360;
+            }
+
+            var saturation = chromaMax != 0
+                ? delta / chromaMax
+                : 0;
+
+            var value = chromaMax; // brightness
+
+            return Tuple.Create(RoundToTwoDecimals(hue), RoundToTwoDecimals(saturation), RoundToTwoDecimals(value));
+        }
+
+        /// <summary>
+        /// Converts an HSV/HSB triplet to a RGB color channel triplet.
+        /// </summary>
+        /// <param name="hue">The hue in degrees.</param>
+        /// <param name="saturation">The saturation.</param>
+        /// <param name="value">The value (brightness).</param>
+        /// <returns>
+        /// An instance of <see cref="Tuple{Byte,Byte,Byte}"/> where
+        /// <see cref="Tuple{Byte,Byte,Byte}.Item1"/> is red,
+        /// <see cref="Tuple{Byte,Byte,Byte}.Item2"/> is green,
+        /// and <see cref="Tuple{Byte,Byte,Byte}.Item3"/> is blue.
+        /// </returns>
+        internal static Tuple<byte, byte, byte> FromHsv(double hue, double saturation, double value)
+        {
+            var chroma = value * saturation;
+
+            var huePrime = hue / 60;
+
+            var x = chroma * (1 - Math.Abs((huePrime % 2) - 1));
+
+            var m = value - chroma;
+
+            double redPrime, greenPrime, bluePrime;
+
+            if (huePrime >= 0 && huePrime < 1)
+            {
+                redPrime = chroma;
+                greenPrime = x;
+                bluePrime = 0;
+            }
+            else if (huePrime >= 1 && huePrime < 2)
+            {
+                redPrime = x;
+                greenPrime = chroma;
+                bluePrime = 0;
+            }
+            else if (huePrime >= 2 && huePrime < 3)
+            {
+                redPrime = 0;
+                greenPrime = chroma;
+                bluePrime = x;
+            }
+            else if (huePrime >= 3 && huePrime < 4)
+            {
+                redPrime = 0;
+                greenPrime = x;
+                bluePrime = chroma;
+            }
+            else if (huePrime >= 4 && huePrime < 5)
+            {
+                redPrime = x;
+                greenPrime = 0;
+                bluePrime = chroma;
+            }
+            else
+            {
+                // assumes: if (huePrime >= 5 && hue < 6)
+                redPrime = chroma;
+                greenPrime = 0;
+                bluePrime = x;
+            }
+
+            var red = Unprime(redPrime, m);
+            var green = Unprime(greenPrime, m);
+            var blue = Unprime(bluePrime, m);
+
+            return Tuple.Create(red, green, blue);
+        }
+
+        /// <summary>
+        /// Un-primes a color channel prime as part of the HSV/HSB to RGB calculation.
+        /// </summary>
+        /// <param name="prime">The color channel prime.</param>
+        /// <param name="m">The intermediate value m.</param>
+        /// <returns>The color channel value.</returns>
+        private static byte Unprime(double prime, double m)
+        {
+            return (byte)Math.Min(Math.Ceiling((prime + m) * byte.MaxValue), byte.MaxValue);
+        }
+
+        private static double RoundToTwoDecimals(double d)
+        {
+            return Math.Round(d, 2, MidpointRounding.AwayFromZero);
         }
     }
 }

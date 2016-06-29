@@ -39,12 +39,32 @@ namespace Band.Personalize.Model.Test.Color.Data
         public const byte DefaultBlue = 0xFF;
 
         /// <summary>
-        /// Gets the default color, constructed with <see cref="DefaultRed"/>, <see cref="DefaultGreen"/>, and <see cref="DefaultBlue"/>.
+        /// The default red channel saturation used for testing.
         /// </summary>
-        public static RgbColor DefaultColor { get; } = new RgbColor(DefaultRed, DefaultGreen, DefaultBlue);
+        public const double DefaultHue = 264.94;
 
         /// <summary>
-        /// Gets a collection of <see cref="RgbColor"/> instances that are not equal to <see cref="DefaultColor"/>.
+        /// The default green channel saturation used for testing.
+        /// </summary>
+        public const double DefaultSaturation = 1;
+
+        /// <summary>
+        /// The default blue channel saturation used for testing.
+        /// </summary>
+        public const double DefaultValue = 1;
+
+        /// <summary>
+        /// Gets the default color, constructed with <see cref="DefaultRed"/>, <see cref="DefaultGreen"/>, and <see cref="DefaultBlue"/>.
+        /// </summary>
+        public static RgbColor DefaultRgbColor { get; } = new RgbColor(DefaultRed, DefaultGreen, DefaultBlue);
+
+        /// <summary>
+        /// Gets the default color, constructed with <see cref="DefaultHue"/>, <see cref="DefaultSaturation"/>, and <see cref="DefaultValue"/>.
+        /// </summary>
+        public static RgbColor DefaultHsvColor { get; } = new RgbColor(DefaultHue, DefaultSaturation, DefaultValue);
+
+        /// <summary>
+        /// Gets a collection of <see cref="RgbColor"/> instances that are not equal to <see cref="DefaultRgbColor"/>.
         /// </summary>
         public static IEnumerable<IEnumerable<object>> NotEqualRgbColors { get; } = new object[][]
         {
@@ -64,11 +84,11 @@ namespace Band.Personalize.Model.Test.Color.Data
         public static IEnumerable<IEnumerable<object>> NonNullNotEqualRgbColors => NotEqualRgbColors.Where(o => o.Single() != null);
 
         /// <summary>
-        /// Gets a collection of <see cref="RgbColor"/> instances including <see cref="NotEqualRgbColors"/> and <see cref="DefaultColor"/>.
+        /// Gets a collection of <see cref="RgbColor"/> instances including <see cref="NotEqualRgbColors"/> and <see cref="DefaultRgbColor"/>.
         /// </summary>
         public static IEnumerable<IEnumerable<object>> RgbColorsWithDefault => NotEqualRgbColors.Concat(new[]
         {
-            new object[] { DefaultColor, }, // equal
+            new object[] { DefaultRgbColor, }, // equal
         });
 
         /// <summary>

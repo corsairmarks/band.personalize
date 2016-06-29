@@ -19,16 +19,32 @@ namespace Band.Personalize.Model.Test.Color.Data
     using System.Linq;
 
     /// <summary>
-    /// Test <see cref="byte"/> data for RGB colors.
+    /// Test <see cref="double"/> data for HSV/HSB colors.
     /// </summary>
-    public class RgbColorByteData : IEnumerable<object[]>
+    public class EquivalentHsvAndRgbColorData : IEnumerable<object[]>
     {
         /// <summary>
         /// Gets a collection of valid RGB color channel byte triplets.
         /// </summary>
-        private static IEnumerable<IEnumerable<byte>> RgbByteTriplets { get; } = new[]
+        private static IEnumerable<IEnumerable<object>> EquivalentHsvAndRgbData { get; } = new[]
         {
-            new byte[] { RgbColorData.DefaultRed, RgbColorData.DefaultGreen, RgbColorData.DefaultBlue, }
+            new object[] { RgbColorData.DefaultRed, RgbColorData.DefaultGreen, RgbColorData.DefaultBlue, RgbColorData.DefaultHue, RgbColorData.DefaultSaturation, RgbColorData.DefaultValue, },
+            new object[] { 0x00, 0x00, 0x00, 0D, 0D, 0D, }, // black
+            new object[] { 0xFF, 0xFF, 0xFF, 0D, 0D, 1D, }, // white
+            new object[] { 0xFF, 0x00, 0x00, 0D, 1D, 1D, }, // red
+            new object[] { 0x00, 0xFF, 0x00, 120D, 1D, 1D, }, // lime
+            new object[] { 0x00, 0x00, 0xFF, 240D, 1D, 1D, }, // blue
+            new object[] { 0xFF, 0xFF, 0x00, 60D, 1D, 1D, }, // yellow
+            new object[] { 0x00, 0xFF, 0xFF, 180D, 1D, 1D, }, // cyan
+            new object[] { 0xFF, 0x00, 0xFF, 300D, 1D, 1D, }, // magenta
+            new object[] { 0xC0, 0xC0, 0xC0, 0D, 0D, 0.75, }, // silver
+            new object[] { 0x80, 0x80, 0x80, 0D, 0D, 0.5, }, // gray
+            new object[] { 0x80, 0x00, 0x00, 0D, 1D, 0.5, }, // maroon
+            new object[] { 0x80, 0x80, 0x00, 60D, 1D, 0.5, }, // olive
+            new object[] { 0x00, 0x80, 0x00, 120D, 1D, 0.5, }, // green
+            new object[] { 0x80, 0x00, 0x80, 300D, 1D, 0.5, }, // purple
+            new object[] { 0x00, 0x80, 0x80, 180D, 1D, 0.5, }, // teal
+            new object[] { 0x00, 0x00, 0x80, 240D, 1D, 0.5, }, // navy
         };
 
         #region IEnumerable<object[]> Members
@@ -39,7 +55,7 @@ namespace Band.Personalize.Model.Test.Color.Data
         /// <returns>An enumerator that can be used to iterate through the collection.</returns>
         public IEnumerator<object[]> GetEnumerator()
         {
-            return RgbByteTriplets.Select(o => o.Cast<object>().ToArray()).GetEnumerator();
+            return EquivalentHsvAndRgbData.Select(o => o.ToArray()).GetEnumerator();
         }
 
         #endregion

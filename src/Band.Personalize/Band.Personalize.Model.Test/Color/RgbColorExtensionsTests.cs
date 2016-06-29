@@ -66,5 +66,50 @@ namespace Band.Personalize.Model.Test.Color
             Assert.NotNull(expected);
             Assert.Equal("color", expected.ParamName);
         }
+
+#pragma warning disable CS0419 // Ambiguous reference in cref attribute
+        /// <summary>
+        /// Verify the <see cref="RgbColorExtensions.ToColor(RgbColor)"/> method maps
+        /// the correct fields from an instance of <see cref="RgbColor"/> to an instance of
+        /// <see cref="Windows.UI.Color"/>.
+        /// </summary>
+        /// <param name="red">The red channel color saturation to test.</param>
+        /// <param name="green">The green channel color saturation to test.</param>
+        /// <param name="blue">The blue channel color saturation to test.</param>
+#pragma warning restore CS0419 // Ambiguous reference in cref attribute
+        [Theory]
+        [ClassData(typeof(RgbColorByteData))]
+        public void ToColor_CreatesInstanceWithSameValues(byte red, byte green, byte blue)
+        {
+            // Arrange
+            var target = new RgbColor(red, green, blue);
+
+            // Act
+            var result = target.ToColor();
+
+            // Assert
+            Assert.Equal(byte.MaxValue, result.A);
+            Assert.Equal(target.Red, result.R);
+            Assert.Equal(target.Green, result.G);
+            Assert.Equal(target.Blue, result.B);
+        }
+
+        /// <summary>
+        /// Verify the <see cref="RgbColorExtensions.ToColor(RgbColor)"/> method throws
+        /// an <see cref="ArgumentNullException"/> when the color parameter is <c>null</c>.
+        /// </summary>
+        [Fact]
+        public void ToColor_NullColor_Throws()
+        {
+            // Arrange
+            RgbColor target = null;
+
+            // Act
+            var expected = Assert.Throws<ArgumentNullException>(() => target.ToColor());
+
+            // Assert
+            Assert.NotNull(expected);
+            Assert.Equal("color", expected.ParamName);
+        }
     }
 }

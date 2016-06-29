@@ -16,6 +16,7 @@ namespace Band.Personalize.Model.Library.Color
 {
     using System;
     using Microsoft.Band;
+    using Windows.UI;
 
     /// <summary>
     /// Extension methods for the <see cref="RgbColor"/> class.
@@ -36,6 +37,30 @@ namespace Band.Personalize.Model.Library.Color
             }
 
             return new BandColor(color.Red, color.Green, color.Blue);
+        }
+
+#pragma warning disable CS0419 // Ambiguous reference in cref attribute
+        /// <summary>
+        /// Convert the <paramref name="color"/> to a new instance of <see cref="Windows.UI.Color"/>.
+        /// </summary>
+        /// <param name="color">The <see cref="RgbColor"/> to convert.</param>
+        /// <returns>A new instance of <see cref="Windows.UI.Color"/></returns>
+        /// <exception cref="ArgumentNullException"><paramref name="color"/> is <c>null</c>.</exception>
+#pragma warning restore CS0419 // Ambiguous reference in cref attribute
+        public static Color ToColor(this RgbColor color)
+        {
+            if (color == null)
+            {
+                throw new ArgumentNullException(nameof(color));
+            }
+
+            return new Color
+            {
+                A = byte.MaxValue,
+                R = color.Red,
+                G = color.Green,
+                B = color.Blue,
+            };
         }
     }
 }

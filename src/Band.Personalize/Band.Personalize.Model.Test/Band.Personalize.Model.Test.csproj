@@ -108,6 +108,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Color\BandColorExtensionsTests.cs" />
+    <Compile Include="Color\ColorExtensionsTests.cs" />
+    <Compile Include="Color\Data\EquivalentHsvAndRgbColorData.cs" />
+    <Compile Include="Color\Data\HsvColorDoubleData.cs" />
     <Compile Include="Color\Data\RgbColorData.cs" />
     <Compile Include="Color\Data\RgbColorByteData.cs" />
     <Compile Include="Color\Data\RgbColorChannelByteData.cs" />

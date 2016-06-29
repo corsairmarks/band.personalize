@@ -120,6 +120,7 @@
     <Compile Include="Band\ConnectionType.cs" />
     <Compile Include="Band\HardwareRevision.cs" />
     <Compile Include="Color\BandColorExtensions.cs" />
+    <Compile Include="Color\ColorExtensions.cs" />
     <Compile Include="Color\RgbColor.cs" />
     <Compile Include="Color\RgbColorExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -79,7 +79,7 @@ namespace Band.Personalize.Model.Test.Color
         /// <param name="blue">The blue channel color saturation to test.</param>
         [Theory]
         [ClassData(typeof(RgbColorByteData))]
-        public void Ctor_SetsProperties(byte red, byte green, byte blue)
+        public void CtorRgb_SetsProperties(byte red, byte green, byte blue)
         {
             // Act
             var result = new RgbColor(red, green, blue);
@@ -88,6 +88,25 @@ namespace Band.Personalize.Model.Test.Color
             Assert.Equal(red, result.Red);
             Assert.Equal(green, result.Green);
             Assert.Equal(blue, result.Blue);
+        }
+
+        /// <summary>
+        /// Verify the constructor sets the public properties.
+        /// </summary>
+        /// <param name="hue">The hue to test.</param>
+        /// <param name="saturation">The saturation to test.</param>
+        /// <param name="value">The value (brightness) to test.</param>
+        [Theory]
+        [ClassData(typeof(HsvColorDoubleData))]
+        public void CtorHsv_SetsProperties(double hue, double saturation, double value)
+        {
+            // Act
+            var result = new RgbColor(hue, saturation, value);
+
+            // Assert
+            Assert.Equal(hue, result.Hue);
+            Assert.Equal(saturation, result.Saturation);
+            Assert.Equal(value, result.Value);
         }
 
         /// <summary>
@@ -159,7 +178,7 @@ namespace Band.Personalize.Model.Test.Color
         public void EqualityOperator_ChannelsNotEqual_IsFalse(RgbColor notEqual)
         {
             // Arrange
-            var target = RgbColorData.DefaultColor;
+            var target = RgbColorData.DefaultRgbColor;
 
             // Act
             var result = target == notEqual;
@@ -215,7 +234,7 @@ namespace Band.Personalize.Model.Test.Color
         public void EqualityOperator_IsCommutative(RgbColor compare)
         {
             // Arrange
-            var target = RgbColorData.DefaultColor;
+            var target = RgbColorData.DefaultRgbColor;
 
             // Act
             var result1 = target == compare;
@@ -274,7 +293,7 @@ namespace Band.Personalize.Model.Test.Color
         public void InequalityOperator_ChannelsNotEqual_IsTrue(RgbColor notEqual)
         {
             // Arrange
-            var target = RgbColorData.DefaultColor;
+            var target = RgbColorData.DefaultRgbColor;
 
             // Act
             var result = target == notEqual;
@@ -330,7 +349,7 @@ namespace Band.Personalize.Model.Test.Color
         public void InequalityOperator_IsCommutative(RgbColor compare)
         {
             // Arrange
-            var target = RgbColorData.DefaultColor;
+            var target = RgbColorData.DefaultRgbColor;
 
             // Act
             var result1 = target != compare;
@@ -514,7 +533,7 @@ namespace Band.Personalize.Model.Test.Color
         public void EqualsMethod_ChannelsNotEqual_IsFalse(object notEqual)
         {
             // Arrange
-            var target = RgbColorData.DefaultColor;
+            var target = RgbColorData.DefaultRgbColor;
 
             // Act
             var result = target.Equals(notEqual);
@@ -553,7 +572,7 @@ namespace Band.Personalize.Model.Test.Color
         public void EqualsMethod_IsCommutative(RgbColor compare)
         {
             // Arrange
-            var target = RgbColorData.DefaultColor;
+            var target = RgbColorData.DefaultRgbColor;
 
             // Act
             var result1 = target.Equals(compare);
@@ -642,6 +661,126 @@ namespace Band.Personalize.Model.Test.Color
 
             // Assert
             Assert.Equal(result1, result2);
+        }
+
+        /// <summary>
+        /// Verify the <see cref="RgbColor.ToHsv(byte, byte, byte)"/> method properly calculates the HSV/HSB values.
+        /// </summary>
+        /// <param name="red">The red channel color saturation to test.</param>
+        /// <param name="green">The green channel color saturation to test.</param>
+        /// <param name="blue">The blue channel color saturation to test.</param>
+        /// <param name="hue">The hue to test.</param>
+        /// <param name="saturation">The saturation to test.</param>
+        /// <param name="value">The value (brightness) to test.</param>
+        [Theory]
+        [ClassData(typeof(EquivalentHsvAndRgbColorData))]
+        public void ToHsv_CalculatesValues(byte red, byte green, byte blue, double hue, double saturation, double value)
+        {
+            // Act
+            var result = RgbColor.ToHsv(red, green, blue);
+
+            // Assert
+            Assert.Equal(hue, result.Item1);
+            Assert.Equal(saturation, result.Item2);
+            Assert.Equal(value, result.Item3);
+        }
+
+        /// <summary>
+        /// Verify the <see cref="RgbColor.FromHsv(double, double, double)"/> method properly calculates the RGB values.
+        /// </summary>
+        /// <param name="red">The red channel color saturation to test.</param>
+        /// <param name="green">The green channel color saturation to test.</param>
+        /// <param name="blue">The blue channel color saturation to test.</param>
+        /// <param name="hue">The hue to test.</param>
+        /// <param name="saturation">The saturation to test.</param>
+        /// <param name="value">The value (brightness) to test.</param>
+        [Theory]
+        [ClassData(typeof(EquivalentHsvAndRgbColorData))]
+        public void FromHsv_CalculatesValues(byte red, byte green, byte blue, double hue, double saturation, double value)
+        {
+            // Act
+            var result = RgbColor.FromHsv(hue, saturation, value);
+
+            // Assert
+            Assert.Equal(red, result.Item1);
+            Assert.Equal(green, result.Item2);
+            Assert.Equal(blue, result.Item3);
+        }
+
+        /// <summary>
+        /// Verify the <see cref="RgbColor.ToHsv(byte, byte, byte)"/> method is commutative.
+        /// </summary>
+        /// <param name="red">The red channel color saturation to test.</param>
+        /// <param name="green">The green channel color saturation to test.</param>
+        /// <param name="blue">The blue channel color saturation to test.</param>
+        /// <param name="hue">The hue to test.</param>
+        /// <param name="saturation">The saturation to test.</param>
+        /// <param name="value">The value (brightness) to test.</param>
+        [Theory]
+        [ClassData(typeof(EquivalentHsvAndRgbColorData))]
+        public void ToHsv_IsCommutative(byte red, byte green, byte blue, double hue, double saturation, double value)
+        {
+            // Arrange
+            var target = Tuple.Create(hue, saturation, value);
+            var target2 = Tuple.Create(red, green, blue);
+
+            // Act
+            var result = RgbColor.ToHsv(red, green, blue);
+            var result2 = RgbColor.FromHsv(result.Item1, result.Item2, result.Item3);
+
+            // Assert
+            Assert.Equal(target, result);
+            Assert.Equal(target2, result2);
+        }
+
+        /// <summary>
+        /// Verify the <see cref="RgbColor.ToHsv(byte, byte, byte)"/> method is commutative.
+        /// </summary>
+        /// <param name="red">The red channel color saturation to test.</param>
+        /// <param name="green">The green channel color saturation to test.</param>
+        /// <param name="blue">The blue channel color saturation to test.</param>
+        /// <param name="hue">The hue to test.</param>
+        /// <param name="saturation">The saturation to test.</param>
+        /// <param name="value">The value (brightness) to test.</param>
+        [Theory]
+        [ClassData(typeof(EquivalentHsvAndRgbColorData))]
+        public void FromHsv_IsCommutative(byte red, byte green, byte blue, double hue, double saturation, double value)
+        {
+            // Arrange
+            var target = Tuple.Create(red, green, blue);
+            var target2 = Tuple.Create(hue, saturation, value);
+
+            // Act
+            var result = RgbColor.FromHsv(hue, saturation, value);
+            var result2 = RgbColor.ToHsv(result.Item1, result.Item2, result.Item3);
+
+            // Assert
+            Assert.Equal(target, result);
+            Assert.Equal(target2, result2);
+        }
+
+        /// <summary>
+        /// Verify that each constructor creates an equivalent instance when provided with mathematically equivalent RGB and HSV/HSB data.
+        /// </summary>
+        /// <param name="red">The red channel color saturation to test.</param>
+        /// <param name="green">The green channel color saturation to test.</param>
+        /// <param name="blue">The blue channel color saturation to test.</param>
+        /// <param name="hue">The hue to test.</param>
+        /// <param name="saturation">The saturation to test.</param>
+        /// <param name="value">The value (brightness) to test.</param>
+        [Theory]
+        [ClassData(typeof(EquivalentHsvAndRgbColorData))]
+        public void Ctor_CreatesEquivalentColors(byte red, byte green, byte blue, double hue, double saturation, double value)
+        {
+            // Arrange
+            var rgbTarget = new RgbColor(red, green, blue);
+            var hsvTarget = new RgbColor(hue, saturation, value);
+
+            // Act
+            var result = rgbTarget == hsvTarget;
+
+            // Assert
+            Assert.True(result);
         }
     }
 }
