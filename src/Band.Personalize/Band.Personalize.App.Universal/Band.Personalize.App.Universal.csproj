@@ -109,6 +109,9 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\BindableUserControl.cs" />
+    <Compile Include="Converters\ByteToDoubleConverter.cs" />
+    <Compile Include="ViewModels\Design\DesignColorPickerViewModel.cs" />
     <Compile Include="Controls\UniformItemsWrapGrid.cs" />
     <Compile Include="Converters\HardwareRevisionToBooleanConverter.cs" />
     <Compile Include="Converters\ConnectionTypeToSymbolConverter.cs" />
@@ -124,6 +127,9 @@
     <Compile Include="ViewModels\MainPageViewModel.cs" />
     <Compile Include="Views\BandPage.xaml.cs">
       <DependentUpon>BandPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\ColorPickerUserControl.xaml.cs">
+      <DependentUpon>ColorPickerUserControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
@@ -170,6 +176,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\BandPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\ColorPickerUserControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
