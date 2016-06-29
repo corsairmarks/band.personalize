@@ -551,8 +551,8 @@ namespace Band.Personalize.App.Universal.Controls
         /// </summary>
         private void OnPickPointChanged()
         {
-            var updated = new RgbColor(this.Hue, this.PointX / this.PickerCanvas.Width, 1 - (this.PointY / this.PickerCanvas.Width)).ToColor();
-            updated.A = this.OpaqueColor.A;
+            var updated = new RgbColor(this.Hue, this.PointX / this.PickerCanvas.ActualWidth, 1 - (this.PointY / this.PickerCanvas.ActualHeight)).ToColor();
+            updated.A = this.Color.A;
             this.Color = updated;
         }
 
