@@ -15,6 +15,7 @@
 namespace Band.Personalize.App.Universal.Controls
 {
     using System;
+    using System.Linq;
     using Model.Library.Color;
     using Windows.Foundation;
     using Windows.UI;
@@ -33,58 +34,38 @@ namespace Band.Personalize.App.Universal.Controls
         /// Alpha dependency property.
         /// </summary>
         public static readonly DependencyProperty UseAlphaProperty = DependencyProperty.Register(
-            "UseAlpha",
+            nameof(UseAlpha),
             typeof(bool),
             typeof(ColorPickerUserControl),
-            new PropertyMetadata(true, OnUseAlphaChanged));
+            new PropertyMetadata(true));
 
         /// <summary>
         /// Orientation dependency property.
         /// </summary>
         public static readonly DependencyProperty OrientationProperty = DependencyProperty.Register(
-            "Orientation",
+            nameof(Orientation),
             typeof(Orientation),
             typeof(ColorPickerUserControl),
-            new PropertyMetadata(Orientation.Horizontal, OnOrientationChanged));
+            new PropertyMetadata(Orientation.Horizontal));
 
         /// <summary>
         /// Color dependency property.
         /// </summary>
         public static readonly DependencyProperty ColorProperty = DependencyProperty.Register(
-            "Color",
+            nameof(Color),
             typeof(Color),
             typeof(ColorPickerUserControl),
-            new PropertyMetadata(null, OnColorChanged));
+            new PropertyMetadata(null, new PropertyChangedCallback(OnColorPropertyChanged)));
 
         /// <summary>
         /// The x-axis location of the picker target.
         /// </summary>
-        private double pointX = 150;
+        private double pointX;
 
         /// <summary>
         /// The y-axis location of the picker target.
         /// </summary>
         private double pointY;
-
-        /// <summary>
-        /// The alpha channel.
-        /// </summary>
-        private byte alpha;
-
-        /// <summary>
-        /// The red color channel.
-        /// </summary>
-        private byte red;
-
-        /// <summary>
-        /// The green color channel.
-        /// </summary>
-        private byte green;
-
-        /// <summary>
-        /// The blue color channel.
-        /// </summary>
-        private byte blue;
 
         /// <summary>
         /// The hue amount (used for the visual picker).
@@ -113,50 +94,8 @@ namespace Band.Personalize.App.Universal.Controls
         /// </summary>
         public Orientation Orientation
         {
-            get
-            {
-                return (Orientation)this.GetValue(OrientationProperty);
-            }
-
-            set
-            {
-                this.SetValue(OrientationProperty, value);
-                this.OnPropertyChanged(() => this.OppositeOrientation);
-            }
-        }
-
-        /// <summary>
-        /// Gets the opposite orientation.
-        /// </summary>
-        public Orientation OppositeOrientation
-        {
-            get
-            {
-                return this.Orientation == Orientation.Horizontal
-                    ? Orientation.Vertical
-                    : Orientation.Horizontal;
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the location of the picker target.
-        /// </summary>
-        public Point Point
-        {
-            get
-            {
-                return new Point
-                {
-                    X = this.PointX,
-                    Y = this.PointY,
-                };
-            }
-
-            set
-            {
-                this.PointX = value.X;
-                this.PointY = value.Y;
-            }
+            get { return (Orientation)this.GetValue(OrientationProperty); }
+            set { this.SetValue(OrientationProperty, value); }
         }
 
         /// <summary>
@@ -178,28 +117,12 @@ namespace Band.Personalize.App.Universal.Controls
         }
 
         /// <summary>
-        /// Gets or sets the color.
+        /// Gets or sets the dependency color.
         /// </summary>
         public Color Color
         {
-            get
-            {
-                return new Color
-                {
-                    A = this.Alpha,
-                    R = this.Red,
-                    G = this.Green,
-                    B = this.Blue,
-                };
-            }
-
-            set
-            {
-                this.Alpha = value.A;
-                this.Red = value.R;
-                this.Green = value.G;
-                this.Blue = value.B;
-            }
+            get { return (Color)this.GetValue(ColorProperty); }
+            set { this.SetValue(ColorProperty, value); }
         }
 
         /// <summary>
@@ -339,15 +262,18 @@ namespace Band.Personalize.App.Universal.Controls
         }
 
         /// <summary>
-        /// Gets the hue (with full alpha) color.
+        /// Gets the current color with alpha or not as appropriate base on <see cref="UseAlpha"/>.
         /// </summary>
-        public Color OpaqueColor
+        public Color SwatchColor
         {
             get
             {
                 return new Color
                 {
-                    A = byte.MaxValue,
+                    // TODO: is this right place?
+                    A = this.UseAlpha
+                        ? this.Color.A
+                        : byte.MaxValue,
                     R = this.Red,
                     G = this.Green,
                     B = this.Blue,
@@ -356,12 +282,31 @@ namespace Band.Personalize.App.Universal.Controls
         }
 
         /// <summary>
+        /// Gets the hue color.
+        /// </summary>
+        public Color HueColor
+        {
+            get { return new RgbColor(this.Hue, 1, 1).ToColor(); }
+        }
+
+        /// <summary>
         /// Gets or sets the hue amount (used for the visual picker).
         /// </summary>
         public double Hue
         {
-            get { return this.hue; }
-            set { this.SetProperty(ref this.hue, value); }
+            get
+            {
+                return this.hue;
+            }
+
+            set
+            {
+                this.hue = value;
+                var current = this.Color.ToRgbColor();
+                var updated = new RgbColor(value, current.Saturation, current.Value).ToColor();
+                updated.A = this.Alpha;
+                this.Color = updated;
+            }
         }
 
         /// <summary>
@@ -371,13 +316,14 @@ namespace Band.Personalize.App.Universal.Controls
         {
             get
             {
-                return this.alpha;
+                return this.Color.A;
             }
 
             set
             {
-                this.SetProperty(ref this.alpha, value);
-                this.OnColorChanged();
+                var updateColor = this.Color;
+                updateColor.A = value;
+                this.Color = updateColor;
             }
         }
 
@@ -388,13 +334,14 @@ namespace Band.Personalize.App.Universal.Controls
         {
             get
             {
-                return this.red;
+                return this.Color.R;
             }
 
             set
             {
-                this.SetProperty(ref this.red, value);
-                this.OnColorChanged();
+                var updateColor = this.Color;
+                updateColor.R = value;
+                this.Color = updateColor;
             }
         }
 
@@ -405,13 +352,14 @@ namespace Band.Personalize.App.Universal.Controls
         {
             get
             {
-                return this.green;
+                return this.Color.G;
             }
 
             set
             {
-                this.SetProperty(ref this.green, value);
-                this.OnColorChanged();
+                var updateColor = this.Color;
+                updateColor.G = value;
+                this.Color = updateColor;
             }
         }
 
@@ -422,13 +370,14 @@ namespace Band.Personalize.App.Universal.Controls
         {
             get
             {
-                return this.blue;
+                return this.Color.B;
             }
 
             set
             {
-                this.SetProperty(ref this.blue, value);
-                this.OnColorChanged();
+                var updateColor = this.Color;
+                updateColor.B = value;
+                this.Color = updateColor;
             }
         }
 
@@ -442,124 +391,160 @@ namespace Band.Personalize.App.Universal.Controls
         }
 
         /// <summary>
-        /// <see cref="UseAlphaProperty"/> changed event handler.
+        /// Represents the <see cref="PropertyChangedCallback"/> that is invoked when the effective property value of the <see cref="ColorProperty"/> dependency property changes.
         /// </summary>
-        /// <param name="d">dependency object</param>
-        /// <param name="e">event argument</param>
-        private static void OnUseAlphaChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        /// <param name="d">The <see cref="DependencyObject"/> on which the property has changed value.</param>
+        /// <param name="e">Event data that is issued by any event that tracks changes to the effective value of this property.</param>
+        private static void OnColorPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var panel = d as ColorPickerUserControl;
-            if (panel == null)
+            var that = d as ColorPickerUserControl;
+            if (that != null)
             {
-                return;
-            }
-
-            if (!(e.NewValue is bool))
-            {
-                panel.UseAlpha = (bool)e.OldValue;
+                that.OnColorChannelChanged();
             }
         }
 
         /// <summary>
-        /// <see cref="UseAlphaProperty"/> changed event handler.
+        /// A custom event handler for when any color channel (or alpha) is changed.
         /// </summary>
-        /// <param name="d">dependency object</param>
-        /// <param name="e">event argument</param>
-        private static void OnOrientationChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private void OnColorChannelChanged()
         {
-            var panel = d as ColorPickerUserControl;
-            if (panel == null)
+            this.OnPropertyChanged(nameof(this.Alpha));
+            this.OnPropertyChanged(nameof(this.Red));
+            this.OnPropertyChanged(nameof(this.Green));
+            this.OnPropertyChanged(nameof(this.Blue));
+            this.OnPropertyChanged(nameof(this.AlphaStartColor));
+            this.OnPropertyChanged(nameof(this.AlphaEndColor));
+            this.OnPropertyChanged(nameof(this.RedStartColor));
+            this.OnPropertyChanged(nameof(this.RedEndColor));
+            this.OnPropertyChanged(nameof(this.GreenStartColor));
+            this.OnPropertyChanged(nameof(this.GreenEndColor));
+            this.OnPropertyChanged(nameof(this.BlueStartColor));
+            this.OnPropertyChanged(nameof(this.BlueEndColor));
+            this.OnPropertyChanged(nameof(this.SwatchColor));
+            this.UpdatePointAndHue();
+        }
+
+        private void UpdatePointAndHue()
+        {
+            var color = this.SwatchColor.ToRgbColor();
+            this.UpdatePoint(color);
+            this.UpdateHue(color);
+        }
+
+        private void UpdatePoint(RgbColor color = null)
+        {
+            if (color == null)
             {
-                return;
+                color = this.SwatchColor.ToRgbColor();
             }
 
-            if (!(e.NewValue is Orientation))
+            this.PointX = this.PickerCanvas.ActualWidth * color.Saturation;
+            this.PointY = this.PickerCanvas.ActualHeight * (1 - color.Value);
+        }
+
+        private void UpdateHue(RgbColor color = null)
+        {
+            if (color == null)
             {
-                panel.Orientation = (Orientation)e.OldValue;
+                color = this.SwatchColor.ToRgbColor();
+            }
+
+            this.hue = color.Hue;
+            this.OnPropertyChanged(nameof(this.Hue));
+            this.OnPropertyChanged(nameof(this.HueColor));
+        }
+
+        /// <summary>
+        /// A <see cref="PointerEventHandler"/> for the <see cref="UIElement.PointerPressed"/> event of <see cref="PickerCanvas"/>.
+        /// </summary>
+        /// <param name="sender">The object where the event handler is attached.</param>
+        /// <param name="e">Event data for the event.</param>
+        private void PickerCanvas_OnPointerPressed(object sender, PointerRoutedEventArgs e)
+        {
+            var uiElement = sender as UIElement;
+            if (uiElement != null && (uiElement.PointerCaptures == null || !uiElement.PointerCaptures.Any()))
+            {
+                this.PickColor(e.GetCurrentPoint(uiElement).Position);
+                if (uiElement.CapturePointer(e.Pointer))
+                {
+                    uiElement.PointerMoved += this.PickerCanvas_OnPointerMoved;
+                }
+
+                e.Handled = true;
             }
         }
 
         /// <summary>
-        /// <see cref="Color"/> changed event handler
+        /// A <see cref="PointerEventHandler"/> for the <see cref="UIElement.PointerReleased"/> event of <see cref="PickerCanvas"/>.
         /// </summary>
-        /// <param name="d">dependency object</param>
-        /// <param name="e">event argument</param>
-        private static void OnColorChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        /// <param name="sender">The object where the event handler is attached.</param>
+        /// <param name="e">Event data for the event.</param>
+        private void PickerCanvas_OnPointerReleased(object sender, PointerRoutedEventArgs e)
         {
-            var panel = d as ColorPickerUserControl;
-            if (panel == null)
+            var uiElement = sender as UIElement;
+            if (uiElement != null)
             {
-                return;
-            }
-
-            if (!(e.NewValue is Color))
-            {
-                panel.Color = (Color)e.OldValue;
+                this.PickColor(e.GetCurrentPoint(uiElement).Position);
+                uiElement.ReleasePointerCaptures();
+                uiElement.PointerMoved -= this.PickerCanvas_OnPointerMoved;
+                e.Handled = true;
             }
         }
 
         /// <summary>
-        /// Notifies all event listeners that are affected when the color changes.
+        /// A <see cref="PointerEventHandler"/> for the <see cref="UIElement.PointerMoved"/> event of <see cref="PickerCanvas"/>.
         /// </summary>
-        private void OnColorChanged()
+        /// <param name="sender">The object where the event handler is attached.</param>
+        /// <param name="e">Event data for the event.</param>
+        private void PickerCanvas_OnPointerMoved(object sender, PointerRoutedEventArgs e)
         {
-            this.OnPropertyChanged(() => this.Color);
-            this.SetValue(ColorProperty, this.Color);
-            this.OnPropertyChanged(() => this.AlphaStartColor);
-            this.OnPropertyChanged(() => this.AlphaEndColor);
-            this.OnPropertyChanged(() => this.RedStartColor);
-            this.OnPropertyChanged(() => this.RedEndColor);
-            this.OnPropertyChanged(() => this.GreenStartColor);
-            this.OnPropertyChanged(() => this.GreenEndColor);
-            this.OnPropertyChanged(() => this.BlueStartColor);
-            this.OnPropertyChanged(() => this.BlueEndColor);
-            this.OnPropertyChanged(() => this.OpaqueColor);
-            this.OnPropertyChanged(() => this.Hue);
-            this.OnPropertyChanged(() => this.Point);
+            var uiElement = sender as UIElement;
+            if (uiElement != null)
+            {
+                this.PickColor(e.GetCurrentPoint(uiElement).Position);
+                e.Handled = true;
+            }
         }
 
         /// <summary>
-        /// Picker area pointer pressed event handler
+        /// A <see cref="PointerEventHandler"/> for the <see cref="UIElement.PointerCaptureLost"/> event of <see cref="PickerCanvas"/>.
         /// </summary>
-        /// <param name="sender">event sender</param>
-        /// <param name="e">event aruments</param>
-        private void OnPickerPressed(object sender, PointerRoutedEventArgs e)
+        /// <param name="sender">The object where the event handler is attached.</param>
+        /// <param name="e">Event data for the event.</param>
+        private void PickerCanvas_OnPointerCaptureLost(object sender, PointerRoutedEventArgs e)
         {
-            this.PickColor(e.GetCurrentPoint(this.PickerCanvas).Position);
-            this.PickerCanvas.CapturePointer(e.Pointer);
-
-            PointerEventHandler moved = null;
-            moved = (s, args) =>
+            var uiElement = sender as UIElement;
+            if (uiElement != null)
             {
-                this.PickColor(args.GetCurrentPoint(this.PickerCanvas).Position);
-            };
-            PointerEventHandler released = null;
-            released = (s, args) =>
-            {
-                this.PickerCanvas.ReleasePointerCapture(args.Pointer);
-                this.PickColor(args.GetCurrentPoint(this.PickerCanvas).Position);
-                this.PickerCanvas.PointerMoved -= moved;
-                this.PickerCanvas.PointerReleased -= released;
-            };
-
-            this.PickerCanvas.PointerMoved += moved;
-            this.PickerCanvas.PointerReleased += released;
+                uiElement.PointerMoved -= this.PickerCanvas_OnPointerMoved;
+                e.Handled = true;
+            }
         }
 
         /// <summary>
-        /// Pick color
+        /// A <see cref="PointerEventHandler"/> for the <see cref="UIElement.PointerCanceled"/> event of <see cref="PickerCanvas"/>.
         /// </summary>
-        /// <param name="point">pick point</param>
+        /// <param name="sender">The object where the event handler is attached.</param>
+        /// <param name="e">Event data for the event.</param>
+        private void PickerCanvas_OnPointerCancelled(object sender, PointerRoutedEventArgs e)
+        {
+            var uiElement = sender as UIElement;
+            if (uiElement != null)
+            {
+                uiElement.PointerMoved -= this.PickerCanvas_OnPointerMoved;
+                e.Handled = true;
+            }
+        }
+
+        /// <summary>
+        /// Choose a color from the <see cref="PickerCanvas"/> based on pointer location.
+        /// </summary>
+        /// <param name="point">The location of the pointer.</param>
         private void PickColor(Point point)
         {
-            var px = Math.Min(this.PickerCanvas.ActualWidth, Math.Max(0, point.X));
-            var py = Math.Min(this.PickerCanvas.ActualHeight, Math.Max(0, point.Y));
-
-            this.Point = new Point
-            {
-                X = Math.Round(px, MidpointRounding.AwayFromZero),
-                Y = Math.Round(py, MidpointRounding.AwayFromZero),
-            };
+            this.PointX = Math.Min(this.PickerCanvas.ActualWidth, Math.Max(0, point.X));
+            this.PointY = Math.Min(this.PickerCanvas.ActualHeight, Math.Max(0, point.Y));
 
             var updated = new RgbColor(this.Hue, this.PointX / this.PickerCanvas.ActualWidth, 1 - (this.PointY / this.PickerCanvas.ActualHeight)).ToColor();
             updated.A = this.Color.A;
