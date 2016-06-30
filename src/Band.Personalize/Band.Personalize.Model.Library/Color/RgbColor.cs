@@ -54,17 +54,12 @@ namespace Band.Personalize.Model.Library.Color
         /// <param name="saturation">The saturation.</param>
         /// <param name="value">The value (brightness).</param>
         /// <exception cref="ArgumentOutOfRangeException">
-        /// <paramref name="hue"/> is less than 0 or greater than or equal to 360,
-        /// <paramref name="saturation"/> is less than 0 or greater than 1,
+        /// <paramref name="saturation"/> is less than 0 or greater than 1
         /// or <paramref name="value"/> is less than 0 or greater than 1.
         /// </exception>
         public RgbColor(double hue, double saturation, double value)
         {
-            if (hue < 0 || hue >= 360)
-            {
-                throw new ArgumentOutOfRangeException(nameof(hue), hue, "Must be between 0 (inclusive) through 360 (exclusive)");
-            }
-            else if (saturation < 0 || saturation > 1)
+            if (saturation < 0 || saturation > 1)
             {
                 throw new ArgumentOutOfRangeException(nameof(saturation), saturation, "Must be between 0 and 1, inclusive");
             }
@@ -73,7 +68,13 @@ namespace Band.Personalize.Model.Library.Color
                 throw new ArgumentOutOfRangeException(nameof(value), value, "Must be between 0 and 1, inclusive");
             }
 
-            this.Hue = hue;
+            // TODO: unit tests or large positive and negative rotation
+            if (hue < 0)
+            {
+                hue = Math.Abs(hue + 360);
+            }
+
+            this.Hue = hue % 360;
             this.Saturation = saturation;
             this.Value = value;
 
