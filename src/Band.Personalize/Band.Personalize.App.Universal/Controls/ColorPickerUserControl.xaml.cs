@@ -68,11 +68,6 @@ namespace Band.Personalize.App.Universal.Controls
         private double pointY;
 
         /// <summary>
-        /// The hue amount (used for the visual picker).
-        /// </summary>
-        private double hue;
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="ColorPickerUserControl"/> class.
         /// </summary>
         public ColorPickerUserControl()
@@ -296,12 +291,11 @@ namespace Band.Personalize.App.Universal.Controls
         {
             get
             {
-                return this.hue;
+                return this.Color.ToRgbColor().Hue;
             }
 
             set
             {
-                this.hue = value;
                 var current = this.Color.ToRgbColor();
                 var updated = new RgbColor(value, current.Saturation, current.Value).ToColor();
                 updated.A = this.Alpha;
@@ -400,59 +394,25 @@ namespace Band.Personalize.App.Universal.Controls
             var that = d as ColorPickerUserControl;
             if (that != null)
             {
-                that.OnColorChannelChanged();
+                that.OnPropertyChanged(nameof(that.Alpha));
+                that.OnPropertyChanged(nameof(that.Red));
+                that.OnPropertyChanged(nameof(that.Green));
+                that.OnPropertyChanged(nameof(that.Blue));
+                that.OnPropertyChanged(nameof(that.Hue));
+                that.OnPropertyChanged(nameof(that.AlphaStartColor));
+                that.OnPropertyChanged(nameof(that.AlphaEndColor));
+                that.OnPropertyChanged(nameof(that.RedStartColor));
+                that.OnPropertyChanged(nameof(that.RedEndColor));
+                that.OnPropertyChanged(nameof(that.GreenStartColor));
+                that.OnPropertyChanged(nameof(that.GreenEndColor));
+                that.OnPropertyChanged(nameof(that.BlueStartColor));
+                that.OnPropertyChanged(nameof(that.BlueEndColor));
+                that.OnPropertyChanged(nameof(that.SwatchColor));
+                that.OnPropertyChanged(nameof(that.HueColor));
+                var color = ((Color)e.NewValue).ToRgbColor();
+                that.PointX = that.PickerCanvas.ActualWidth * color.Saturation;
+                that.PointY = that.PickerCanvas.ActualHeight * (1 - color.Value);
             }
-        }
-
-        /// <summary>
-        /// A custom event handler for when any color channel (or alpha) is changed.
-        /// </summary>
-        private void OnColorChannelChanged()
-        {
-            this.OnPropertyChanged(nameof(this.Alpha));
-            this.OnPropertyChanged(nameof(this.Red));
-            this.OnPropertyChanged(nameof(this.Green));
-            this.OnPropertyChanged(nameof(this.Blue));
-            this.OnPropertyChanged(nameof(this.AlphaStartColor));
-            this.OnPropertyChanged(nameof(this.AlphaEndColor));
-            this.OnPropertyChanged(nameof(this.RedStartColor));
-            this.OnPropertyChanged(nameof(this.RedEndColor));
-            this.OnPropertyChanged(nameof(this.GreenStartColor));
-            this.OnPropertyChanged(nameof(this.GreenEndColor));
-            this.OnPropertyChanged(nameof(this.BlueStartColor));
-            this.OnPropertyChanged(nameof(this.BlueEndColor));
-            this.OnPropertyChanged(nameof(this.SwatchColor));
-            this.UpdatePointAndHue();
-        }
-
-        private void UpdatePointAndHue()
-        {
-            var color = this.SwatchColor.ToRgbColor();
-            this.UpdatePoint(color);
-            this.UpdateHue(color);
-        }
-
-        private void UpdatePoint(RgbColor color = null)
-        {
-            if (color == null)
-            {
-                color = this.SwatchColor.ToRgbColor();
-            }
-
-            this.PointX = this.PickerCanvas.ActualWidth * color.Saturation;
-            this.PointY = this.PickerCanvas.ActualHeight * (1 - color.Value);
-        }
-
-        private void UpdateHue(RgbColor color = null)
-        {
-            if (color == null)
-            {
-                color = this.SwatchColor.ToRgbColor();
-            }
-
-            this.hue = color.Hue;
-            this.OnPropertyChanged(nameof(this.Hue));
-            this.OnPropertyChanged(nameof(this.HueColor));
         }
 
         /// <summary>
