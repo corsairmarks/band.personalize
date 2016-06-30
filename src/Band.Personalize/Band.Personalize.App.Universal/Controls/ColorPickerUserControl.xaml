@@ -8,9 +8,10 @@
     xmlns:designViewModels="using:Band.Personalize.App.Universal.ViewModels.Design"
     mc:Ignorable="d"
     d:DataContext="{d:DesignInstance Type=designViewModels:DesignColorPickerViewModel, IsDesignTimeCreatable=True}"
+    DataContext="{Binding RelativeSource={RelativeSource Self}}"
     d:DesignHeight="640"
     d:DesignWidth="360">
-    <StackPanel Orientation="{x:Bind Path=Orientation, Mode=OneWay}" DataContext="{Binding RelativeSource={RelativeSource Self}}">
+    <StackPanel Orientation="{x:Bind Orientation, Mode=OneWay}">
         <StackPanel>
             <TextBox
                 BorderThickness="0"
@@ -55,8 +56,8 @@
                         </Canvas.Clip>
                         <Grid
                             Margin="-7,-7,0,0"
-                            Canvas.Left="{x:Bind PointX, Mode=OneWay}"
-                            Canvas.Top="{x:Bind PointY, Mode=OneWay}">
+                            Canvas.Left="{x:Bind Path=PointX, Mode=OneWay}"
+                            Canvas.Top="{x:Bind Path=PointY, Mode=OneWay}">
                             <Ellipse
                                 Stroke="White"
                                 StrokeThickness="3"
@@ -78,9 +79,8 @@
                     Grid.Column="1"
                     Grid.Row="2"
                     Orientation="Vertical"
-                    Maximum="359.99"
+                    Maximum="360"
                     Minimum="0"
-                    
                     Foreground="Transparent"
                     Value="{x:Bind Path=Hue, Mode=TwoWay}">
                     <Slider.Background>
@@ -100,10 +100,7 @@
         <StackPanel>
             <Grid>
                 <!--<local:ImageTile Source="ms-appx:///Assets/Images/light-transparent.png"/>-->
-                <Rectangle
-                        Height="32"
-                        Stroke="Black"
-                        StrokeThickness="1">
+                <Rectangle Height="32">
                     <Rectangle.Fill>
                         <SolidColorBrush Color="{x:Bind Path=SwatchColor, Mode=OneWay}" />
                     </Rectangle.Fill>
@@ -129,6 +126,7 @@
                     VerticalAlignment="Center"
                     Text="A" />
                 <Slider
+                    x:Name="AlphaSlider"
                     Grid.Row="0"
                     Grid.Column="1"
                     Maximum="255"
@@ -146,7 +144,7 @@
                 <TextBox
                     Grid.Row="0"
                     Grid.Column="2"
-                    Text="{x:Bind Path=Alpha, Mode=TwoWay}"
+                    Text="{x:Bind Path=AlphaSlider.Value, Mode=TwoWay}"
                     InputScope="Number"
                     MaxLength="3"
                     IsTextPredictionEnabled="False"
@@ -163,6 +161,7 @@
                     VerticalAlignment="Center"
                     Text="R" />
                 <Slider
+                    x:Name="RedSlider"
                     Grid.Row="1"
                     Grid.Column="1"
                     Maximum="255"
@@ -180,7 +179,7 @@
                 <TextBox
                     Grid.Row="1"
                     Grid.Column="2"
-                    Text="{x:Bind Path=Red, Mode=TwoWay}"
+                    Text="{x:Bind Path=RedSlider.Value, Mode=TwoWay}"
                     InputScope="Number"
                     MaxLength="3"
                     IsTextPredictionEnabled="False"
@@ -193,6 +192,7 @@
                     VerticalAlignment="Center"
                     Text="G" />
                 <Slider
+                    x:Name="GreenSlider"
                     Grid.Row="2"
                     Grid.Column="1"
                     Maximum="255"
@@ -210,7 +210,7 @@
                 <TextBox
                     Grid.Row="2"
                     Grid.Column="2"
-                    Text="{x:Bind Path=Green, Mode=TwoWay}"
+                    Text="{x:Bind Path=GreenSlider.Value, Mode=TwoWay}"
                     InputScope="Number"
                     MaxLength="3"
                     IsTextPredictionEnabled="False"
@@ -223,11 +223,13 @@
                     VerticalAlignment="Center"
                     Text="B" />
                 <Slider
+                    x:Name="BlueSlider"
                     Grid.Row="3"
                     Grid.Column="1"
                     Maximum="255"
                     Minimum="0"
                     StepFrequency="1"
+                    Foreground="Transparent"
                     Value="{x:Bind Path=Blue, Mode=TwoWay, Converter={StaticResource ByteToDoubleConverter}}">
                     <Slider.Background>
                         <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
@@ -239,7 +241,7 @@
                 <TextBox
                     Grid.Row="3"
                     Grid.Column="2"
-                    Text="{x:Bind Path=Blue, Mode=TwoWay}"
+                    Text="{x:Bind Path=BlueSlider.Value, Mode=TwoWay}"
                     InputScope="Number"
                     MaxLength="3"
                     IsTextPredictionEnabled="False"
