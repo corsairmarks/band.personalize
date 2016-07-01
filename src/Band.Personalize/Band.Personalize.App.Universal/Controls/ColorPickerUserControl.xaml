@@ -7,8 +7,6 @@
     xmlns:controls="using:Band.Personalize.App.Universal.Controls"
     xmlns:designViewModels="using:Band.Personalize.App.Universal.ViewModels.Design"
     mc:Ignorable="d"
-    d:DataContext="{d:DesignInstance Type=designViewModels:DesignColorPickerViewModel, IsDesignTimeCreatable=True}"
-    DataContext="{Binding RelativeSource={RelativeSource Self}}"
     d:DesignHeight="640"
     d:DesignWidth="360">
     <StackPanel Orientation="{x:Bind Orientation, Mode=OneWay}">
