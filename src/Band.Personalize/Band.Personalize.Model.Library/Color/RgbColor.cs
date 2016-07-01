@@ -345,7 +345,7 @@ namespace Band.Personalize.Model.Library.Color
 
             var value = chromaMax; // brightness
 
-            return Tuple.Create(RoundToTwoDecimals(hue), RoundToTwoDecimals(saturation), RoundToTwoDecimals(value));
+            return Tuple.Create(Math.Round(hue, MidpointRounding.AwayFromZero), saturation, value);
         }
 
         /// <summary>
@@ -425,12 +425,7 @@ namespace Band.Personalize.Model.Library.Color
         /// <returns>The color channel value.</returns>
         private static byte Unprime(double prime, double m)
         {
-            return (byte)Math.Min(Math.Ceiling((prime + m) * byte.MaxValue), byte.MaxValue);
-        }
-
-        private static double RoundToTwoDecimals(double d)
-        {
-            return Math.Round(d, 2, MidpointRounding.AwayFromZero);
+            return (byte)Math.Min(Math.Round((prime + m) * byte.MaxValue, MidpointRounding.AwayFromZero), byte.MaxValue);
         }
     }
 }
