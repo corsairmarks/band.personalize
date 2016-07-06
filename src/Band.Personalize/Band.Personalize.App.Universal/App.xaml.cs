@@ -27,6 +27,7 @@ namespace Band.Personalize.App.Universal
     using ViewModels.Design;
     using Windows.ApplicationModel;
     using Windows.ApplicationModel.Activation;
+    using Windows.ApplicationModel.Resources;
     using Windows.UI.Xaml;
 
     /// <summary>
@@ -121,8 +122,7 @@ namespace Band.Personalize.App.Universal
             this.Container.RegisterInstance<INavigationService>(this.NavigationService);
             this.Container.RegisterInstance<ISessionStateService>(this.SessionStateService);
             this.Container.RegisterInstance<IEventAggregator>(this.EventAggregator);
-
-            // this.Container.RegisterInstance<IResourceLoader>(new ResourceLoaderAdapter(new ResourceLoader()));
+            this.Container.RegisterInstance<IResourceLoader>(new ResourceLoaderAdapter(new ResourceLoader()));
 
             // Register services
             // this.Container.RegisterType<IAccountService, AccountService>(new ContainerControlledLifetimeManager());

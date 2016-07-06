@@ -16,6 +16,7 @@ namespace Band.Personalize.App.Universal.ViewModels
 {
     using System;
     using System.Collections.Generic;
+    using System.Collections.ObjectModel;
     using System.Threading.Tasks;
     using System.Windows.Input;
     using Model.Library.Band;
@@ -23,10 +24,10 @@ namespace Band.Personalize.App.Universal.ViewModels
     using Model.Library.Repository;
     using Model.Library.Theme;
     using Prism.Commands;
+    using Prism.Windows.AppModel;
     using Prism.Windows.Mvvm;
     using Prism.Windows.Navigation;
     using Windows.Storage.Pickers;
-    using Windows.UI;
     using Windows.UI.Xaml.Media.Imaging;
 
     /// <summary>
@@ -34,6 +35,11 @@ namespace Band.Personalize.App.Universal.ViewModels
     /// </summary>
     public class BandPageViewModel : ViewModelBase
     {
+        /// <summary>
+        /// The resource loader.
+        /// </summary>
+        private readonly IResourceLoader resourceLoader;
+
         /// <summary>
         /// The Band personalizer.
         /// </summary>
@@ -55,34 +61,9 @@ namespace Band.Personalize.App.Universal.ViewModels
         private bool isBusy;
 
         /// <summary>
-        /// The base Start Strip color, used as the default for tiles.
+        /// The collection of theme colors for editing.
         /// </summary>
-        private Color @base;
-
-        /// <summary>
-        /// The high contrast Start Strip color, used for highlighted tiles (i.e., new content alerts).
-        /// </summary>
-        private Color highContrast;
-
-        /// <summary>
-        /// The lowlight Start Strip color, used for "pressed" tiles.
-        /// </summary>
-        private Color lowlight;
-
-        /// <summary>
-        /// The in-tile header color.
-        /// </summary>
-        private Color highlight;
-
-        /// <summary>
-        /// The in-tile muted color, used for the achievement marker background.
-        /// </summary>
-        private Color muted;
-
-        /// <summary>
-        /// The system-wide secondary text color.
-        /// </summary>
-        private Color secondaryText;
+        private ReadOnlyObservableCollection<ThemeColorViewModel> themeColors = new ReadOnlyObservableCollection<ThemeColorViewModel>(new ObservableCollection<ThemeColorViewModel>());
 
         /// <summary>
         /// The currently-selected Me Tile image.
@@ -92,15 +73,21 @@ namespace Band.Personalize.App.Universal.ViewModels
         /// <summary>
         /// Initializes a new instance of the <see cref="BandPageViewModel"/> class.
         /// </summary>
+        /// <param name="resourceLoader">The resource loader.</param>
         /// <param name="bandPersonalizer">The Band personalizer.</param>
         /// <exception cref="ArgumentNullException"><paramref name="bandPersonalizer"/> is <c>null</c>.</exception>
-        public BandPageViewModel(IBandPersonalizer bandPersonalizer)
+        public BandPageViewModel(IResourceLoader resourceLoader, IBandPersonalizer bandPersonalizer)
         {
-            if (bandPersonalizer == null)
+            if (resourceLoader == null)
+            {
+                throw new ArgumentNullException(nameof(resourceLoader));
+            }
+            else if (bandPersonalizer == null)
             {
                 throw new ArgumentNullException(nameof(bandPersonalizer));
             }
 
+            this.resourceLoader = resourceLoader;
             this.bandPersonalizer = bandPersonalizer;
 
             var refreshPersonalizationCommand = new CompositeCommand();
@@ -194,57 +181,12 @@ namespace Band.Personalize.App.Universal.ViewModels
         }
 
         /// <summary>
-        /// Gets or sets the base Start Strip color, used as the default for tiles.
+        /// Gets the theme colors.
         /// </summary>
-        public Color Base
+        public ReadOnlyObservableCollection<ThemeColorViewModel> CurrentThemeColors
         {
-            get { return this.@base; }
-            set { this.SetProperty(ref this.@base, value); }
-        }
-
-        /// <summary>
-        /// Gets or sets the high contrast Start Strip color, used for highlighted tiles (i.e., new content alerts).
-        /// </summary>
-        public Color HighContrast
-        {
-            get { return this.highContrast; }
-            set { this.SetProperty(ref this.highContrast, value); }
-        }
-
-        /// <summary>
-        /// Gets or sets the lowlight Start Strip color, used for "pressed" tiles.
-        /// </summary>
-        public Color Lowlight
-        {
-            get { return this.lowlight; }
-            set { this.SetProperty(ref this.lowlight, value); }
-        }
-
-        /// <summary>
-        /// Gets or sets the in-tile header color.
-        /// </summary>
-        public Color Highlight
-        {
-            get { return this.highlight; }
-            set { this.SetProperty(ref this.highlight, value); }
-        }
-
-        /// <summary>
-        /// Gets or sets the in-tile muted color, used for the achievement marker background.
-        /// </summary>
-        public Color Muted
-        {
-            get { return this.muted; }
-            set { this.SetProperty(ref this.muted, value); }
-        }
-
-        /// <summary>
-        /// Gets or sets the system-wide secondary text color.
-        /// </summary>
-        public Color SecondaryText
-        {
-            get { return this.secondaryText; }
-            set { this.SetProperty(ref this.secondaryText, value); }
+            get { return this.themeColors; }
+            private set { this.SetProperty(ref this.themeColors, value); }
         }
 
         /// <summary>
@@ -296,13 +238,7 @@ namespace Band.Personalize.App.Universal.ViewModels
             switch (selectedPivotIndex)
             {
                 case 0:
-                    var currentTheme = await this.bandPersonalizer.GetTheme();
-                    this.Base = currentTheme.Base.ToColor();
-                    this.HighContrast = currentTheme.HighContrast.ToColor();
-                    this.Lowlight = currentTheme.Lowlight.ToColor();
-                    this.Highlight = currentTheme.Highlight.ToColor();
-                    this.Muted = currentTheme.Muted.ToColor();
-                    this.SecondaryText = currentTheme.SecondaryText.ToColor();
+                    this.CurrentThemeColors = this.BuildThemeColorCollection(await this.bandPersonalizer.GetTheme());
                     break;
                 case 1:
                     this.CurrentMeTileImage = await this.bandPersonalizer.GetMeTileImage();
@@ -324,12 +260,12 @@ namespace Band.Personalize.App.Universal.ViewModels
                 case 0:
                     await this.bandPersonalizer.SetTheme(new RgbColorTheme
                     {
-                        Base = this.Base.ToRgbColor(),
-                        HighContrast = this.HighContrast.ToRgbColor(),
-                        Lowlight = this.Lowlight.ToRgbColor(),
-                        Highlight = this.Highlight.ToRgbColor(),
-                        Muted = this.Muted.ToRgbColor(),
-                        SecondaryText = this.SecondaryText.ToRgbColor(),
+                        Base = this.CurrentThemeColors[0].Swatch.ToRgbColor(),
+                        HighContrast = this.CurrentThemeColors[1].Swatch.ToRgbColor(),
+                        Lowlight = this.CurrentThemeColors[2].Swatch.ToRgbColor(),
+                        Highlight = this.CurrentThemeColors[3].Swatch.ToRgbColor(),
+                        Muted = this.CurrentThemeColors[4].Swatch.ToRgbColor(),
+                        SecondaryText = this.CurrentThemeColors[5].Swatch.ToRgbColor(),
                     });
                     break;
                 case 1:
@@ -338,6 +274,48 @@ namespace Band.Personalize.App.Universal.ViewModels
                 default:
                     throw new ArgumentNullException($"Unhandled pivot index: {selectedPivotIndex}");
             }
+        }
+
+        /// <summary>
+        /// Create a read-only observable collection of theme colors using the specified <paramref name="theme"/>.
+        /// </summary>
+        /// <param name="theme">The theme from which to get colors.</param>
+        /// <returns>A read-only observable collection of theme colors.</returns>
+        private ReadOnlyObservableCollection<ThemeColorViewModel> BuildThemeColorCollection(RgbColorTheme theme)
+        {
+            return new ReadOnlyObservableCollection<ThemeColorViewModel>(new ObservableCollection<ThemeColorViewModel>(new[]
+            {
+                new ThemeColorViewModel
+                {
+                    Title = this.resourceLoader.GetString($"{nameof(theme.Base)}TextBox/Text"),
+                    Swatch = theme.Base.ToColor(),
+                },
+                new ThemeColorViewModel
+                {
+                    Title = this.resourceLoader.GetString($"{nameof(theme.HighContrast)}TextBox/Text"),
+                    Swatch = theme.HighContrast.ToColor(),
+                },
+                new ThemeColorViewModel
+                {
+                    Title = this.resourceLoader.GetString($"{nameof(theme.Lowlight)}TextBox/Text"),
+                    Swatch = theme.Lowlight.ToColor(),
+                },
+                new ThemeColorViewModel
+                {
+                    Title = this.resourceLoader.GetString($"{nameof(theme.Highlight)}TextBox/Text"),
+                    Swatch = theme.Highlight.ToColor(),
+                },
+                new ThemeColorViewModel
+                {
+                    Title = this.resourceLoader.GetString($"{nameof(theme.Muted)}TextBox/Text"),
+                    Swatch = theme.Muted.ToColor(),
+                },
+                new ThemeColorViewModel
+                {
+                    Title = this.resourceLoader.GetString($"{nameof(theme.SecondaryText)}TextBox/Text"),
+                    Swatch = theme.SecondaryText.ToColor(),
+                },
+            }));
         }
     }
 }

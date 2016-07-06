@@ -110,8 +110,10 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\BindableUserControl.cs" />
+    <Compile Include="Controls\ColorPickerFlyoutUserControl.xaml.cs">
+      <DependentUpon>ColorPickerFlyoutUserControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Converters\ByteToDoubleConverter.cs" />
-    <Compile Include="ViewModels\Design\DesignColorPickerViewModel.cs" />
     <Compile Include="Controls\UniformItemsWrapGrid.cs" />
     <Compile Include="Converters\HardwareRevisionToBooleanConverter.cs" />
     <Compile Include="Converters\ConnectionTypeToSymbolConverter.cs" />
@@ -125,6 +127,7 @@
     <Compile Include="ViewModels\Design\DesignMainPageViewModel.cs" />
     <Compile Include="ViewModels\Design\NavigationServiceStub.cs" />
     <Compile Include="ViewModels\MainPageViewModel.cs" />
+    <Compile Include="ViewModels\ThemeColorViewModel.cs" />
     <Compile Include="Views\BandPage.xaml.cs">
       <DependentUpon>BandPage.xaml</DependentUpon>
     </Compile>
@@ -171,6 +174,10 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
+    <Page Include="Controls\ColorPickerFlyoutUserControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Themes\AppStyles.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

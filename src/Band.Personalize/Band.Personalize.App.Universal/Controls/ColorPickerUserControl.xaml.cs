@@ -28,7 +28,7 @@ namespace Band.Personalize.App.Universal.Controls
     /// A custom <see cref="UserControl"/> for picking a <see cref="Windows.UI.Color"/>.
     /// </summary>
 #pragma warning restore CS0419 // Ambiguous reference in cref attribute
-    public partial class ColorPickerUserControl : BindableUserControl
+    public sealed partial class ColorPickerUserControl : BindableUserControl
     {
         /// <summary>
         /// Alpha dependency property.
@@ -485,9 +485,9 @@ namespace Band.Personalize.App.Universal.Controls
             var that = d as ColorPickerUserControl;
             if (that != null)
             {
-                var newColor = (Color)e.NewValue;
-                if (newColor != null)
+                if (e != null && e.NewValue != null && e.NewValue is Color)
                 {
+                    var newColor = (Color)e.NewValue;
                     bool isAlphaSame = that.Alpha == newColor.A;
                     bool isRedSame = that.Red == newColor.R;
                     bool isGreenSame = that.Green == newColor.G;
