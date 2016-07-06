@@ -19,12 +19,14 @@ namespace Band.Personalize.App.Universal.ViewModels
     using System.Threading.Tasks;
     using System.Windows.Input;
     using Model.Library.Band;
+    using Model.Library.Color;
     using Model.Library.Repository;
     using Model.Library.Theme;
     using Prism.Commands;
     using Prism.Windows.Mvvm;
     using Prism.Windows.Navigation;
     using Windows.Storage.Pickers;
+    using Windows.UI;
     using Windows.UI.Xaml.Media.Imaging;
 
     /// <summary>
@@ -53,9 +55,34 @@ namespace Band.Personalize.App.Universal.ViewModels
         private bool isBusy;
 
         /// <summary>
-        /// The current theme.
+        /// The base Start Strip color, used as the default for tiles.
         /// </summary>
-        private RgbColorTheme currentTheme;
+        private Color @base;
+
+        /// <summary>
+        /// The high contrast Start Strip color, used for highlighted tiles (i.e., new content alerts).
+        /// </summary>
+        private Color highContrast;
+
+        /// <summary>
+        /// The lowlight Start Strip color, used for "pressed" tiles.
+        /// </summary>
+        private Color lowlight;
+
+        /// <summary>
+        /// The in-tile header color.
+        /// </summary>
+        private Color highlight;
+
+        /// <summary>
+        /// The in-tile muted color, used for the achievement marker background.
+        /// </summary>
+        private Color muted;
+
+        /// <summary>
+        /// The system-wide secondary text color.
+        /// </summary>
+        private Color secondaryText;
 
         /// <summary>
         /// The currently-selected Me Tile image.
@@ -167,12 +194,57 @@ namespace Band.Personalize.App.Universal.ViewModels
         }
 
         /// <summary>
-        /// Gets the current theme.
+        /// Gets or sets the base Start Strip color, used as the default for tiles.
         /// </summary>
-        public RgbColorTheme CurrentTheme
+        public Color Base
         {
-            get { return this.currentTheme; }
-            private set { this.SetProperty(ref this.currentTheme, value); }
+            get { return this.@base; }
+            set { this.SetProperty(ref this.@base, value); }
+        }
+
+        /// <summary>
+        /// Gets or sets the high contrast Start Strip color, used for highlighted tiles (i.e., new content alerts).
+        /// </summary>
+        public Color HighContrast
+        {
+            get { return this.highContrast; }
+            set { this.SetProperty(ref this.highContrast, value); }
+        }
+
+        /// <summary>
+        /// Gets or sets the lowlight Start Strip color, used for "pressed" tiles.
+        /// </summary>
+        public Color Lowlight
+        {
+            get { return this.lowlight; }
+            set { this.SetProperty(ref this.lowlight, value); }
+        }
+
+        /// <summary>
+        /// Gets or sets the in-tile header color.
+        /// </summary>
+        public Color Highlight
+        {
+            get { return this.highlight; }
+            set { this.SetProperty(ref this.highlight, value); }
+        }
+
+        /// <summary>
+        /// Gets or sets the in-tile muted color, used for the achievement marker background.
+        /// </summary>
+        public Color Muted
+        {
+            get { return this.muted; }
+            set { this.SetProperty(ref this.muted, value); }
+        }
+
+        /// <summary>
+        /// Gets or sets the system-wide secondary text color.
+        /// </summary>
+        public Color SecondaryText
+        {
+            get { return this.secondaryText; }
+            set { this.SetProperty(ref this.secondaryText, value); }
         }
 
         /// <summary>
@@ -224,7 +296,13 @@ namespace Band.Personalize.App.Universal.ViewModels
             switch (selectedPivotIndex)
             {
                 case 0:
-                    this.CurrentTheme = await this.bandPersonalizer.GetTheme();
+                    var currentTheme = await this.bandPersonalizer.GetTheme();
+                    this.Base = currentTheme.Base.ToColor();
+                    this.HighContrast = currentTheme.HighContrast.ToColor();
+                    this.Lowlight = currentTheme.Lowlight.ToColor();
+                    this.Highlight = currentTheme.Highlight.ToColor();
+                    this.Muted = currentTheme.Muted.ToColor();
+                    this.SecondaryText = currentTheme.SecondaryText.ToColor();
                     break;
                 case 1:
                     this.CurrentMeTileImage = await this.bandPersonalizer.GetMeTileImage();
@@ -244,7 +322,15 @@ namespace Band.Personalize.App.Universal.ViewModels
             switch (selectedPivotIndex)
             {
                 case 0:
-                    await this.bandPersonalizer.SetTheme(this.CurrentTheme);
+                    await this.bandPersonalizer.SetTheme(new RgbColorTheme
+                    {
+                        Base = this.Base.ToRgbColor(),
+                        HighContrast = this.HighContrast.ToRgbColor(),
+                        Lowlight = this.Lowlight.ToRgbColor(),
+                        Highlight = this.Highlight.ToRgbColor(),
+                        Muted = this.Muted.ToRgbColor(),
+                        SecondaryText = this.SecondaryText.ToRgbColor(),
+                    });
                     break;
                 case 1:
                     await this.bandPersonalizer.SetMeTileImage(null, HardwareRevision.Band2);

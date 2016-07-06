@@ -41,7 +41,7 @@ namespace Band.Personalize.Model.Test.Color.Data
         /// <summary>
         /// The default red channel saturation used for testing.
         /// </summary>
-        public const double DefaultHue = 264.94;
+        public const double DefaultHue = 265;
 
         /// <summary>
         /// The default green channel saturation used for testing.

@@ -680,9 +680,9 @@ namespace Band.Personalize.Model.Test.Color
             var result = RgbColor.ToHsv(red, green, blue);
 
             // Assert
-            Assert.Equal(hue, result.Item1);
-            Assert.Equal(saturation, result.Item2);
-            Assert.Equal(value, result.Item3);
+            Assert.Equal(hue, result.Item1, 2);
+            Assert.Equal(saturation, result.Item2, 2);
+            Assert.Equal(value, result.Item3, 2);
         }
 
         /// <summary>
@@ -729,8 +729,12 @@ namespace Band.Personalize.Model.Test.Color
             var result2 = RgbColor.FromHsv(result.Item1, result.Item2, result.Item3);
 
             // Assert
-            Assert.Equal(target, result);
-            Assert.Equal(target2, result2);
+            Assert.Equal(target.Item1, result.Item1, 2);
+            Assert.Equal(target.Item2, result.Item2, 2);
+            Assert.Equal(target.Item3, result.Item3, 2);
+            Assert.Equal(target2.Item1, result2.Item1);
+            Assert.Equal(target2.Item2, result2.Item2);
+            Assert.Equal(target2.Item3, result2.Item3);
         }
 
         /// <summary>
@@ -755,8 +759,12 @@ namespace Band.Personalize.Model.Test.Color
             var result2 = RgbColor.ToHsv(result.Item1, result.Item2, result.Item3);
 
             // Assert
-            Assert.Equal(target, result);
-            Assert.Equal(target2, result2);
+            Assert.Equal(target.Item1, result.Item1);
+            Assert.Equal(target.Item2, result.Item2);
+            Assert.Equal(target.Item3, result.Item3);
+            Assert.Equal(target2.Item1, result2.Item1, 2);
+            Assert.Equal(target2.Item2, result2.Item2, 2);
+            Assert.Equal(target2.Item3, result2.Item3, 2);
         }
 
         /// <summary>
@@ -780,7 +788,7 @@ namespace Band.Personalize.Model.Test.Color
             var result = rgbTarget == hsvTarget;
 
             // Assert
-            Assert.True(result);
+            Assert.True(result, $"RGB {rgbTarget} does not match (from HSV) {hsvTarget}");
         }
     }
 }
