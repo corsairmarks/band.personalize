@@ -26,7 +26,6 @@
                     <GridView.ItemContainerStyle>
                         <Style TargetType="GridViewItem">
                             <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-                            <Setter Property="Width" Value="130" /> <!-- ItemWidth controls clipping here, if specified! -->
                         </Style>
                     </GridView.ItemContainerStyle>
                     <GridView.ItemTemplate>
