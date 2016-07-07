@@ -17,6 +17,7 @@ namespace Band.Personalize.App.Universal.ViewModels
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
+    using System.Linq;
     using System.Threading.Tasks;
     using System.Windows.Input;
     using Model.Library.Band;
@@ -46,6 +47,11 @@ namespace Band.Personalize.App.Universal.ViewModels
         private readonly IBandPersonalizer bandPersonalizer;
 
         /// <summary>
+        /// The collection of theme colors for editing.
+        /// </summary>
+        private readonly ObservableCollection<ThemeColorViewModel> currentThemeColors;
+
+        /// <summary>
         /// The current Band.
         /// </summary>
         private IBand currentBand;
@@ -59,11 +65,6 @@ namespace Band.Personalize.App.Universal.ViewModels
         /// A value indicationg whether the <see cref="RefreshPersonalizationCommand"/> is busy.
         /// </summary>
         private bool isBusy;
-
-        /// <summary>
-        /// The collection of theme colors for editing.
-        /// </summary>
-        private ReadOnlyObservableCollection<ThemeColorViewModel> themeColors = new ReadOnlyObservableCollection<ThemeColorViewModel>(new ObservableCollection<ThemeColorViewModel>());
 
         /// <summary>
         /// The currently-selected Me Tile image.
@@ -89,6 +90,8 @@ namespace Band.Personalize.App.Universal.ViewModels
 
             this.resourceLoader = resourceLoader;
             this.bandPersonalizer = bandPersonalizer;
+            this.currentThemeColors = new ObservableCollection<ThemeColorViewModel>();
+            this.CurrentThemeColors = new ReadOnlyObservableCollection<ThemeColorViewModel>(this.currentThemeColors);
 
             var refreshPersonalizationCommand = new CompositeCommand();
             refreshPersonalizationCommand.RegisterCommand(new DelegateCommand(() => this.IsBusy = true, () => !this.IsBusy));
@@ -183,11 +186,7 @@ namespace Band.Personalize.App.Universal.ViewModels
         /// <summary>
         /// Gets the theme colors.
         /// </summary>
-        public ReadOnlyObservableCollection<ThemeColorViewModel> CurrentThemeColors
-        {
-            get { return this.themeColors; }
-            private set { this.SetProperty(ref this.themeColors, value); }
-        }
+        public ReadOnlyObservableCollection<ThemeColorViewModel> CurrentThemeColors { get; }
 
         /// <summary>
         /// Gets or sets the currently-selected Me Tile image.
@@ -238,7 +237,16 @@ namespace Band.Personalize.App.Universal.ViewModels
             switch (selectedPivotIndex)
             {
                 case 0:
-                    this.CurrentThemeColors = this.BuildThemeColorCollection(await this.bandPersonalizer.GetTheme());
+                    var themeColors = this.RgbColorThemeToCollection(await this.bandPersonalizer.GetTheme());
+                    this.currentThemeColors.Clear();
+                    if (themeColors != null && themeColors.Any())
+                    {
+                        foreach (var themeColor in themeColors)
+                        {
+                            this.currentThemeColors.Add(themeColor);
+                        }
+                    }
+
                     break;
                 case 1:
                     this.CurrentMeTileImage = await this.bandPersonalizer.GetMeTileImage();
@@ -281,9 +289,9 @@ namespace Band.Personalize.App.Universal.ViewModels
         /// </summary>
         /// <param name="theme">The theme from which to get colors.</param>
         /// <returns>A read-only observable collection of theme colors.</returns>
-        private ReadOnlyObservableCollection<ThemeColorViewModel> BuildThemeColorCollection(RgbColorTheme theme)
+        private IReadOnlyCollection<ThemeColorViewModel> RgbColorThemeToCollection(RgbColorTheme theme)
         {
-            return new ReadOnlyObservableCollection<ThemeColorViewModel>(new ObservableCollection<ThemeColorViewModel>(new[]
+            return new ReadOnlyCollection<ThemeColorViewModel>(new[]
             {
                 new ThemeColorViewModel
                 {
@@ -315,7 +323,7 @@ namespace Band.Personalize.App.Universal.ViewModels
                     Title = this.resourceLoader.GetString($"{nameof(theme.SecondaryText)}TextBox/Text"),
                     Swatch = theme.SecondaryText.ToColor(),
                 },
-            }));
+            });
         }
     }
 }
