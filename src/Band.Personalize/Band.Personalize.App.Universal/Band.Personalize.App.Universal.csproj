@@ -109,12 +109,12 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Behaviors\UniformRowsOrColumnsBehavior.cs" />
     <Compile Include="Controls\BindableUserControl.cs" />
     <Compile Include="Controls\ColorPickerFlyoutUserControl.xaml.cs">
       <DependentUpon>ColorPickerFlyoutUserControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Converters\ByteToDoubleConverter.cs" />
-    <Compile Include="Controls\UniformItemsWrapGrid.cs" />
     <Compile Include="Converters\HardwareRevisionToBooleanConverter.cs" />
     <Compile Include="Converters\ConnectionTypeToSymbolConverter.cs" />
     <Compile Include="Converters\HardwareRevisionToVisibilityConverter.cs" />
