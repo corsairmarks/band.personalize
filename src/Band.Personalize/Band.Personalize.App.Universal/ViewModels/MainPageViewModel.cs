@@ -45,7 +45,7 @@ namespace Band.Personalize.App.Universal.ViewModels
         /// <summary>
         /// A read-only collection of connected Bands.
         /// </summary>
-        private IReadOnlyList<IBand> connectedBands;
+        private readonly ObservableCollection<IBand> connectedBands;
 
         /// <summary>
         /// A value indicationg whether the <see cref="RefreshConnectedBandsCommand"/> is busy.
@@ -81,6 +81,8 @@ namespace Band.Personalize.App.Universal.ViewModels
 
             this.navigationService = navigationService;
             this.bandRepository = bandRepository;
+            this.connectedBands = new ObservableCollection<IBand>();
+            this.ConnectedBands = new ReadOnlyObservableCollection<IBand>(this.connectedBands);
 
             var cancelRefreshConnectedBandsCommand = new CompositeCommand();
             cancelRefreshConnectedBandsCommand.RegisterCommand(DelegateCommand.FromAsyncHandler(this.CancelRefreshConnectedBands, () => this.IsBusy));
@@ -92,17 +94,6 @@ namespace Band.Personalize.App.Universal.ViewModels
             refreshConnectedBandsCommand.RegisterCommand(DelegateCommand.FromAsyncHandler(this.CancelRefreshConnectedBands));
             refreshConnectedBandsCommand.RegisterCommand(DelegateCommand.FromAsyncHandler(this.RefreshConnectedBands));
             refreshConnectedBandsCommand.RegisterCommand(new DelegateCommand(() => this.IsBusy = false));
-            refreshConnectedBandsCommand.RegisterCommand(new DelegateCommand(() =>
-            {
-                this.ConnectedBands.Clear();
-                if (this.connectedBands != null && this.connectedBands.Any())
-                {
-                    foreach (var band in this.connectedBands)
-                    {
-                        this.ConnectedBands.Add(band);
-                    }
-                }
-            }));
             this.RefreshConnectedBandsCommand = refreshConnectedBandsCommand;
 
             this.NavigateToBandPageCommand = new DelegateCommand<IBand>(b => this.navigationService.Navigate("Band", b));
@@ -143,7 +134,28 @@ namespace Band.Personalize.App.Universal.ViewModels
         /// <summary>
         /// Gets a read-only collection of connected Microsoft Bands.
         /// </summary>
-        public ObservableCollection<IBand> ConnectedBands { get; } = new ObservableCollection<IBand>();
+        public ReadOnlyObservableCollection<IBand> ConnectedBands { get; }
+
+        /// <summary>
+        /// Called when navigation is performed to a page. You can use this method to load state if it is available.
+        /// </summary>
+        /// <param name="e">The <see cref="NavigatedToEventArgs"/> instance containing the event data.</param>
+        /// <param name="viewModelState">The state of the view model.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="e"/> is <c>null</c>.</exception>
+        public override void OnNavigatedTo(NavigatedToEventArgs e, Dictionary<string, object> viewModelState)
+        {
+            base.OnNavigatedTo(e, viewModelState);
+
+            if (e == null)
+            {
+                throw new ArgumentNullException(nameof(e));
+            }
+
+            if (!this.ConnectedBands.Any())
+            {
+                this.RefreshConnectedBandsCommand.Execute(null);
+            }
+        }
 
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
@@ -195,7 +207,15 @@ namespace Band.Personalize.App.Universal.ViewModels
                 cancellationToken = this.refreshCancellationTokenSource.Token;
             });
 
-            this.connectedBands = await this.bandRepository.GetBands(cancellationToken);
+            var bands = await this.bandRepository.GetBands(cancellationToken);
+            this.connectedBands.Clear();
+            if (bands != null && bands.Any())
+            {
+                foreach (var band in bands)
+                {
+                    this.connectedBands.Add(band);
+                }
+            }
         }
 
         /// <summary>
