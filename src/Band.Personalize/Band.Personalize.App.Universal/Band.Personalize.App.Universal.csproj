@@ -109,6 +109,7 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Behaviors\BindToControlHeightOrWidthBehavior.cs" />
     <Compile Include="Behaviors\UniformRowsOrColumnsBehavior.cs" />
     <Compile Include="Controls\BindableUserControl.cs" />
     <Compile Include="Controls\ColorPickerFlyoutUserControl.xaml.cs">

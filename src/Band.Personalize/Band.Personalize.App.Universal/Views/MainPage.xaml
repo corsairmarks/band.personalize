@@ -14,18 +14,40 @@
     mc:Ignorable="d">
     <Page.Resources>
         <DataTemplate x:Key="BandTile">
-            <Button Style="{ThemeResource BandTile}"
-                    Command="{Binding DataContext.NavigateToBandPageCommand, ElementName=TheGrid}"
-                    CommandParameter="{Binding}">
+            <Button
+                x:Name="BandTile"
+                Style="{ThemeResource BandTile}"
+                Command="{Binding DataContext.NavigateToBandPageCommand, ElementName=TheGrid}"
+                CommandParameter="{Binding}">
                 <RelativePanel>
-                    <TextBlock Text="{Binding Name}" TextWrapping="Wrap" RelativePanel.AlignTopWithPanel="True" RelativePanel.AlignLeftWithPanel="True" />
-                    <Ellipse Height="50" Width="50" Fill="{ThemeResource SystemControlForegroundChromeWhiteBrush}"  RelativePanel.AlignVerticalCenterWithPanel="True" RelativePanel.AlignHorizontalCenterWithPanel="True" />
-                    <SymbolIcon Symbol="{Binding ConnectionType, Converter={StaticResource ConnectionTypeToSymbolConverter}}" RenderTransformOrigin="0.5,0.5" Foreground="{ThemeResource SystemControlForegroundAccentBrush}"  RelativePanel.AlignVerticalCenterWithPanel="True" RelativePanel.AlignHorizontalCenterWithPanel="True">
-                        <SymbolIcon.RenderTransform>
-                            <CompositeTransform ScaleX="1.5" ScaleY="1.5" />
-                        </SymbolIcon.RenderTransform>
-                    </SymbolIcon>
-                    <StackPanel Orientation="Horizontal" RelativePanel.AlignBottomWithPanel="True" RelativePanel.AlignLeftWithPanel="True">
+                    <TextBlock
+                        RelativePanel.AlignTopWithPanel="True"
+                        RelativePanel.AlignLeftWithPanel="True"
+                        Text="{Binding Path=Name}"
+                        TextWrapping="Wrap" />
+                    <Ellipse
+                        RelativePanel.AlignVerticalCenterWithPanel="True"
+                        RelativePanel.AlignHorizontalCenterWithPanel="True"
+                        x:Name="Ellipse"
+                        Fill="{ThemeResource SystemControlForegroundChromeWhiteBrush}">
+                        <i:Interaction.Behaviors>
+                            <behaviors:BindToControlHeightOrWidthBehavior SourceObject="{Binding ElementName=BandTile}" ScaleFactor="0.35" />
+                        </i:Interaction.Behaviors>
+                    </Ellipse>
+                    <Viewbox
+                        RelativePanel.AlignVerticalCenterWithPanel="True"
+                        RelativePanel.AlignHorizontalCenterWithPanel="True">
+                        <i:Interaction.Behaviors>
+                            <behaviors:BindToControlHeightOrWidthBehavior SourceObject="{Binding ElementName=Ellipse}" ScaleFactor="0.65" />
+                        </i:Interaction.Behaviors>
+                        <SymbolIcon
+                            Symbol="{Binding ConnectionType, Converter={StaticResource ConnectionTypeToSymbolConverter}}"
+                            Foreground="{Binding Path=Background, ElementName=BandTile, Mode=OneWay}" />
+                    </Viewbox>
+                    <StackPanel
+                        RelativePanel.AlignBottomWithPanel="True"
+                        RelativePanel.AlignLeftWithPanel="True"
+                        Orientation="Horizontal">
                         <TextBlock Text="{Binding HardwareRevision}" Margin="0,0,2,0" />
                         <TextBlock Text="(" />
                         <TextBlock Text="{Binding HardwareVersion}" />
@@ -43,11 +65,12 @@
         </Grid.RowDefinitions>
         <TextBlock x:Name="TheHeader" x:Uid="BandGridViewHeaderTextBlock" Text="Connected Bands" FontWeight="Bold" Margin="4,2" HorizontalAlignment="Left" VerticalAlignment="Center" />
         <StackPanel Name="TheGridView">
-            <GridView x:Name="LargeGridView"
-                      ItemTemplate="{StaticResource BandTile}"
-                      ItemContainerStyle="{StaticResource BandTileContainer}"
-                      ItemsSource="{Binding Path=ConnectedBands}"
-                      Visibility="Collapsed">
+            <GridView
+                x:Name="LargeGridView"
+                ItemTemplate="{StaticResource BandTile}"
+                ItemContainerStyle="{StaticResource BandTileContainer}"
+                ItemsSource="{Binding Path=ConnectedBands}"
+                Visibility="Collapsed">
                 <GridView.ItemsPanel>
                     <ItemsPanelTemplate>
                         <ItemsWrapGrid MaximumRowsOrColumns="4" Orientation="Horizontal">
@@ -58,11 +81,12 @@
                     </ItemsPanelTemplate>
                 </GridView.ItemsPanel>
             </GridView>
-            <GridView x:Name="MediumGridView"
-                      ItemTemplate="{StaticResource BandTile}"
-                      ItemContainerStyle="{StaticResource BandTileContainer}"
-                      ItemsSource="{Binding Path=ConnectedBands}"
-                      Visibility="Collapsed">
+            <GridView
+                x:Name="MediumGridView"
+                ItemTemplate="{StaticResource BandTile}"
+                ItemContainerStyle="{StaticResource BandTileContainer}"
+                ItemsSource="{Binding Path=ConnectedBands}"
+                Visibility="Collapsed">
                 <GridView.ItemsPanel>
                     <ItemsPanelTemplate>
                         <ItemsWrapGrid MaximumRowsOrColumns="3" Orientation="Horizontal">
@@ -73,11 +97,12 @@
                     </ItemsPanelTemplate>
                 </GridView.ItemsPanel>
             </GridView>
-            <GridView x:Name="SmallGridView"
-                      ItemTemplate="{StaticResource BandTile}"
-                      ItemContainerStyle="{StaticResource BandTileContainer}"
-                      ItemsSource="{Binding Path=ConnectedBands}"
-                      Visibility="Collapsed">
+            <GridView
+                x:Name="SmallGridView"
+                ItemTemplate="{StaticResource BandTile}"
+                ItemContainerStyle="{StaticResource BandTileContainer}"
+                ItemsSource="{Binding Path=ConnectedBands}"
+                Visibility="Collapsed">
                 <GridView.ItemsPanel>
                     <ItemsPanelTemplate>
                         <ItemsWrapGrid MaximumRowsOrColumns="2" Orientation="Horizontal">
