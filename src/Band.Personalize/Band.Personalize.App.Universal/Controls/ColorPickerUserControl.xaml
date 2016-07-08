@@ -2,29 +2,35 @@
     x:Class="Band.Personalize.App.Universal.Controls.ColorPickerUserControl"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:behaviors="using:Band.Personalize.App.Universal.Behaviors"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:i="using:Microsoft.Xaml.Interactivity"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:controls="using:Band.Personalize.App.Universal.Controls"
-    xmlns:designViewModels="using:Band.Personalize.App.Universal.ViewModels.Design"
     mc:Ignorable="d"
     d:DesignHeight="640"
     d:DesignWidth="360">
-    <StackPanel Orientation="{x:Bind Orientation, Mode=OneWay}">
-        <StackPanel>
+    <StackPanel Orientation="{x:Bind Path=Orientation, Mode=OneWay}">
+        <StackPanel Margin="0,0,0,4">
+            <!-- TODO: StackPanel orientation-based margins -->
             <TextBox
-                BorderThickness="0"
+                Margin="0,0,0,4"
                 Text="{x:Bind Path=Color, Mode=TwoWay}"
                 IsTextPredictionEnabled="False"
-                IsSpellCheckEnabled="False"/>
-            <Grid>
+                IsSpellCheckEnabled="False" />
+            <Grid Margin="0,4,0,0">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="150" />
+                    <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="150" />
-                </Grid.RowDefinitions>
-                <Grid>
+                <Grid
+                    x:Name="PickerGrid"
+                    Height="{Binding Path=ActualWidth, RelativeSource={RelativeSource Mode=Self}, Mode=OneWay}"
+                    HorizontalAlignment="Stretch"
+                    SizeChanged="PickerGrid_SizeChanged">
+                    <i:Interaction.Behaviors>
+                        <behaviors:SquareBehavior ScalableOrientation="Horizontal" />
+                    </i:Interaction.Behaviors>
                     <Grid.Background>
                         <SolidColorBrush Color="{x:Bind Path=HueColor, Mode=OneWay}" />
                     </Grid.Background>
@@ -48,22 +54,21 @@
                         x:Name="PickerCanvas"
                         PointerPressed="PickerCanvas_OnPointerPressed"
                         PointerReleased="PickerCanvas_OnPointerReleased"
-                        Background="Transparent">
-                        <Canvas.Clip>
-                            <RectangleGeometry Rect="0,0,150,150"/>
-                        </Canvas.Clip>
+                        Background="Transparent"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch">
                         <Grid
                             Margin="-7,-7,0,0"
                             Canvas.Left="{x:Bind Path=PointX, Mode=OneWay}"
                             Canvas.Top="{x:Bind Path=PointY, Mode=OneWay}">
                             <Ellipse
-                                Stroke="White"
+                                Stroke="{ThemeResource SystemControlForegroundBaseHighBrush}"
                                 StrokeThickness="3"
                                 Width="14"
                                 Height="14"
                                 UseLayoutRounding="False" />
                             <Ellipse
-                                Stroke="Black"
+                                Stroke="{ThemeResource SystemControlForegroundAltHighBrush}"
                                 StrokeThickness="1"
                                 Width="12"
                                 Height="12"
@@ -73,9 +78,8 @@
                 </Grid>
 
                 <Slider
-                    x:Name="HueSlider"
                     Grid.Column="1"
-                    Grid.Row="2"
+                    x:Name="HueSlider"
                     Orientation="Vertical"
                     Maximum="360"
                     Minimum="0"
@@ -95,8 +99,9 @@
             </Grid>
         </StackPanel>
 
-        <StackPanel>
-            <Grid>
+        <StackPanel Margin="0,4,0,0">
+            <!-- TODO: StackPanel orientation-based margins -->
+            <Grid Margin="0,0,0,4">
                 <!--<local:ImageTile Source="ms-appx:///Assets/Images/light-transparent.png"/>-->
                 <Rectangle Height="32">
                     <Rectangle.Fill>
@@ -104,147 +109,35 @@
                     </Rectangle.Fill>
                 </Rectangle>
             </Grid>
-
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                </Grid.RowDefinitions>
-                <TextBlock
-                    Grid.Row="0"
-                    Grid.Column="0"
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Center"
-                    Text="A" />
-                <Slider
-                    x:Name="AlphaSlider"
-                    Grid.Row="0"
-                    Grid.Column="1"
-                    Maximum="255"
-                    Minimum="0"
-                    StepFrequency="1"
-                    Foreground="Transparent"
-                    Value="{x:Bind Path=Alpha, Mode=TwoWay, Converter={StaticResource ByteToDoubleConverter}}">
-                    <Slider.Background>
-                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
-                            <GradientStop Offset="0" Color="{x:Bind Path=AlphaStartColor, Mode=OneWay}"/>
-                            <GradientStop Offset="1" Color="{x:Bind Path=AlphaEndColor, Mode=OneWay}"/>
-                        </LinearGradientBrush>
-                    </Slider.Background>
-                </Slider>
-                <TextBox
-                    Grid.Row="0"
-                    Grid.Column="2"
-                    Text="{x:Bind Path=AlphaSlider.Value, Mode=TwoWay}"
-                    InputScope="Number"
-                    MaxLength="3"
-                    IsTextPredictionEnabled="False"
-                    IsSpellCheckEnabled="False" />
+            <Grid Margin="0,4">
                 <!--<local:ImageTile
-                        x:Name="alpha"
-                        Height="8"
-                        Source="ms-appx:///Assets/Images/light-transparent.png" />-->
-
-                <TextBlock
-                    Grid.Row="1"
-                    Grid.Column="0"
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Center"
-                    Text="R" />
-                <Slider
-                    x:Name="RedSlider"
-                    Grid.Row="1"
-                    Grid.Column="1"
-                    Maximum="255"
-                    Minimum="0"
-                    StepFrequency="1"
-                    Foreground="Transparent"
-                    Value="{x:Bind Path=Red, Mode=TwoWay, Converter={StaticResource ByteToDoubleConverter}}">
-                    <Slider.Background>
-                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
-                            <GradientStop Offset="0" Color="{x:Bind Path=RedStartColor, Mode=OneWay}"/>
-                            <GradientStop Offset="1" Color="{x:Bind Path=RedEndColor, Mode=OneWay}"/>
-                        </LinearGradientBrush>
-                    </Slider.Background>
-                </Slider>
-                <TextBox
-                    Grid.Row="1"
-                    Grid.Column="2"
-                    Text="{x:Bind Path=RedSlider.Value, Mode=TwoWay}"
-                    InputScope="Number"
-                    MaxLength="3"
-                    IsTextPredictionEnabled="False"
-                    IsSpellCheckEnabled="False" />
-
-                <TextBlock
-                    Grid.Row="2"
-                    Grid.Column="0"
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Center"
-                    Text="G" />
-                <Slider
-                    x:Name="GreenSlider"
-                    Grid.Row="2"
-                    Grid.Column="1"
-                    Maximum="255"
-                    Minimum="0"
-                    StepFrequency="1"
-                    Foreground="Transparent"
-                    Value="{x:Bind Path=Green, Mode=TwoWay, Converter={StaticResource ByteToDoubleConverter}}">
-                    <Slider.Background>
-                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
-                            <GradientStop Offset="0" Color="{x:Bind Path=GreenStartColor, Mode=OneWay}"/>
-                            <GradientStop Offset="1" Color="{x:Bind Path=GreenEndColor, Mode=OneWay}"/>
-                        </LinearGradientBrush>
-                    </Slider.Background>
-                </Slider>
-                <TextBox
-                    Grid.Row="2"
-                    Grid.Column="2"
-                    Text="{x:Bind Path=GreenSlider.Value, Mode=TwoWay}"
-                    InputScope="Number"
-                    MaxLength="3"
-                    IsTextPredictionEnabled="False"
-                    IsSpellCheckEnabled="False" />
-
-                <TextBlock
-                    Grid.Row="3"
-                    Grid.Column="0"
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Center"
-                    Text="B" />
-                <Slider
-                    x:Name="BlueSlider"
-                    Grid.Row="3"
-                    Grid.Column="1"
-                    Maximum="255"
-                    Minimum="0"
-                    StepFrequency="1"
-                    Foreground="Transparent"
-                    Value="{x:Bind Path=Blue, Mode=TwoWay, Converter={StaticResource ByteToDoubleConverter}}">
-                    <Slider.Background>
-                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
-                            <GradientStop Offset="0" Color="{x:Bind Path=BlueStartColor, Mode=OneWay}"/>
-                            <GradientStop Offset="1" Color="{x:Bind Path=BlueEndColor, Mode=OneWay}"/>
-                        </LinearGradientBrush>
-                    </Slider.Background>
-                </Slider>
-                <TextBox
-                    Grid.Row="3"
-                    Grid.Column="2"
-                    Text="{x:Bind Path=BlueSlider.Value, Mode=TwoWay}"
-                    InputScope="Number"
-                    MaxLength="3"
-                    IsTextPredictionEnabled="False"
-                    IsSpellCheckEnabled="False" />
+                    x:Name="alpha"
+                    Height="8"
+                    Source="ms-appx:///Assets/Images/light-transparent.png" />-->
+                <controls:RgbColorChannelUserControl
+                    Header="A"
+                    Channel="{x:Bind Path=Alpha, Mode=TwoWay}"
+                    StartColor="{x:Bind Path=AlphaStartColor, Mode=OneWay}"
+                    EndColor="{x:Bind Path=AlphaEndColor, Mode=OneWay}" />
             </Grid>
+            <controls:RgbColorChannelUserControl
+                Header="R"
+                Margin="0,4"
+                Channel="{x:Bind Path=Red, Mode=TwoWay}"
+                StartColor="{x:Bind Path=RedStartColor, Mode=OneWay}"
+                EndColor="{x:Bind Path=RedEndColor, Mode=OneWay}" />
+            <controls:RgbColorChannelUserControl
+                Header="G"
+                Margin="0,4"
+                Channel="{x:Bind Path=Green, Mode=TwoWay}"
+                StartColor="{x:Bind Path=GreenStartColor, Mode=OneWay}"
+                EndColor="{x:Bind Path=GreenEndColor, Mode=OneWay}" />
+            <controls:RgbColorChannelUserControl
+                Margin="0,4,0,0"
+                Header="B"
+                Channel="{x:Bind Path=Blue, Mode=TwoWay}"
+                StartColor="{x:Bind Path=BlueStartColor, Mode=OneWay}"
+                EndColor="{x:Bind Path=BlueEndColor, Mode=OneWay}" />
         </StackPanel>
     </StackPanel>
 </controls:BindableUserControl>

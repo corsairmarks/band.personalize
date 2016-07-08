@@ -110,10 +110,14 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="Behaviors\BindToControlHeightOrWidthBehavior.cs" />
+    <Compile Include="Behaviors\SquareBehavior.cs" />
     <Compile Include="Behaviors\UniformRowsOrColumnsBehavior.cs" />
     <Compile Include="Controls\BindableUserControl.cs" />
     <Compile Include="Controls\ColorPickerFlyoutUserControl.xaml.cs">
       <DependentUpon>ColorPickerFlyoutUserControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\RgbColorChannelUserControl.xaml.cs">
+      <DependentUpon>RgbColorChannelUserControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Converters\ByteToDoubleConverter.cs" />
     <Compile Include="Converters\HardwareRevisionToBooleanConverter.cs" />
@@ -176,6 +180,10 @@
   <ItemGroup />
   <ItemGroup>
     <Page Include="Controls\ColorPickerFlyoutUserControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\RgbColorChannelUserControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

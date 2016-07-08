@@ -632,15 +632,29 @@ namespace Band.Personalize.App.Universal.Controls
         }
 
         /// <summary>
+        /// A <see cref="SizeChangedEventHandler"/> for the <see cref="FrameworkElement.SizeChanged"/> event of <see cref="PickerGrid"/>.
+        /// </summary>
+        /// <param name="sender">The object where the event handler is attached.</param>
+        /// <param name="e">Event data for the event.</param>
+        private void PickerGrid_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            var senderFrameworkElement = sender as FrameworkElement;
+            if (senderFrameworkElement != null)
+            {
+                this.UpdatePickPoint(new RgbColor(this.Red, this.Green, this.Blue));
+            }
+        }
+
+        /// <summary>
         /// Choose a color from the <see cref="PickerCanvas"/> based on pointer location.
         /// </summary>
         /// <param name="point">The location of the pointer.</param>
         private void PickColor(Point point)
         {
-            this.PointX = Math.Min(this.PickerCanvas.ActualWidth, Math.Max(0, point.X));
-            this.PointY = Math.Min(this.PickerCanvas.ActualHeight, Math.Max(0, point.Y));
+            this.PointX = Math.Min(this.PickerGrid.ActualWidth, Math.Max(0, point.X));
+            this.PointY = Math.Min(this.PickerGrid.ActualHeight, Math.Max(0, point.Y));
 
-            var changedColor = new RgbColor(this.Hue, this.PointX / this.PickerCanvas.ActualWidth, 1 - (this.PointY / this.PickerCanvas.ActualHeight)).ToColor();
+            var changedColor = new RgbColor(this.Hue, this.PointX / this.PickerGrid.ActualWidth, 1 - (this.PointY / this.PickerGrid.ActualHeight)).ToColor();
             changedColor.A = this.Alpha;
             this.Color = changedColor;
         }
@@ -653,9 +667,18 @@ namespace Band.Personalize.App.Universal.Controls
         {
             var rgbColor = color.ToRgbColor();
             this.SetProperty(ref this.hue, rgbColor.Hue, nameof(this.Hue));
-            this.PointX = this.PickerCanvas.ActualWidth * rgbColor.Saturation;
-            this.PointY = this.PickerCanvas.ActualHeight * (1 - rgbColor.Value);
+            this.UpdatePickPoint(rgbColor);
             this.OnPropertyChanged(nameof(this.HueColor));
+        }
+
+        /// <summary>
+        /// Update the visual pick point.
+        /// </summary>
+        /// <param name="color">The RGB color being represented.</param>
+        private void UpdatePickPoint(RgbColor color)
+        {
+            this.PointX = this.PickerGrid.ActualWidth * color.Saturation;
+            this.PointY = this.PickerGrid.ActualHeight * (1 - color.Value);
         }
     }
 }
