@@ -20,12 +20,12 @@ namespace Band.Personalize.App.Universal.Behaviors
     using Windows.UI.Xaml.Controls;
 
     /// <summary>
-    /// A behavior for <see cref="ItemsWrapGrid"/> the stretches in the direction of the <see cref="ItemsWrapGrid.Orientation"/> property.
+    /// A behavior for <see cref="ItemsWrapGrid"/> that stretches in the direction of the <see cref="ItemsWrapGrid.Orientation"/> property.
     /// </summary>
     public class UniformRowsOrColumnsBehavior : Behavior<ItemsWrapGrid>
     {
         /// <summary>
-        /// Called after the behavior is attached to the <see cref="Behavior.AssociatedObject"/>.
+        /// Called after the behavior is attached to the <see cref="Behavior{FrameworkElement}.AssociatedObject"/>.
         /// </summary>
         protected override void OnAttached()
         {
@@ -35,7 +35,7 @@ namespace Band.Personalize.App.Universal.Behaviors
         }
 
         /// <summary>
-        /// Called when the behavior is being detached from its <see cref="Behavior.AssociatedObject"/>.
+        /// Called when the behavior is being detached from its <see cref="Behavior{FrameworkElement}.AssociatedObject"/>.
         /// </summary>
         protected override void OnDetaching()
         {
