@@ -152,6 +152,8 @@
   <ItemGroup>
     <Content Include="Assets\band.png" />
     <Content Include="Assets\band2.png" />
+    <Content Include="Assets\grid-dark.png" />
+    <Content Include="Assets\grid-light.png" />
     <Content Include="Properties\Default.rd.xml" />
     <Content Include="Assets\LockScreenLogo.scale-200.png" />
     <Content Include="Assets\SplashScreen.scale-200.png" />

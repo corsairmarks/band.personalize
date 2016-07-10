@@ -18,7 +18,7 @@
         <Pivot Name="ThePivot">
             <PivotItem Header="Theme" x:Uid="ThemePivotItem" Margin="12">
                 <GridView
-                    ItemContainerStyle="{ThemeResource ThemeColorTileContainer}"
+                    ItemContainerStyle="{StaticResource ThemeColorTileContainer}"
                     ItemsSource="{Binding Path=CurrentThemeColors, Mode=OneWay}">
                     <GridView.ItemsPanel>
                         <ItemsPanelTemplate>

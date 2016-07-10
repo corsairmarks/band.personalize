@@ -80,10 +80,10 @@
                 <Slider
                     Grid.Column="1"
                     x:Name="HueSlider"
+                    Style="{StaticResource AlphaChannelSlider}"
                     Orientation="Vertical"
                     Maximum="360"
                     Minimum="0"
-                    Foreground="Transparent"
                     Value="{x:Bind Path=Hue, Mode=TwoWay}">
                     <Slider.Background>
                         <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
@@ -101,7 +101,7 @@
 
         <StackPanel Margin="0,4,0,0">
             <!-- TODO: StackPanel orientation-based margins -->
-            <Grid Margin="0,0,0,4">
+            <Grid Margin="0,0,0,4" Background="{ThemeResource AlphaTileBrush}">
                 <!--<local:ImageTile Source="ms-appx:///Assets/Images/light-transparent.png"/>-->
                 <Rectangle Height="32">
                     <Rectangle.Fill>

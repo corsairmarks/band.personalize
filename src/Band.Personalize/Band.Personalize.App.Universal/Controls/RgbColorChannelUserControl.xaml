@@ -20,12 +20,12 @@
             VerticalAlignment="Center"
             Text="{x:Bind Path=Header, Mode=OneTime}" />
         <Slider
-            x:Name="ChannelSlider"
             Grid.Column="1"
+            x:Name="ChannelSlider"
+            Style="{StaticResource AlphaChannelSlider}"
             Maximum="255"
             Minimum="0"
             StepFrequency="1"
-            Foreground="Transparent"
             Margin="4,0"
             Value="{x:Bind Path=Channel, Mode=TwoWay, Converter={StaticResource ByteToDoubleConverter}}">
             <Slider.Background>
