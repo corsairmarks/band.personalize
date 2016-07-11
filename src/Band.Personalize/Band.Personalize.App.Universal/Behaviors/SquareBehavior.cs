@@ -32,10 +32,10 @@ namespace Band.Personalize.App.Universal.Behaviors
             nameof(ScalableOrientation),
             typeof(Orientation),
             typeof(SquareBehavior),
-            new PropertyMetadata(Orientation.Horizontal));
+            new PropertyMetadata(Orientation.Horizontal, OnScalableOrientationChanged));
 
         /// <summary>
-        /// Gets or sets the assumed scalable (resibalbe, fluid) dimension of the square object.  <see cref="Orientation.Horizontal"/>
+        /// Gets or sets the assumed scalable (resizable, fluid) dimension of the square object.  <see cref="Orientation.Horizontal"/>
         /// implies the <see cref="FrameworkElement.ActualWidth"/> property determines the <see cref="FrameworkElement.Height"/>, where
         /// <see cref="Orientation.Vertical"/> implies the <see cref="FrameworkElement.ActualHeight"/> property determines the
         /// <see cref="FrameworkElement.Width"/>.
@@ -67,6 +67,22 @@ namespace Band.Personalize.App.Universal.Behaviors
         }
 
         /// <summary>
+        /// Represents the <see cref="PropertyChangedCallback"/> that is invoked when the effective property value of the <see cref="ScalableOrientationProperty"/> dependency property changes.
+        /// </summary>
+        /// <param name="d">The <see cref="DependencyObject"/> on which the property has changed value.</param>
+        /// <param name="e">Event data that is issued by any event that tracks changes to the effective value of this property.</param>
+        private static void OnScalableOrientationChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var that = d as SquareBehavior;
+            if (that != null && that.AssociatedObject != null)
+            {
+                that.AssociatedObject.Height = double.NaN;
+                that.AssociatedObject.Width = double.NaN;
+                that.ScaleElement(that.AssociatedObject);
+            }
+        }
+
+        /// <summary>
         /// Represents the method that will handle the SizeChanged event.
         /// See also <seealso cref="SizeChangedEventHandler"/>.
         /// </summary>
@@ -77,17 +93,27 @@ namespace Band.Personalize.App.Universal.Behaviors
             var senderFrameworkElement = sender as FrameworkElement;
             if (senderFrameworkElement != null && e != null && e.NewSize != e.PreviousSize)
             {
-                switch (this.ScalableOrientation)
-                {
-                    case Orientation.Horizontal:
-                        senderFrameworkElement.Height = senderFrameworkElement.ActualWidth;
-                        break;
-                    case Orientation.Vertical:
-                        senderFrameworkElement.Width = senderFrameworkElement.ActualHeight;
-                        break;
-                    default:
-                        throw new NotImplementedException($"Unhandled {typeof(Orientation)}: \"{this.ScalableOrientation}\"");
-                }
+                this.ScaleElement(senderFrameworkElement);
+            }
+        }
+
+        /// <summary>
+        /// Scale the <paramref name="sender"/> as a square based on the <see cref="ScalableOrientation"/>.
+        /// </summary>
+        /// <param name="sender">The object requesting a square scale.</param>
+        /// <exception cref="NotImplementedException"><see cref="ScalableOrientation"/> is an unhandled value of <see cref="Orientation"/>.</exception>
+        private void ScaleElement(FrameworkElement sender)
+        {
+            switch (this.ScalableOrientation)
+            {
+                case Orientation.Horizontal:
+                    sender.Height = sender.ActualWidth;
+                    break;
+                case Orientation.Vertical:
+                    sender.Width = sender.ActualHeight;
+                    break;
+                default:
+                    throw new NotImplementedException($"Unhandled {typeof(Orientation)}: \"{this.ScalableOrientation}\"");
             }
         }
     }
