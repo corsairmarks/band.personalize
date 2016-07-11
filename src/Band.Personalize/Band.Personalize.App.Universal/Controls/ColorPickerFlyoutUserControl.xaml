@@ -9,7 +9,7 @@
     <Button x:Uid="ChooseColorButton" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
         <Button.Flyout>
             <Flyout x:Name="TheFlyout" Opening="TheFlyout_Opening">
-                <StackPanel>
+                <StackPanel MinWidth="220">
                     <controls:ColorPickerUserControl Margin="0,0,0,4" Color="{x:Bind Path=PickerColor, Mode=TwoWay}" Orientation="Vertical" />
                     <StackPanel Orientation="Horizontal">
                         <Button x:Uid="ConfirmButton" Content="Confirm" Click="ConfirmButton_Click" TabIndex="0" Margin="0,4,4,0" />
