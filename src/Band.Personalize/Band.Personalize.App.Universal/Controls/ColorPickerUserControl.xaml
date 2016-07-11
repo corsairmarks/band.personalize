@@ -102,24 +102,17 @@
         <StackPanel Margin="0,4,0,0">
             <!-- TODO: StackPanel orientation-based margins -->
             <Grid Margin="0,0,0,4" Background="{ThemeResource AlphaTileBrush}">
-                <!--<local:ImageTile Source="ms-appx:///Assets/Images/light-transparent.png"/>-->
                 <Rectangle Height="32">
                     <Rectangle.Fill>
                         <SolidColorBrush Color="{x:Bind Path=SwatchColor, Mode=OneWay}" />
                     </Rectangle.Fill>
                 </Rectangle>
             </Grid>
-            <Grid Margin="0,4">
-                <!--<local:ImageTile
-                    x:Name="alpha"
-                    Height="8"
-                    Source="ms-appx:///Assets/Images/light-transparent.png" />-->
-                <controls:RgbColorChannelUserControl
-                    Header="A"
-                    Channel="{x:Bind Path=Alpha, Mode=TwoWay}"
-                    StartColor="{x:Bind Path=AlphaStartColor, Mode=OneWay}"
-                    EndColor="{x:Bind Path=AlphaEndColor, Mode=OneWay}" />
-            </Grid>
+            <controls:RgbColorChannelUserControl
+                Header="A"
+                Channel="{x:Bind Path=Alpha, Mode=TwoWay}"
+                StartColor="{x:Bind Path=AlphaStartColor, Mode=OneWay}"
+                EndColor="{x:Bind Path=AlphaEndColor, Mode=OneWay}" />
             <controls:RgbColorChannelUserControl
                 Header="R"
                 Margin="0,4"
