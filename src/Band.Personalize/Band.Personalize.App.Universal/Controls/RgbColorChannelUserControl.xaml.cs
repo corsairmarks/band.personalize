@@ -17,6 +17,7 @@ namespace Band.Personalize.App.Universal.Controls
     using Windows.UI;
     using Windows.UI.Xaml;
     using Windows.UI.Xaml.Controls;
+    using Windows.UI.Xaml.Media;
 
     /// <summary>
     /// A custom <see cref="UserControl"/> for picking a single color (or alpha) channel of an ARGB color.
@@ -39,25 +40,16 @@ namespace Band.Personalize.App.Universal.Controls
             nameof(Channel),
             typeof(byte),
             typeof(RgbColorChannelUserControl),
-            null);
-
-        /// <summary>
-        /// Start color dependency property.
-        /// </summary>
-        public static readonly DependencyProperty StartColorProperty = DependencyProperty.Register(
-            nameof(StartColor),
-            typeof(Color),
-            typeof(RgbColorChannelUserControl),
-            null);
+            new PropertyMetadata((byte)0));
 
         /// <summary>
         /// End color dependency property.
         /// </summary>
-        public static readonly DependencyProperty EndColorProperty = DependencyProperty.Register(
-            nameof(EndColor),
-            typeof(Color),
+        public static readonly DependencyProperty SliderTrackBackgroundProperty = DependencyProperty.Register(
+            nameof(SliderTrackBackground),
+            typeof(Brush),
             typeof(RgbColorChannelUserControl),
-            null);
+            new PropertyMetadata(new SolidColorBrush(Colors.Transparent)));
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RgbColorChannelUserControl"/> class.
@@ -86,21 +78,12 @@ namespace Band.Personalize.App.Universal.Controls
         }
 
         /// <summary>
-        /// Gets or sets the starting gradient color of the control.
+        /// Gets or sets the brush for the slider track background.
         /// </summary>
-        public Color StartColor
+        public Brush SliderTrackBackground
         {
-            get { return (Color)this.GetValue(StartColorProperty); }
-            set { this.SetValue(StartColorProperty, value); }
-        }
-
-        /// <summary>
-        /// Gets or sets the starting gradient color of the control.
-        /// </summary>
-        public Color EndColor
-        {
-            get { return (Color)this.GetValue(EndColorProperty); }
-            set { this.SetValue(EndColorProperty, value); }
+            get { return (Brush)this.GetValue(SliderTrackBackgroundProperty); }
+            set { this.SetValue(SliderTrackBackgroundProperty, value); }
         }
     }
 }

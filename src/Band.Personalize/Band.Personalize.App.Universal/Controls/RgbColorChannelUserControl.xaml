@@ -22,19 +22,13 @@
         <Slider
             Grid.Column="1"
             x:Name="ChannelSlider"
+            Background="{x:Bind Path=SliderTrackBackground, Mode=OneWay}"
             Style="{StaticResource AlphaChannelSlider}"
             Maximum="255"
             Minimum="0"
             StepFrequency="1"
             Margin="4,0"
-            Value="{x:Bind Path=Channel, Mode=TwoWay, Converter={StaticResource ByteToDoubleConverter}}">
-            <Slider.Background>
-                <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
-                    <GradientStop Offset="0" Color="{x:Bind Path=StartColor, Mode=OneWay}"/>
-                    <GradientStop Offset="1" Color="{x:Bind Path=EndColor, Mode=OneWay}"/>
-                </LinearGradientBrush>
-            </Slider.Background>
-        </Slider>
+            Value="{x:Bind Path=Channel, Mode=TwoWay, Converter={StaticResource ByteToDoubleConverter}}" />
         <TextBox
             Grid.Column="2"
             Text="{x:Bind Path=ChannelSlider.Value, Mode=TwoWay}"

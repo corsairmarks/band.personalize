@@ -109,28 +109,52 @@
                 </Rectangle>
             </Grid>
             <controls:RgbColorChannelUserControl
+                x:Uid="AlphaChannel"
                 Header="A"
-                Channel="{x:Bind Path=Alpha, Mode=TwoWay}"
-                StartColor="{x:Bind Path=AlphaStartColor, Mode=OneWay}"
-                EndColor="{x:Bind Path=AlphaEndColor, Mode=OneWay}" />
+                Channel="{x:Bind Path=Alpha, Mode=TwoWay, FallbackValue=0}">
+                <controls:RgbColorChannelUserControl.SliderTrackBackground>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                        <GradientStop Offset="0" Color="{x:Bind Path=AlphaStartColor, Mode=OneWay}"/>
+                        <GradientStop Offset="1" Color="{x:Bind Path=AlphaEndColor, Mode=OneWay}"/>
+                    </LinearGradientBrush>
+                </controls:RgbColorChannelUserControl.SliderTrackBackground>
+            </controls:RgbColorChannelUserControl>
             <controls:RgbColorChannelUserControl
+                x:Uid="RedChannel"
                 Header="R"
                 Margin="0,4"
-                Channel="{x:Bind Path=Red, Mode=TwoWay}"
-                StartColor="{x:Bind Path=RedStartColor, Mode=OneWay}"
-                EndColor="{x:Bind Path=RedEndColor, Mode=OneWay}" />
+                Channel="{x:Bind Path=Red, Mode=TwoWay, FallbackValue=0}">
+                <controls:RgbColorChannelUserControl.SliderTrackBackground>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                        <GradientStop Offset="0" Color="{x:Bind Path=RedStartColor, Mode=OneWay}"/>
+                        <GradientStop Offset="1" Color="{x:Bind Path=RedEndColor, Mode=OneWay}"/>
+                    </LinearGradientBrush>
+                </controls:RgbColorChannelUserControl.SliderTrackBackground>
+            </controls:RgbColorChannelUserControl>
             <controls:RgbColorChannelUserControl
+                x:Uid="GreenChannel"
                 Header="G"
                 Margin="0,4"
-                Channel="{x:Bind Path=Green, Mode=TwoWay}"
-                StartColor="{x:Bind Path=GreenStartColor, Mode=OneWay}"
-                EndColor="{x:Bind Path=GreenEndColor, Mode=OneWay}" />
+                Channel="{x:Bind Path=Green, Mode=TwoWay, FallbackValue=0}">
+                <controls:RgbColorChannelUserControl.SliderTrackBackground>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                        <GradientStop Offset="0" Color="{x:Bind Path=GreenStartColor, Mode=OneWay}"/>
+                        <GradientStop Offset="1" Color="{x:Bind Path=GreenEndColor, Mode=OneWay}"/>
+                    </LinearGradientBrush>
+                </controls:RgbColorChannelUserControl.SliderTrackBackground>
+            </controls:RgbColorChannelUserControl>
             <controls:RgbColorChannelUserControl
+                x:Uid="BlueChannel"
                 Margin="0,4,0,0"
                 Header="B"
-                Channel="{x:Bind Path=Blue, Mode=TwoWay}"
-                StartColor="{x:Bind Path=BlueStartColor, Mode=OneWay}"
-                EndColor="{x:Bind Path=BlueEndColor, Mode=OneWay}" />
+                Channel="{x:Bind Path=Blue, Mode=TwoWay, FallbackValue=0}">
+                <controls:RgbColorChannelUserControl.SliderTrackBackground>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                        <GradientStop Offset="0" Color="{x:Bind Path=BlueStartColor, Mode=OneWay}"/>
+                        <GradientStop Offset="1" Color="{x:Bind Path=BlueEndColor, Mode=OneWay}"/>
+                    </LinearGradientBrush>
+                </controls:RgbColorChannelUserControl.SliderTrackBackground>
+            </controls:RgbColorChannelUserControl>
         </StackPanel>
     </StackPanel>
 </controls:BindableUserControl>
