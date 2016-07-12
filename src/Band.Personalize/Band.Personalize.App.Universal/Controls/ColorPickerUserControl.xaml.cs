@@ -282,7 +282,7 @@ namespace Band.Personalize.App.Universal.Controls
         }
 
         /// <summary>
-        /// Gets the current color with alpha or not as appropriate base on <see cref="UseAlpha"/>.
+        /// Gets the current color based on the alpha and color channels.
         /// </summary>
         public Color SwatchColor
         {
@@ -290,9 +290,7 @@ namespace Band.Personalize.App.Universal.Controls
             {
                 return new Color
                 {
-                    A = this.UseAlpha
-                        ? this.Alpha
-                        : byte.MaxValue,
+                    A = this.Alpha,
                     R = this.Red,
                     G = this.Green,
                     B = this.Blue,
@@ -339,7 +337,9 @@ namespace Band.Personalize.App.Universal.Controls
         {
             get
             {
-                return this.alpha;
+                return this.UseAlpha
+                    ? this.alpha
+                    : byte.MaxValue;
             }
 
             set
