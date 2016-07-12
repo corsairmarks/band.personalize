@@ -10,8 +10,8 @@
     <Button x:Uid="ChooseColorButton" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
         <Button.Flyout>
             <Flyout x:Name="TheFlyout" Opening="TheFlyout_Opening">
-                <StackPanel x:Name="FlyoutPanel" MinWidth="220">
-                    <controls:ColorPickerUserControl x:Name="ColorPicker" Margin="0,0,0,4" Color="{x:Bind Path=PickerColor, Mode=TwoWay}" Orientation="Horizontal" />
+                <StackPanel x:Name="FlyoutPanel">
+                    <controls:ColorPickerUserControl x:Name="ColorPicker" Margin="0,0,0,4" Color="{x:Bind Path=PickerColor, Mode=TwoWay}" />
                     <StackPanel Orientation="Horizontal">
                         <Button x:Uid="ConfirmButton" Content="Confirm" Click="ConfirmButton_Click" TabIndex="0" Margin="0,4,4,0" />
                         <Button x:Uid="CancelButton" Content="Cancel" Click="CancelButton_Click" TabIndex="1" Margin="4,4,0,0" />
@@ -34,7 +34,6 @@
                         <triggers:ApplicationViewOrientationTrigger ApplicationViewOrientation="Landscape" />
                     </VisualState.StateTriggers>
                     <VisualState.Setters>
-                        <Setter Target="FlyoutPanel.MinWidth" Value="472" />
                         <Setter Target="ColorPicker.Orientation" Value="Horizontal" />
                     </VisualState.Setters>
                 </VisualState>
@@ -43,7 +42,6 @@
                         <triggers:ApplicationViewOrientationTrigger ApplicationViewOrientation="Portrait" />
                     </VisualState.StateTriggers>
                     <VisualState.Setters>
-                        <Setter Target="FlyoutPanel.MinWidth" Value="220" />
                         <Setter Target="ColorPicker.Orientation" Value="Vertical" />
                     </VisualState.Setters>
                 </VisualState>

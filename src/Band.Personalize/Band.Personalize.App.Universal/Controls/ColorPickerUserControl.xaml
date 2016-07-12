@@ -11,8 +11,8 @@
     mc:Ignorable="d"
     d:DesignHeight="640"
     d:DesignWidth="360">
-    <StackPanel Orientation="{x:Bind Path=Orientation, Mode=OneWay}">
-        <Grid x:Name="ColorPickerGrid" MaxHeight="300" MaxWidth="300">
+    <RelativePanel x:Name="ThePanel" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+        <Grid x:Name="ColorPickerGrid">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
@@ -28,7 +28,7 @@
                 Text="{x:Bind Path=Color, Mode=TwoWay}"
                 IsTextPredictionEnabled="False"
                 IsSpellCheckEnabled="False" />
-            <Grid x:Name="PickerCell" Grid.Column="0" Grid.Row="1">
+            <Grid Grid.Column="0" Grid.Row="1">
                 <Grid x:Name="PickerGrid" SizeChanged="PickerGrid_SizeChanged">
                     <i:Interaction.Behaviors>
                         <behaviors:SquareBehavior x:Name="PickerGridSquareBehavior" />
@@ -103,9 +103,7 @@
 
         <StackPanel
             x:Name="ColorSliderPanel"
-            HorizontalAlignment="Stretch"
-            MinWidth="200"
-            MaxWidth="300">
+            MinWidth="176">
             <Grid Margin="0,0,0,4" Background="{ThemeResource AlphaTileBrush}">
                 <Rectangle Height="32">
                     <Rectangle.Fill>
@@ -169,10 +167,20 @@
                         <triggers:OrientationMatchTrigger ExpectedValue="Horizontal" Value="{x:Bind Path=Orientation, Mode=OneWay}" />
                     </VisualState.StateTriggers>
                     <VisualState.Setters>
-                        <Setter Target="ColorPickerGrid.Margin" Value="0,0,4,0" />
-                        <Setter Target="ColorPickerGrid.VerticalAlignment" Value="Stretch" />
-                        <Setter Target="ColorSliderPanel.Margin" Value="4,0,0,0" />
+                        <Setter Target="ColorPickerGrid.(RelativePanel.AlignTopWithPanel)" Value="True" />
+                        <Setter Target="ColorPickerGrid.(RelativePanel.AlignLeftWithPanel)" Value="True" />
+                        <Setter Target="ColorPickerGrid.(RelativePanel.AlignRightWithPanel)" Value="False" />
+                        <Setter Target="ColorPickerGrid.(RelativePanel.AlignBottomWithPanel)" Value="True" />
+
+                        <Setter Target="ColorSliderPanel.(RelativePanel.RightOf)" Value="ColorPickerGrid" />
+                        <Setter Target="ColorSliderPanel.(RelativePanel.AlignTopWithPanel)" Value="True" />
+                        <Setter Target="ColorSliderPanel.(RelativePanel.AlignLeftWithPanel)" Value="False" />
+                        <Setter Target="ColorSliderPanel.(RelativePanel.AlignRightWithPanel)" Value="True" />
+                        <Setter Target="ColorSliderPanel.(RelativePanel.AlignBottomWithPanel)" Value="True" />
+
                         <Setter Target="PickerGridSquareBehavior.ScalableOrientation" Value="Vertical" />
+                        <Setter Target="ColorPickerGrid.Margin" Value="0,0,4,0" />
+                        <Setter Target="ColorSliderPanel.Margin" Value="4,0,0,0" />
                     </VisualState.Setters>
                 </VisualState>
                 <VisualState x:Name="Vertical">
@@ -180,12 +188,23 @@
                         <triggers:OrientationMatchTrigger ExpectedValue="Vertical" Value="{x:Bind Path=Orientation, Mode=OneWay}" />
                     </VisualState.StateTriggers>
                     <VisualState.Setters>
+                        <Setter Target="ColorPickerGrid.(RelativePanel.AlignTopWithPanel)" Value="True" />
+                        <Setter Target="ColorPickerGrid.(RelativePanel.AlignLeftWithPanel)" Value="True" />
+                        <Setter Target="ColorPickerGrid.(RelativePanel.AlignRightWithPanel)" Value="True" />
+                        <Setter Target="ColorPickerGrid.(RelativePanel.AlignBottomWithPanel)" Value="False" />
+
+                        <Setter Target="ColorSliderPanel.(RelativePanel.Below)" Value="ColorPickerGrid" />
+                        <Setter Target="ColorSliderPanel.(RelativePanel.AlignTopWithPanel)" Value="False" />
+                        <Setter Target="ColorSliderPanel.(RelativePanel.AlignLeftWithPanel)" Value="True" />
+                        <Setter Target="ColorSliderPanel.(RelativePanel.AlignRightWithPanel)" Value="True" />
+                        <Setter Target="ColorSliderPanel.(RelativePanel.AlignBottomWithPanel)" Value="True" />
+
+                        <Setter Target="PickerGridSquareBehavior.ScalableOrientation" Value="Horizontal" />
                         <Setter Target="ColorPickerGrid.Margin" Value="0,0,0,4" />
                         <Setter Target="ColorSliderPanel.Margin" Value="0,4,0,0" />
-                        <Setter Target="PickerGridSquareBehavior.ScalableOrientation" Value="Horizontal" />
                     </VisualState.Setters>
                 </VisualState>
             </VisualStateGroup>
         </VisualStateManager.VisualStateGroups>
-    </StackPanel>
+    </RelativePanel>
 </controls:BindableUserControl>
