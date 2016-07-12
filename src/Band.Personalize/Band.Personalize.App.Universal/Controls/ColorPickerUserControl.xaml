@@ -21,6 +21,7 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
+            <!-- TODO: bind safely to a string that may or may not convert, take into account UseAlpha -->
             <TextBox
                 Grid.ColumnSpan="2"
                 Grid.Row="0"
