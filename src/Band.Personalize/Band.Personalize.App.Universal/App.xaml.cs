@@ -29,10 +29,12 @@ namespace Band.Personalize.App.Universal
     using Windows.ApplicationModel.Activation;
     using Windows.ApplicationModel.Resources;
     using Windows.UI.Xaml;
+    using Windows.UI.Xaml.Data;
 
     /// <summary>
     /// Provides application-specific behavior to supplement the default Application class.
     /// </summary>
+    [Bindable]
     public sealed partial class App : PrismUnityApplication
     {
         /// <summary>

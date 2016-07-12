@@ -17,6 +17,7 @@
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <PackageCertificateKeyFile>Band.Personalize.App.Universal_TemporaryKey.pfx</PackageCertificateKeyFile>
+    <PackageCertificateThumbprint>97557448A534893CA69C53A001C5554EE2732809</PackageCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <DebugSymbols>true</DebugSymbols>
@@ -123,6 +124,7 @@
     <Compile Include="Converters\HardwareRevisionToBooleanConverter.cs" />
     <Compile Include="Converters\ConnectionTypeToSymbolConverter.cs" />
     <Compile Include="Converters\HardwareRevisionToVisibilityConverter.cs" />
+    <Compile Include="Converters\BooleanToVisibilityConverter.cs" />
     <Compile Include="Triggers\OrientationMatchTrigger.cs" />
     <Compile Include="Triggers\PropertyMatchTrigger.cs" />
     <Compile Include="Triggers\ApplicationViewOrientationTrigger.cs" />
