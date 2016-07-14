@@ -15,26 +15,27 @@
 namespace Band.Personalize.App.Universal
 {
     using System;
-    using System.Collections.Generic;
-    using System.IO;
-    using System.Linq;
-    using System.Runtime.InteropServices.WindowsRuntime;
+    using System.Diagnostics;
+    using System.Threading.Tasks;
+    using Microsoft.Practices.Unity;
+    using Model.Library.Repository;
+    using Prism.Events;
+    using Prism.Unity.Windows;
+    using Prism.Windows;
+    using Prism.Windows.AppModel;
+    using Prism.Windows.Navigation;
+    using ViewModels.Design;
     using Windows.ApplicationModel;
     using Windows.ApplicationModel.Activation;
-    using Windows.Foundation;
-    using Windows.Foundation.Collections;
+    using Windows.ApplicationModel.Resources;
     using Windows.UI.Xaml;
-    using Windows.UI.Xaml.Controls;
-    using Windows.UI.Xaml.Controls.Primitives;
     using Windows.UI.Xaml.Data;
-    using Windows.UI.Xaml.Input;
-    using Windows.UI.Xaml.Media;
-    using Windows.UI.Xaml.Navigation;
 
     /// <summary>
     /// Provides application-specific behavior to supplement the default Application class.
     /// </summary>
-    public sealed partial class App : Application
+    [Bindable]
+    public sealed partial class App : PrismUnityApplication
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="App"/> class, which is the singleton application object.
@@ -47,61 +48,110 @@ namespace Band.Personalize.App.Universal
         }
 
         /// <summary>
-        /// Invoked when the application is launched normally by the end user.  Other entry points
-        /// will be used such as when the application is launched to open a specific file.
+        /// Gets the Event Aggregator.
         /// </summary>
-        /// <param name="e">Details about the launch request and process.</param>
-        protected override void OnLaunched(LaunchActivatedEventArgs e)
+        public IEventAggregator EventAggregator { get; private set; }
+
+        /// <summary>
+        /// Logic that will be performed after the application is initialized. For example, navigating to the application's home page.
+        /// </summary>
+        /// <param name="e">The <see cref="IActivatedEventArgs"/> instance containing the event data.</param>
+        /// <returns>The asynchronous task.</returns>
+        protected override Task OnLaunchApplicationAsync(LaunchActivatedEventArgs e)
         {
 #if DEBUG
-            if (System.Diagnostics.Debugger.IsAttached)
+            if (Debugger.IsAttached)
             {
                 this.DebugSettings.EnableFrameRateCounter = true;
             }
 #endif
-            Frame rootFrame = Window.Current.Content as Frame;
 
-            // Do not repeat app initialization when the Window already has content,
-            // just ensure that the window is active
-            if (rootFrame == null)
+            if (e != null)
             {
-                // Create a Frame to act as the navigation context and navigate to the first page
-                rootFrame = new Frame();
-
-                rootFrame.NavigationFailed += this.OnNavigationFailed;
-
-                if (e.PreviousExecutionState == ApplicationExecutionState.Terminated)
+                if (!string.IsNullOrWhiteSpace(e.Arguments))
+                {
+                    // The app was launched from a Secondary Tile
+                    // Navigate to the item's page
+                    this.NavigationService.Navigate("ItemDetail", e.Arguments);
+                }
+                else if (e.PreviousExecutionState == ApplicationExecutionState.Terminated)
                 {
                     // TODO: Load state from previously suspended application
+                    this.NavigationService.RestoreSavedNavigation();
                 }
-
-                // Place the frame in the current Window
-                Window.Current.Content = rootFrame;
-            }
-
-            if (e.PrelaunchActivated == false)
-            {
-                if (rootFrame.Content == null)
+                else
                 {
-                    // When the navigation stack isn't restored navigate to the first page,
-                    // configuring the new page by passing required information as a navigation
-                    // parameter
-                    rootFrame.Navigate(typeof(MainPage), e.Arguments);
+                    this.NavigateToDefaultPage();
                 }
-
-                // Ensure the current window is active
-                Window.Current.Activate();
             }
+            else
+            {
+                this.NavigateToDefaultPage();
+            }
+
+            Window.Current.Activate();
+            return Task.CompletedTask;
         }
 
         /// <summary>
-        /// Invoked when Navigation to a certain page fails
+        ///  Used for setting up the list of known types for the <see cref="PrismApplication.SessionStateService"/>,
+        ///  using the <see cref="ISessionStateService.RegisterKnownType(Type)"/> method.
         /// </summary>
-        /// <param name="sender">The Frame which failed navigation</param>
-        /// <param name="e">Details about the navigation failure</param>
-        private void OnNavigationFailed(object sender, NavigationFailedEventArgs e)
+        protected override void OnRegisterKnownTypesForSerialization()
         {
-            throw new Exception("Failed to load Page " + e.SourcePageType.FullName);
+            // Set up the list of known types for the SuspensionManager
+            // this.SessionStateService.RegisterKnownType(typeof(Address));
+            // this.SessionStateService.RegisterKnownType(typeof(PaymentMethod));
+            // this.SessionStateService.RegisterKnownType(typeof(UserInfo));
+            // this.SessionStateService.RegisterKnownType(typeof(CheckoutDataViewModel));
+            // this.SessionStateService.RegisterKnownType(typeof(ObservableCollection<CheckoutDataViewModel>));
+            // this.SessionStateService.RegisterKnownType(typeof(ShippingMethod));
+            // this.SessionStateService.RegisterKnownType(typeof(Dictionary<string, Collection<string>>));
+            // this.SessionStateService.RegisterKnownType(typeof(Order));
+            // this.SessionStateService.RegisterKnownType(typeof(Product));
+            // this.SessionStateService.RegisterKnownType(typeof(Collection<Product>));
+        }
+
+        /// <summary>
+        /// The initialization logic of the application. Here you can initialize services, repositories, and so on.
+        /// </summary>
+        /// <param name="e">The <see cref="IActivatedEventArgs"/> instance containing the event data.</param>
+        /// <returns>The asynchronous task.</returns>
+        protected override Task OnInitializeAsync(IActivatedEventArgs e)
+        {
+            this.EventAggregator = new EventAggregator();
+
+            this.Container.RegisterInstance<INavigationService>(this.NavigationService);
+            this.Container.RegisterInstance<ISessionStateService>(this.SessionStateService);
+            this.Container.RegisterInstance<IEventAggregator>(this.EventAggregator);
+            this.Container.RegisterInstance<IResourceLoader>(new ResourceLoaderAdapter(new ResourceLoader()));
+
+            // Register services
+            // this.Container.RegisterType<IAccountService, AccountService>(new ContainerControlledLifetimeManager());
+            // this.Container.RegisterType<ICredentialStore, RoamingCredentialStore>(new ContainerControlledLifetimeManager());
+            // this.Container.RegisterType<ICacheService, TemporaryFolderCacheService>(new ContainerControlledLifetimeManager());
+            // this.Container.RegisterType<ISecondaryTileService, SecondaryTileService>(new ContainerControlledLifetimeManager());
+            // this.Container.RegisterType<IAlertMessageService, AlertMessageService>(new ContainerControlledLifetimeManager());
+
+            // Register repositories
+            this.Container.RegisterInstance<IBandPersonalizer>(BandPersonalizerStub.Instance);
+            this.Container.RegisterInstance<IBandRepository>(BandRepositoryStub.Instance);
+
+            // Register child view models
+            // this.Container.RegisterType<IShippingAddressUserControlViewModel, ShippingAddressUserControlViewModel>();
+            // this.Container.RegisterType<IBillingAddressUserControlViewModel, BillingAddressUserControlViewModel>();
+            // this.Container.RegisterType<IPaymentMethodUserControlViewModel, PaymentMethodUserControlViewModel>();
+            // this.Container.RegisterType<ISignInUserControlViewModel, SignInUserControlViewModel>();
+            return base.OnInitializeAsync(e);
+        }
+
+        /// <summary>
+        /// Navigate to the default page of the application.
+        /// </summary>
+        /// <returns>Returns <c>true</c> if navigation succeeds; otherwise, <c>false</c>.</returns>
+        private bool NavigateToDefaultPage()
+        {
+            return this.NavigationService.Navigate("Main", null);
         }
 
         /// <summary>
@@ -116,6 +166,8 @@ namespace Band.Personalize.App.Universal
             var deferral = e.SuspendingOperation.GetDeferral();
 
             // TODO: Save application state and stop any background activity
+            this.NavigationService.Suspending();
+
             deferral.Complete();
         }
     }

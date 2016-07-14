@@ -1,0 +1,90 @@
+﻿<prismMvvm:SessionStateAwarePage
+    x:Class="Band.Personalize.App.Universal.Views.BandPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="using:Band.Personalize.App.Universal.Controls"
+    xmlns:designViewModels="using:Band.Personalize.App.Universal.ViewModels.Design"
+    xmlns:prismMvvm="using:Prism.Windows.Mvvm"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    d:DataContext="{d:DesignInstance Type=designViewModels:DesignBandPageViewModel, IsDesignTimeCreatable=True}"
+    prismMvvm:ViewModelLocator.AutoWireViewModel="True"
+    mc:Ignorable="d">
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition x:Name="TopGridRow" />
+            <RowDefinition x:Name="BottomGridRow" />
+        </Grid.RowDefinitions>
+        <Pivot Name="ThePivot">
+            <PivotItem Header="Theme" x:Uid="ThemePivotItem" Margin="12">
+                <GridView
+                    ItemContainerStyle="{StaticResource ResourceKey=ThemeColorTileContainer}"
+                    ItemsSource="{Binding Path=CurrentThemeColors, Mode=OneWay}">
+                    <GridView.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <ItemsWrapGrid ItemWidth="120" MaximumRowsOrColumns="3" Orientation="Horizontal" />
+                        </ItemsPanelTemplate>
+                    </GridView.ItemsPanel>
+                    <GridView.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel>
+                                <TextBlock Text="{Binding Path=Title, Mode=OneWay}" />
+                                <controls:ColorPickerFlyoutUserControl HorizontalContentAlignment="Stretch" ColorOuter="{Binding Path=Swatch, Mode=TwoWay}" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </GridView.ItemTemplate>
+                </GridView>
+            </PivotItem>
+            <PivotItem Header="Image" x:Uid="ImagePivotItem" Margin="12">
+                <StackPanel>
+                    <Image Source="{Binding Path=CurrentMeTileImage}" Stretch="None" HorizontalAlignment="Left" />
+                    <Button x:Uid="BrowseButton" Content="Browse" Command="{Binding Path=BrowserForMeTileImageCommand}" Margin="0,7" />
+                    <ToggleSwitch
+                        x:Uid="BandVersionToggle"
+                        Header="Use original Band height (102px)"
+                        IsOn="{Binding Path=IsUseOriginalBandHeight, Mode=TwoWay}"
+                        Visibility="{Binding Path=CurrentBand.HardwareRevision, Converter={StaticResource ResourceKey=HardwareRevisionToVisibilityConverter}}"
+                        IsEnabled="{Binding Path=CurrentBand.HardwareRevision, Converter={StaticResource ResourceKey=HardwareRevisionToBooleanConverter}}" />
+                </StackPanel>
+            </PivotItem>
+        </Pivot>
+        <CommandBar Name="TheCommandBar">
+            <CommandBar.Content>
+                <StackPanel Orientation="Horizontal" Margin="12,12">
+                    <SymbolIcon Symbol="{Binding Path=CurrentBand.ConnectionType, Converter={StaticResource ResourceKey=ConnectionTypeToSymbolConverter}}" Foreground="{StaticResource ResourceKey=SystemControlHighlightListAccentMediumBrush}" />
+                    <TextBlock Text="{Binding Path=CurrentBand.Name}" Foreground="{StaticResource ResourceKey=SystemControlHighlightListAccentMediumBrush}" />
+                </StackPanel>
+            </CommandBar.Content>
+            <CommandBar.PrimaryCommands>
+                <AppBarButton x:Uid="RefreshAppBarButton" Icon="Refresh" Label="Refresh" Command="{Binding Path=RefreshPersonalizationCommand}" CommandParameter="{Binding Path=SelectedIndex, ElementName=ThePivot}" IsEnabled="{Binding Path=IsNotBusy}" />
+                <AppBarButton x:Uid="ApplyAppBarButton" Icon="Save" Label="Apply" Command="{Binding Path=ApplyPersonalizationCommand}" CommandParameter="{Binding Path=SelectedIndex, ElementName=ThePivot}" IsEnabled="{Binding Path=IsNotBusy}" />
+            </CommandBar.PrimaryCommands>
+        </CommandBar>
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup>
+                <VisualState x:Name="MediumLayout">
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="641" />
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="ThePivot.(Grid.Row)" Value="1" />
+                        <Setter Target="TheCommandBar.(Grid.Row)" Value="0" />
+                        <Setter Target="TopGridRow.Height" Value="Auto" />
+                        <Setter Target="BottomGridRow.Height" Value="*" />
+                    </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="NarrowLayout">
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="0" />
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="ThePivot.(Grid.Row)" Value="0" />
+                        <Setter Target="TheCommandBar.(Grid.Row)" Value="1" />
+                        <Setter Target="TopGridRow.Height" Value="*" />
+                        <Setter Target="BottomGridRow.Height" Value="Auto" />
+                    </VisualState.Setters>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
+    </Grid>
+</prismMvvm:SessionStateAwarePage>

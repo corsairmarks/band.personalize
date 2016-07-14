@@ -1,8 +1,20 @@
-﻿<Application
+﻿<prismUnity:PrismUnityApplication
     x:Class="Band.Personalize.App.Universal.App"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:Band.Personalize.App.Universal"
-    RequestedTheme="Light">
-
-</Application>
+    xmlns:converters="using:Band.Personalize.App.Universal.Converters"
+    xmlns:prismUnity="using:Prism.Unity.Windows"
+    RequestedTheme="Dark">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Themes/AppStyles.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+            <converters:ByteToDoubleConverter x:Key="ByteToDoubleConverter" />
+            <converters:ConnectionTypeToSymbolConverter x:Key="ConnectionTypeToSymbolConverter" />
+            <converters:HardwareRevisionToBooleanConverter x:Key="HardwareRevisionToBooleanConverter" />
+            <converters:HardwareRevisionToVisibilityConverter x:Key="HardwareRevisionToVisibilityConverter" />
+        </ResourceDictionary>
+    </Application.Resources>
+</prismUnity:PrismUnityApplication>
