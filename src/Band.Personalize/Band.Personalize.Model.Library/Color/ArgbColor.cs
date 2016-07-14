@@ -93,7 +93,40 @@ namespace Band.Personalize.Model.Library.Color
         }
 
         /// <summary>
-        /// Parse a well-formatted hexadecimal color string into a instance of <see cref="ArgbColor"/>.
+        /// Try to parse a hexadecimal color string into an instance of <see cref="ArgbColor"/>.
+        /// The accepted format is 8 hexadecimal digits, optionally preceded by #.
+        /// </summary>
+        /// <param name="str">The string to try to parse.</param>
+        /// <param name="result">
+        /// When this method returns, contains a new instance of <see cref="ArgbColor"/> equivalent to the
+        /// hexadecimal ARGB string contained in <paramref name="str"/>, if the conversion succeeded, or
+        /// <c>null</c> if the conversion failed.  This parameter is passed uninitialized; any value
+        /// originally supplied in result will be overwritten.
+        /// </param>
+        /// <returns><c>true</c> if <paramref name="str"/> was converted successfully; otherwise, <c>false</c>.</returns>
+        public static bool TryFromArgbString(string str, out ArgbColor result)
+        {
+            if (str != null && HexadecimalStringPattern.IsMatch(str))
+            {
+                var hexStr = str
+                    .Trim()
+                    .TrimStart('#');
+                result = new ArgbColor(
+                    byte.Parse(hexStr.Substring(0, 2), NumberStyles.HexNumber),
+                    byte.Parse(hexStr.Substring(2, 2), NumberStyles.HexNumber),
+                    byte.Parse(hexStr.Substring(4, 2), NumberStyles.HexNumber),
+                    byte.Parse(hexStr.Substring(6, 2), NumberStyles.HexNumber));
+                return true;
+            }
+            else
+            {
+                result = null;
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Parse a well-formatted hexadecimal color string into an instance of <see cref="ArgbColor"/>.
         /// The accepted format is 8 hexadecimal digits, optionally preceded by #.
         /// </summary>
         /// <param name="str">The string to parse.</param>
@@ -106,20 +139,16 @@ namespace Band.Personalize.Model.Library.Color
             {
                 throw new ArgumentNullException(nameof(str));
             }
-            else if (!HexadecimalStringPattern.IsMatch(str))
+
+            ArgbColor result;
+            if (TryFromArgbString(str, out result))
+            {
+                return result;
+            }
+            else
             {
                 throw new FormatException(string.Format("the {0} parameter must be a hexadecimal ARGB color string: 8 hexadecimal digits, optionally preceded by #", nameof(str)));
             }
-
-            var hexStr = str
-                .Trim()
-                .TrimStart('#');
-
-            return new ArgbColor(
-                byte.Parse(hexStr.Substring(0, 2), NumberStyles.HexNumber),
-                byte.Parse(hexStr.Substring(2, 2), NumberStyles.HexNumber),
-                byte.Parse(hexStr.Substring(4, 2), NumberStyles.HexNumber),
-                byte.Parse(hexStr.Substring(6, 2), NumberStyles.HexNumber));
         }
 
         /// <summary>

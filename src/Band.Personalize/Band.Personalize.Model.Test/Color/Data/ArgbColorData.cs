@@ -85,7 +85,7 @@ namespace Band.Personalize.Model.Test.Color.Data
         /// <summary>
         /// Gets the test data for the <see cref="ArgbColorTests.FromArgbString_InvalidFormat_Throws(string)"/> test.
         /// </summary>
-        public static IEnumerable<IEnumerable<string>> InvalidHexadecimalColorStrings
+        public static IEnumerable<IEnumerable<string>> InvalidHexadecimalArgbColorStrings
         {
             get
             {
@@ -120,7 +120,7 @@ namespace Band.Personalize.Model.Test.Color.Data
         /// <summary>
         /// Gets the test data for the <see cref="ArgbColorTests.FromArgbString_ValidFormat_ReturnsEquivalentArgbColor(string, ArgbColor)"/> test.
         /// </summary>
-        public static IEnumerable<IEnumerable<object>> ValidHexadecimalColorStrings
+        public static IEnumerable<IEnumerable<object>> ValidHexadecimalArgbColorStrings
         {
             get
             {

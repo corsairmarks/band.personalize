@@ -492,6 +492,66 @@ namespace Band.Personalize.Model.Test.Color
         }
 
         /// <summary>
+        /// Verify the <see cref="ArgbColor.TryFromArgbString(string, out ArgbColor)"/> method does not throw an <see cref="ArgumentNullException"/>
+        /// when it is passed <c>null</c>, but instead returns <c>false</c> and outputs <c>null</c>.
+        /// </summary>
+        [Fact]
+        public void TryFromArgbString_NullInput_DoesNotThrowAndIsFalse()
+        {
+            // Arrange
+            string target = null;
+            ArgbColor parseResult;
+
+            // Act
+            var result = ArgbColor.TryFromArgbString(target, out parseResult);
+
+            // Assert
+            Assert.False(result);
+            Assert.Null(parseResult);
+        }
+
+        /// <summary>
+        /// Verify the <see cref="ArgbColor.TryFromArgbString(string, out ArgbColor)"/> method does not throw a <see cref="FormatException"/>
+        /// when it is passed string data it cannot parse, but instead returns <c>false</c> and outputs <c>null</c>.
+        /// </summary>
+        /// <param name="target">The target string to try to parse.</param>
+        [Theory]
+        [MemberData(nameof(ArgbColorData.InvalidHexadecimalArgbColorStrings), MemberType = typeof(ArgbColorData))]
+        public void TryFromArgbString_InvalidFormat_DoesNotThrowAndIsFalse(string target)
+        {
+            // Arrange
+            ArgbColor parseResult;
+
+            // Act
+            var result = ArgbColor.TryFromArgbString(target, out parseResult);
+
+            // Assert
+            Assert.False(result);
+            Assert.Null(parseResult);
+        }
+
+        /// <summary>
+        /// Verify the <see cref="ArgbColor.TryFromArgbString(string, out ArgbColor)"/> method outputs the expected <see cref="ArgbColor"/>
+        /// and returns <c>true</c> when it is passed string data it can parse.
+        /// </summary>
+        /// <param name="target">The target string to try to parse.</param>
+        /// <param name="expected">The expected output of parsing.</param>
+        [Theory]
+        [MemberData(nameof(ArgbColorData.ValidHexadecimalArgbColorStrings), MemberType = typeof(ArgbColorData))]
+        public void TryFromArgbString_ValidFormat_OutputsEquivalentArgbColorAndIsTrue(string target, ArgbColor expected)
+        {
+            // Arrange
+            ArgbColor parseResult;
+
+            // Act
+            var result = ArgbColor.TryFromArgbString(target, out parseResult);
+
+            // Assert
+            Assert.True(result);
+            Assert.Equal(expected, parseResult);
+        }
+
+        /// <summary>
         /// Verify the <see cref="ArgbColor.FromArgbString(string)"/> method throws an <see cref="ArgumentNullException"/> when it is passed <c>null</c>.
         /// </summary>
         [Fact]
@@ -513,7 +573,7 @@ namespace Band.Personalize.Model.Test.Color
         /// </summary>
         /// <param name="target">The target string to parse.</param>
         [Theory]
-        [MemberData(nameof(ArgbColorData.InvalidHexadecimalColorStrings), MemberType = typeof(ArgbColorData))]
+        [MemberData(nameof(ArgbColorData.InvalidHexadecimalArgbColorStrings), MemberType = typeof(ArgbColorData))]
         public void FromArgbString_InvalidFormat_Throws(string target)
         {
             // Act
@@ -524,12 +584,12 @@ namespace Band.Personalize.Model.Test.Color
         }
 
         /// <summary>
-        /// Verify the <see cref="ArgbColor.FromArgbString(string)"/> method throws a <see cref="FormatException"/> when it is passed string data it cannot parse.
+        /// Verify the <see cref="ArgbColor.FromArgbString(string)"/> method returns the expected <see cref="ArgbColor"/> when it is passed string data it can parse.
         /// </summary>
         /// <param name="target">The target string to parse.</param>
         /// <param name="expected">The expected result of parsing.</param>
         [Theory]
-        [MemberData(nameof(ArgbColorData.ValidHexadecimalColorStrings), MemberType = typeof(ArgbColorData))]
+        [MemberData(nameof(ArgbColorData.ValidHexadecimalArgbColorStrings), MemberType = typeof(ArgbColorData))]
         public void FromArgbString_ValidFormat_ReturnsEquivalentArgbColor(string target, ArgbColor expected)
         {
             // Act

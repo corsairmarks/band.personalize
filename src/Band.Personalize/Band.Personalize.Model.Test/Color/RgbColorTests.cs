@@ -400,6 +400,66 @@ namespace Band.Personalize.Model.Test.Color
         }
 
         /// <summary>
+        /// Verify the <see cref="RgbColor.TryFromRgbString(string, out RgbColor)"/> method does not throw an <see cref="ArgumentNullException"/>
+        /// when it is passed <c>null</c>, but instead returns <c>false</c> and outputs <c>null</c>.
+        /// </summary>
+        [Fact]
+        public void TryFromRgbString_NullInput_DoesNotThrowAndIsFalse()
+        {
+            // Arrange
+            string target = null;
+            RgbColor parseResult;
+
+            // Act
+            var result = RgbColor.TryFromRgbString(target, out parseResult);
+
+            // Assert
+            Assert.False(result);
+            Assert.Null(parseResult);
+        }
+
+        /// <summary>
+        /// Verify the <see cref="RgbColor.TryFromRgbString(string, out RgbColor)"/> method does not throw a <see cref="FormatException"/>
+        /// when it is passed string data it cannot parse, but instead returns <c>false</c> and outputs <c>null</c>.
+        /// </summary>
+        /// <param name="target">The target string to try to parse.</param>
+        [Theory]
+        [MemberData(nameof(RgbColorData.InvalidHexadecimalRgbColorStrings), MemberType = typeof(RgbColorData))]
+        public void TryFromRgbString_InvalidFormat_DoesNotThrowAndIsFalse(string target)
+        {
+            // Arrange
+            RgbColor parseResult;
+
+            // Act
+            var result = RgbColor.TryFromRgbString(target, out parseResult);
+
+            // Assert
+            Assert.False(result);
+            Assert.Null(parseResult);
+        }
+
+        /// <summary>
+        /// Verify the <see cref="RgbColor.TryFromRgbString(string, out RgbColor)"/> method outputs the expected <see cref="RgbColor"/>
+        /// and returns <c>true</c> when it is passed string data it can parse.
+        /// </summary>
+        /// <param name="target">The target string to try to parse.</param>
+        /// <param name="expected">The expected output of parsing.</param>
+        [Theory]
+        [MemberData(nameof(RgbColorData.ValidHexadecimalRgbColorStrings), MemberType = typeof(RgbColorData))]
+        public void TryFromRgbString_ValidFormat_OutputsEquivalentRgbColorAndIsTrue(string target, RgbColor expected)
+        {
+            // Arrange
+            RgbColor parseResult;
+
+            // Act
+            var result = RgbColor.TryFromRgbString(target, out parseResult);
+
+            // Assert
+            Assert.True(result);
+            Assert.Equal(expected, parseResult);
+        }
+
+        /// <summary>
         /// Verify the <see cref="RgbColor.FromRgbString(string)"/> method throws an <see cref="ArgumentNullException"/> when it is passed <c>null</c>.
         /// </summary>
         [Fact]
@@ -432,7 +492,7 @@ namespace Band.Personalize.Model.Test.Color
         }
 
         /// <summary>
-        /// Verify the <see cref="RgbColor.FromRgbString(string)"/> method throws a <see cref="FormatException"/> when it is passed string data it cannot parse.
+        /// Verify the <see cref="RgbColor.FromRgbString(string)"/> method returns the expected <see cref="ArgbColor"/> when it is passed string data it can parse.
         /// </summary>
         /// <param name="target">The target string to parse.</param>
         /// <param name="expected">The expected result of parsing.</param>
