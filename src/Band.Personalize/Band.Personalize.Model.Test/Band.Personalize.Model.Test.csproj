@@ -107,6 +107,9 @@
     <SDKReference Include="TestPlatform.Universal, Version=$(UnitTestPlatformVersion)" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Band\BandConnectionTypeExtensionsTests.cs" />
+    <Compile Include="Band\Dimension2DTests.cs" />
+    <Compile Include="Band\HardwareRevisionExtensionsTests.cs" />
     <Compile Include="Color\ArgbColorExtensionsTests.cs" />
     <Compile Include="Color\ArgbColorTests.cs" />
     <Compile Include="Color\BandColorExtensionsTests.cs" />

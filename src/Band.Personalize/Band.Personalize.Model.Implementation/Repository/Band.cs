@@ -12,31 +12,47 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Band.Personalize.Model.Library.Band
+namespace Band.Personalize.Model.Implementation.Repository
 {
+    using Library.Band;
+    using Microsoft.Band;
+
     /// <summary>
     /// Information about a Microsoft Band.
     /// </summary>
-    public interface IBand
+    internal class Band : IBand
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Band"/> class.
+        /// </summary>
+        /// <param name="bandInfo">Band information from the Band SDK.</param>
+        /// <param name="hardwareVersion">The hardware verision, which requires a second connection.</param>
+        public Band(IBandInfo bandInfo, int hardwareVersion)
+        {
+            this.Name = bandInfo.Name;
+            this.HardwareVersion = hardwareVersion;
+            this.HardwareRevision = hardwareVersion.ToHardwareRevision();
+            this.ConnectionType = bandInfo.ConnectionType.ToConnectionType();
+        }
+
         /// <summary>
         /// Gets the name.
         /// </summary>
-        string Name { get; }
+        public string Name { get; }
 
         /// <summary>
         /// Gets the hardware major revision level.
         /// </summary>
-        HardwareRevision HardwareRevision { get; }
+        public HardwareRevision HardwareRevision { get; }
 
         /// <summary>
         /// Gets the specific hardware version.
         /// </summary>
-        int HardwareVersion { get; }
+        public int HardwareVersion { get; }
 
         /// <summary>
         /// Gets the connection type between the application host and the Microsoft Band.
         /// </summary>
-        ConnectionType ConnectionType { get; }
+        public ConnectionType ConnectionType { get; }
     }
 }

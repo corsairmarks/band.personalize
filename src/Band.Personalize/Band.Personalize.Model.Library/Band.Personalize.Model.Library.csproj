@@ -116,6 +116,9 @@
     <AdditionalFiles Include="..\stylecop.json" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Band\BandConnectionTypeExtensions.cs" />
+    <Compile Include="Band\Dimension2D.cs" />
+    <Compile Include="Band\HardwareRevisionExtensions.cs" />
     <Compile Include="Band\IBand.cs" />
     <Compile Include="Band\ConnectionType.cs" />
     <Compile Include="Band\HardwareRevision.cs" />

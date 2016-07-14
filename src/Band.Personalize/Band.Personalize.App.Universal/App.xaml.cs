@@ -17,7 +17,10 @@ namespace Band.Personalize.App.Universal
     using System;
     using System.Diagnostics;
     using System.Threading.Tasks;
+    using Microsoft.Band;
     using Microsoft.Practices.Unity;
+    using Model.Implementation.Repository;
+    using Model.Library.Band;
     using Model.Library.Repository;
     using Prism.Events;
     using Prism.Unity.Windows;
@@ -134,8 +137,15 @@ namespace Band.Personalize.App.Universal
             // this.Container.RegisterType<IAlertMessageService, AlertMessageService>(new ContainerControlledLifetimeManager());
 
             // Register repositories
+#if DEBUG && STUB
             this.Container.RegisterInstance<IBandPersonalizer>(BandPersonalizerStub.Instance);
             this.Container.RegisterInstance<IBandRepository>(BandRepositoryStub.Instance);
+#else
+            this.Container.RegisterInstance<IBandClientManager>(BandClientManager.Instance);
+            this.Container.RegisterInstance<Func<IBand>>(() => null); // TODO: actually get the "currently selected Band" (child container?)
+            this.Container.RegisterType<IBandPersonalizer, BandPersonalizer>(new ContainerControlledLifetimeManager());
+            this.Container.RegisterType<IBandRepository, BandRepository>(new ContainerControlledLifetimeManager());
+#endif
 
             // Register child view models
             // this.Container.RegisterType<IShippingAddressUserControlViewModel, ShippingAddressUserControlViewModel>();
