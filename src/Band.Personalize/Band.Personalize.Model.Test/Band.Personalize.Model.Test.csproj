@@ -107,10 +107,14 @@
     <SDKReference Include="TestPlatform.Universal, Version=$(UnitTestPlatformVersion)" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Color\ArgbColorExtensionsTests.cs" />
+    <Compile Include="Color\ArgbColorTests.cs" />
     <Compile Include="Color\BandColorExtensionsTests.cs" />
     <Compile Include="Color\ColorExtensionsTests.cs" />
     <Compile Include="Color\Data\EquivalentHsvAndRgbColorData.cs" />
     <Compile Include="Color\Data\HsvColorDoubleData.cs" />
+    <Compile Include="Color\Data\ArgbColorByteData.cs" />
+    <Compile Include="Color\Data\ArgbColorData.cs" />
     <Compile Include="Color\Data\RgbColorData.cs" />
     <Compile Include="Color\Data\RgbColorByteData.cs" />
     <Compile Include="Color\Data\RgbColorChannelByteData.cs" />

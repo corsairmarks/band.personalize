@@ -174,7 +174,7 @@ namespace Band.Personalize.Model.Test.Color
         /// </summary>
         /// <param name="notEqual">A value that is expected the be not equal to the default test color.</param>
         [Theory]
-        [MemberData("NonNullNotEqualRgbColors", MemberType = typeof(RgbColorData))]
+        [MemberData(nameof(RgbColorData.NonNullNotEqualRgbColors), MemberType = typeof(RgbColorData))]
         public void EqualityOperator_ChannelsNotEqual_IsFalse(RgbColor notEqual)
         {
             // Arrange
@@ -230,7 +230,7 @@ namespace Band.Personalize.Model.Test.Color
         /// </summary>
         /// <param name="compare">The <see cref="RgbColor"/> to verify for commutative equality.</param>
         [Theory]
-        [MemberData("RgbColorsWithDefault", MemberType = typeof(RgbColorData))]
+        [MemberData(nameof(RgbColorData.RgbColorsWithDefault), MemberType = typeof(RgbColorData))]
         public void EqualityOperator_IsCommutative(RgbColor compare)
         {
             // Arrange
@@ -241,7 +241,7 @@ namespace Band.Personalize.Model.Test.Color
             var result2 = compare == target;
 
             // Assert
-            Assert.Equal(result1, result2);
+            Assert.True(result1 == result2, "evaluation was not commutative");
         }
 
         /// <summary>
@@ -249,7 +249,7 @@ namespace Band.Personalize.Model.Test.Color
         /// </summary>
         /// <param name="color">The <see cref="RgbColor"/> to verify for reflexive equality.</param>
         [Theory]
-        [MemberData("RgbColorsWithDefault", MemberType = typeof(RgbColorData))]
+        [MemberData(nameof(RgbColorData.RgbColorsWithDefault), MemberType = typeof(RgbColorData))]
         public void EqualityOperator_IsReflexive(RgbColor color)
         {
 #pragma warning disable CS1718 // disabled because the purpose of the test is to compare the object to itself
@@ -289,7 +289,7 @@ namespace Band.Personalize.Model.Test.Color
         /// </summary>
         /// <param name="notEqual">A value that is expected the be not equal to the default test color.</param>
         [Theory]
-        [MemberData("NonNullNotEqualRgbColors", MemberType = typeof(RgbColorData))]
+        [MemberData(nameof(RgbColorData.NonNullNotEqualRgbColors), MemberType = typeof(RgbColorData))]
         public void InequalityOperator_ChannelsNotEqual_IsTrue(RgbColor notEqual)
         {
             // Arrange
@@ -345,7 +345,7 @@ namespace Band.Personalize.Model.Test.Color
         /// </summary>
         /// <param name="compare">The <see cref="RgbColor"/> to verify for commutative equality.</param>
         [Theory]
-        [MemberData("RgbColorsWithDefault", MemberType = typeof(RgbColorData))]
+        [MemberData(nameof(RgbColorData.RgbColorsWithDefault), MemberType = typeof(RgbColorData))]
         public void InequalityOperator_IsCommutative(RgbColor compare)
         {
             // Arrange
@@ -356,7 +356,7 @@ namespace Band.Personalize.Model.Test.Color
             var result2 = compare != target;
 
             // Assert
-            Assert.Equal(result1, result2);
+            Assert.True(result1 == result2, "evaluation was not commutative");
         }
 
         /// <summary>
@@ -364,7 +364,7 @@ namespace Band.Personalize.Model.Test.Color
         /// </summary>
         /// <param name="color">The <see cref="RgbColor"/> to verify for reflexive equality.</param>
         [Theory]
-        [MemberData("RgbColorsWithDefault", MemberType = typeof(RgbColorData))]
+        [MemberData(nameof(RgbColorData.RgbColorsWithDefault), MemberType = typeof(RgbColorData))]
         public void InequalityOperator_IsReflexive(RgbColor color)
         {
 #pragma warning disable CS1718 // disabled because the purpose of the test is to compare the object to itself
@@ -400,16 +400,16 @@ namespace Band.Personalize.Model.Test.Color
         }
 
         /// <summary>
-        /// Verify the <see cref="RgbColor.ParseHexadecimal(string)"/> method throws an <see cref="ArgumentNullException"/> when it is passed <c>null</c>.
+        /// Verify the <see cref="RgbColor.FromRgbString(string)"/> method throws an <see cref="ArgumentNullException"/> when it is passed <c>null</c>.
         /// </summary>
         [Fact]
-        public void ParseHexadecimal_NullInput_Throws()
+        public void FromRgbString_NullInput_Throws()
         {
             // Arrange
             string target = null;
 
             // Act
-            var expected = Assert.Throws<ArgumentNullException>(() => RgbColor.ParseHexadecimal(target));
+            var expected = Assert.Throws<ArgumentNullException>(() => RgbColor.FromRgbString(target));
 
             // Assert
             Assert.NotNull(expected);
@@ -417,31 +417,31 @@ namespace Band.Personalize.Model.Test.Color
         }
 
         /// <summary>
-        /// Verify the <see cref="RgbColor.ParseHexadecimal(string)"/> method throws a <see cref="FormatException"/> when it is passed string data it cannot parse.
+        /// Verify the <see cref="RgbColor.FromRgbString(string)"/> method throws a <see cref="FormatException"/> when it is passed string data it cannot parse.
         /// </summary>
         /// <param name="target">The target string to parse.</param>
         [Theory]
-        [MemberData("InvalidHexadecimalColorStrings", MemberType = typeof(RgbColorData))]
-        public void ParseHexadecimal_InvalidFormat_Throws(string target)
+        [MemberData(nameof(RgbColorData.InvalidHexadecimalRgbColorStrings), MemberType = typeof(RgbColorData))]
+        public void FromRgbString_InvalidFormat_Throws(string target)
         {
             // Act
-            var expected = Assert.Throws<FormatException>(() => RgbColor.ParseHexadecimal(target));
+            var expected = Assert.Throws<FormatException>(() => RgbColor.FromRgbString(target));
 
             // Assert
             Assert.NotNull(expected);
         }
 
         /// <summary>
-        /// Verify the <see cref="RgbColor.ParseHexadecimal(string)"/> method throws a <see cref="FormatException"/> when it is passed string data it cannot parse.
+        /// Verify the <see cref="RgbColor.FromRgbString(string)"/> method throws a <see cref="FormatException"/> when it is passed string data it cannot parse.
         /// </summary>
         /// <param name="target">The target string to parse.</param>
         /// <param name="expected">The expected result of parsing.</param>
         [Theory]
-        [MemberData("ValidHexadecimalColorStrings", MemberType = typeof(RgbColorData))]
-        public void ParseHexadecimal_ValidFormat_ReturnsEquivalentRgbColor(string target, RgbColor expected)
+        [MemberData(nameof(RgbColorData.ValidHexadecimalRgbColorStrings), MemberType = typeof(RgbColorData))]
+        public void FromRgbString_ValidFormat_ReturnsEquivalentRgbColor(string target, RgbColor expected)
         {
             // Act
-            var result = RgbColor.ParseHexadecimal(target);
+            var result = RgbColor.FromRgbString(target);
 
             // Assert
             Assert.Equal(expected, result);
@@ -474,7 +474,7 @@ namespace Band.Personalize.Model.Test.Color
         /// <param name="percentage">The percentage of maximum by which to brighten/darken the <paramref name="colorChannel"/>.</param>
         /// <param name="expected">The expected result.</param>
         [Theory]
-        [MemberData("LuminanceBytes")]
+        [MemberData(nameof(LuminanceBytes))]
         public void Luminance_Static_ReturnsModifiedByte(byte colorChannel, decimal percentage, byte expected)
         {
             // Act
@@ -491,7 +491,7 @@ namespace Band.Personalize.Model.Test.Color
         /// <param name="target">The color to test.</param>
         /// <param name="percentage">The percentage of maximum by which to brighten/darken each channel on the <paramref name="target"/>.</param>
         [Theory]
-        [MemberData("LuminanceRgbColors")]
+        [MemberData(nameof(LuminanceRgbColors))]
         public void Luminance_ReturnsNewInstanceWithModifiedChannels(RgbColor target, decimal percentage)
         {
             // Act
@@ -529,7 +529,7 @@ namespace Band.Personalize.Model.Test.Color
         /// </summary>
         /// <param name="notEqual">A value that is expected the be not equal to the default test color.</param>
         [Theory]
-        [MemberData("NotEqualObjects", MemberType = typeof(RgbColorData))]
+        [MemberData(nameof(RgbColorData.NotEqualObjects), MemberType = typeof(RgbColorData))]
         public void EqualsMethod_ChannelsNotEqual_IsFalse(object notEqual)
         {
             // Arrange
@@ -568,7 +568,7 @@ namespace Band.Personalize.Model.Test.Color
         /// </summary>
         /// <param name="compare">The <see cref="RgbColor"/> to verify for commutative equality.</param>
         [Theory]
-        [MemberData("NonNullRgbColorsWithDefault", MemberType = typeof(RgbColorData))]
+        [MemberData(nameof(RgbColorData.NonNullRgbColorsWithDefault), MemberType = typeof(RgbColorData))]
         public void EqualsMethod_IsCommutative(RgbColor compare)
         {
             // Arrange
@@ -579,7 +579,7 @@ namespace Band.Personalize.Model.Test.Color
             var result2 = compare.Equals(target);
 
             // Assert
-            Assert.Equal(result1, result2);
+            Assert.True(result1 == result2, "evaluation was not commutative");
         }
 
         /// <summary>
@@ -587,7 +587,7 @@ namespace Band.Personalize.Model.Test.Color
         /// </summary>
         /// <param name="color">The <see cref="RgbColor"/> to verify for reflexive equality.</param>
         [Theory]
-        [MemberData("NonNullRgbColorsWithDefault", MemberType = typeof(RgbColorData))]
+        [MemberData(nameof(RgbColorData.NonNullRgbColorsWithDefault), MemberType = typeof(RgbColorData))]
         public void EqualsMethod_IsReflexive(RgbColor color)
         {
             // Act
@@ -789,6 +789,66 @@ namespace Band.Personalize.Model.Test.Color
 
             // Assert
             Assert.True(result, $"RGB {rgbTarget} does not match (from HSV) {hsvTarget}");
+        }
+
+        /// <summary>
+        /// Verify the <see cref="RgbColor.GetHashCode()"/> method does not throw.
+        /// </summary>
+        /// <param name="color">The <see cref="RgbColor"/> to verify <see cref="RgbColor.GetHashCode()"/> does not throw.</param>
+        [Theory]
+        [MemberData(nameof(RgbColorData.NonNullRgbColorsWithDefault), MemberType = typeof(RgbColorData))]
+        public void GetHashCode_DoesNotThrow(RgbColor color)
+        {
+            // Act
+            var result = color.GetHashCode();
+
+            // Assert: passes as long as an exception is not thrown
+        }
+
+        /// <summary>
+        /// Verify the <see cref="RgbColor.GetHashCode()"/> method returns the same value when two instances of <see cref="RgbColor"/> are equal based on <see cref="RgbColor.Equals(object)"/>.
+        /// </summary>
+        /// <param name="color">The <see cref="RgbColor"/> to which may or may not be equal to <see cref="RgbColorData.DefaultRgbColor"/>.</param>
+        [Theory]
+        [MemberData(nameof(RgbColorData.NonNullRgbColorsWithDefault), MemberType = typeof(RgbColorData))]
+        public void GetHashCode_EqualityOperator_EqualInstancesSameHashCode(RgbColor color)
+        {
+            // Arrange
+            var target = RgbColorData.DefaultRgbColor;
+            var targetHashCode = target.GetHashCode();
+            var isEqual = color == target;
+
+            // Act
+            var result = color.GetHashCode();
+
+            // Assert
+            if (isEqual)
+            {
+                Assert.Equal(targetHashCode, result);
+            }
+        }
+
+        /// <summary>
+        /// Verify the <see cref="RgbColor.GetHashCode()"/> method returns the same value when two instances of <see cref="RgbColor"/> are equal based on the equality operator.
+        /// </summary>
+        /// <param name="color">The <see cref="RgbColor"/> to which may or may not be equal to <see cref="RgbColorData.DefaultRgbColor"/>.</param>
+        [Theory]
+        [MemberData(nameof(RgbColorData.NonNullNotEqualRgbColors), MemberType = typeof(RgbColorData))]
+        public void GetHashCode_EqualsMethod_EqualInstancesSameHashCode(RgbColor color)
+        {
+            // Arrange
+            var target = RgbColorData.DefaultRgbColor;
+            var targetHashCode = target.GetHashCode();
+            var isEqual = color.Equals(target);
+
+            // Act
+            var result = color.GetHashCode();
+
+            // Assert
+            if (isEqual)
+            {
+                Assert.Equal(targetHashCode, result);
+            }
         }
     }
 }

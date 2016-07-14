@@ -19,12 +19,12 @@ namespace Band.Personalize.Model.Library.Color
     using System.Text.RegularExpressions;
 
     /// <summary>
-    /// A class representing a 8-bit-per-channel RGB color, with supporting methods for manipulating the color.
+    /// A class representing a 16-bit-per-channel RGB color, with supporting methods for manipulating the color.
     /// </summary>
     public class RgbColor
     {
         /// <summary>
-        /// A regular expression defining the allowable formats for a hexadecimal color string.
+        /// A regular expression defining the allowable formats for a hexadecimal RGB color string.
         /// </summary>
         private static readonly Regex HexadecimalStringPattern = new Regex("^\\s*#?(?:[0-9a-f]{3}){1,2}\\s*$", RegexOptions.IgnoreCase);
 
@@ -191,7 +191,7 @@ namespace Band.Personalize.Model.Library.Color
         /// <returns>A new instance of <see cref="RgbColor"/>.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="str"/> is <c>null</c>.</exception>
         /// <exception cref="FormatException"><paramref name="str"/> is not a hexadecimal color string.</exception>
-        public static RgbColor ParseHexadecimal(string str)
+        public static RgbColor FromRgbString(string str)
         {
             if (str == null)
             {
@@ -199,7 +199,7 @@ namespace Band.Personalize.Model.Library.Color
             }
             else if (!HexadecimalStringPattern.IsMatch(str))
             {
-                throw new FormatException(string.Format("the {0} parameter must be a hexadecimal color string: either 3 or 6 hexadecimal digits, optionally preceded by #", nameof(str)));
+                throw new FormatException(string.Format("the {0} parameter must be a hexadecimal RGB color string: either 3 or 6 hexadecimal digits, optionally preceded by #", nameof(str)));
             }
 
             var hexStr = str
@@ -209,16 +209,19 @@ namespace Band.Personalize.Model.Library.Color
             {
                 hexStr = new string(new[]
                 {
-                        hexStr[0],
-                        hexStr[0],
-                        hexStr[1],
-                        hexStr[1],
-                        hexStr[2],
-                        hexStr[2],
-                    });
+                    hexStr[0],
+                    hexStr[0],
+                    hexStr[1],
+                    hexStr[1],
+                    hexStr[2],
+                    hexStr[2],
+                });
             }
 
-            return new RgbColor(byte.Parse(hexStr.Substring(0, 2), NumberStyles.HexNumber), byte.Parse(hexStr.Substring(2, 2), NumberStyles.HexNumber), byte.Parse(hexStr.Substring(4, 2), NumberStyles.HexNumber));
+            return new RgbColor(
+                byte.Parse(hexStr.Substring(0, 2), NumberStyles.HexNumber),
+                byte.Parse(hexStr.Substring(2, 2), NumberStyles.HexNumber),
+                byte.Parse(hexStr.Substring(4, 2), NumberStyles.HexNumber));
         }
 
         /// <summary>
@@ -270,7 +273,7 @@ namespace Band.Personalize.Model.Library.Color
         /// <returns><c>true</c> if the <paramref name="obj"/> is equal to this instance, otherwise <c>false</c>.</returns>
         public override bool Equals(object obj)
         {
-            if (object.ReferenceEquals(this, obj))
+            if (ReferenceEquals(this, obj))
             {
                 return true;
             }

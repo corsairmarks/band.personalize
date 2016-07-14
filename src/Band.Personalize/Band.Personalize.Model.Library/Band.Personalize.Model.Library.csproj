@@ -119,6 +119,8 @@
     <Compile Include="Band\IBand.cs" />
     <Compile Include="Band\ConnectionType.cs" />
     <Compile Include="Band\HardwareRevision.cs" />
+    <Compile Include="Color\ArgbColor.cs" />
+    <Compile Include="Color\ArgbColorExtensions.cs" />
     <Compile Include="Color\BandColorExtensions.cs" />
     <Compile Include="Color\ColorExtensions.cs" />
     <Compile Include="Color\RgbColor.cs" />
