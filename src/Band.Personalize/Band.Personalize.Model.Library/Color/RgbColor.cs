@@ -26,7 +26,7 @@ namespace Band.Personalize.Model.Library.Color
         /// <summary>
         /// A regular expression defining the allowable formats for a hexadecimal RGB color string.
         /// </summary>
-        private static readonly Regex HexadecimalStringPattern = new Regex("^\\s*#?(?:[0-9a-f]{3}){1,2}\\s*$", RegexOptions.IgnoreCase);
+        private static readonly Regex HexadecimalStringPattern = new Regex("^\\s*#?(?:[0-9a-f]{3}){1,2}\\s*$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RgbColor"/> class.
