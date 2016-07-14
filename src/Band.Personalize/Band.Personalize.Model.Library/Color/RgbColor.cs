@@ -19,14 +19,14 @@ namespace Band.Personalize.Model.Library.Color
     using System.Text.RegularExpressions;
 
     /// <summary>
-    /// A class representing a 8-bit-per-channel RGB color, with supporting methods for manipulating the color.
+    /// A class representing a 16-bit-per-channel RGB color, with supporting methods for manipulating the color.
     /// </summary>
     public class RgbColor
     {
         /// <summary>
-        /// A regular expression defining the allowable formats for a hexadecimal color string.
+        /// A regular expression defining the allowable formats for a hexadecimal RGB color string.
         /// </summary>
-        private static readonly Regex HexadecimalStringPattern = new Regex("^\\s*#?(?:[0-9a-f]{3}){1,2}\\s*$", RegexOptions.IgnoreCase);
+        private static readonly Regex HexadecimalStringPattern = new Regex("^\\s*#?(?:[0-9a-f]{3}){1,2}\\s*$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RgbColor"/> class.
@@ -184,31 +184,28 @@ namespace Band.Personalize.Model.Library.Color
         }
 
         /// <summary>
-        /// Parse a well-formatted hexadecimal color string into a instance of <see cref="RgbColor"/>.
+        /// Try to parse a hexadecimal color string into an instance of <see cref="RgbColor"/>.
         /// The accepted formats are either 3 or 6 hexadecimal digits, optionally preceded by #.
         /// </summary>
-        /// <param name="str">The string to parse.</param>
-        /// <returns>A new instance of <see cref="RgbColor"/>.</returns>
-        /// <exception cref="ArgumentNullException"><paramref name="str"/> is <c>null</c>.</exception>
-        /// <exception cref="FormatException"><paramref name="str"/> is not a hexadecimal color string.</exception>
-        public static RgbColor ParseHexadecimal(string str)
+        /// <param name="str">The string to try to parse.</param>
+        /// <param name="result">
+        /// When this method returns, contains a new instance of <see cref="RgbColor"/> equivalent to the
+        /// hexadecimal RGB string contained in <paramref name="str"/>, if the conversion succeeded, or
+        /// <c>null</c> if the conversion failed.  This parameter is passed uninitialized; any value
+        /// originally supplied in result will be overwritten.
+        /// </param>
+        /// <returns><c>true</c> if <paramref name="str"/> was converted successfully; otherwise, <c>false</c>.</returns>
+        public static bool TryFromRgbString(string str, out RgbColor result)
         {
-            if (str == null)
+            if (str != null && HexadecimalStringPattern.IsMatch(str))
             {
-                throw new ArgumentNullException(nameof(str));
-            }
-            else if (!HexadecimalStringPattern.IsMatch(str))
-            {
-                throw new FormatException(string.Format("the {0} parameter must be a hexadecimal color string: either 3 or 6 hexadecimal digits, optionally preceded by #", nameof(str)));
-            }
-
-            var hexStr = str
-                .Trim()
-                .TrimStart('#');
-            if (hexStr.Length == 3)
-            {
-                hexStr = new string(new[]
+                var hexStr = str
+                    .Trim()
+                    .TrimStart('#');
+                if (hexStr.Length == 3)
                 {
+                    hexStr = new string(new[]
+                    {
                         hexStr[0],
                         hexStr[0],
                         hexStr[1],
@@ -216,9 +213,45 @@ namespace Band.Personalize.Model.Library.Color
                         hexStr[2],
                         hexStr[2],
                     });
+                }
+
+                result = new RgbColor(
+                    byte.Parse(hexStr.Substring(0, 2), NumberStyles.HexNumber),
+                    byte.Parse(hexStr.Substring(2, 2), NumberStyles.HexNumber),
+                    byte.Parse(hexStr.Substring(4, 2), NumberStyles.HexNumber));
+                return true;
+            }
+            else
+            {
+                result = null;
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Parse a well-formatted hexadecimal color string into an instance of <see cref="RgbColor"/>.
+        /// The accepted formats are either 3 or 6 hexadecimal digits, optionally preceded by #.
+        /// </summary>
+        /// <param name="str">The string to parse.</param>
+        /// <returns>A new instance of <see cref="RgbColor"/>.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="str"/> is <c>null</c>.</exception>
+        /// <exception cref="FormatException"><paramref name="str"/> is not a hexadecimal color string.</exception>
+        public static RgbColor FromRgbString(string str)
+        {
+            if (str == null)
+            {
+                throw new ArgumentNullException(nameof(str));
             }
 
-            return new RgbColor(byte.Parse(hexStr.Substring(0, 2), NumberStyles.HexNumber), byte.Parse(hexStr.Substring(2, 2), NumberStyles.HexNumber), byte.Parse(hexStr.Substring(4, 2), NumberStyles.HexNumber));
+            RgbColor result;
+            if (TryFromRgbString(str, out result))
+            {
+                return result;
+            }
+            else
+            {
+                throw new FormatException(string.Format("the {0} parameter must be a hexadecimal RGB color string: either 3 or 6 hexadecimal digits, optionally preceded by #", nameof(str)));
+            }
         }
 
         /// <summary>
@@ -270,7 +303,7 @@ namespace Band.Personalize.Model.Library.Color
         /// <returns><c>true</c> if the <paramref name="obj"/> is equal to this instance, otherwise <c>false</c>.</returns>
         public override bool Equals(object obj)
         {
-            if (object.ReferenceEquals(this, obj))
+            if (ReferenceEquals(this, obj))
             {
                 return true;
             }

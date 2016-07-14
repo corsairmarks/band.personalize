@@ -95,6 +95,32 @@ namespace Band.Personalize.Model.Test.Color
         }
 
         /// <summary>
+        /// Verify the <see cref="RgbColorExtensions.ToArgbColor(RgbColor)"/> method maps
+        /// the correct fields from an instance of <see cref="RgbColor"/> to an instance of
+        /// <see cref="ArgbColor"/>.  The <see cref="ArgbColor.Alpha"/> channel is set to
+        /// <see cref="byte.MaxValue"/>.
+        /// </summary>
+        /// <param name="red">The red channel color saturation to test.</param>
+        /// <param name="green">The green channel color saturation to test.</param>
+        /// <param name="blue">The blue channel color saturation to test.</param>
+        [Theory]
+        [ClassData(typeof(RgbColorByteData))]
+        public void ToArgbColor_CreatesInstanceWithSameValues(byte red, byte green, byte blue)
+        {
+            // Arrange
+            var target = new RgbColor(red, green, blue);
+
+            // Act
+            var result = target.ToArgbColor();
+
+            // Assert
+            Assert.Equal(byte.MaxValue, result.Alpha);
+            Assert.Equal(target.Red, result.Red);
+            Assert.Equal(target.Green, result.Green);
+            Assert.Equal(target.Blue, result.Blue);
+        }
+
+        /// <summary>
         /// Verify the <see cref="RgbColorExtensions.ToColor(RgbColor)"/> method throws
         /// an <see cref="ArgumentNullException"/> when the color parameter is <c>null</c>.
         /// </summary>
@@ -106,6 +132,24 @@ namespace Band.Personalize.Model.Test.Color
 
             // Act
             var expected = Assert.Throws<ArgumentNullException>(() => target.ToColor());
+
+            // Assert
+            Assert.NotNull(expected);
+            Assert.Equal("color", expected.ParamName);
+        }
+
+        /// <summary>
+        /// Verify the <see cref="RgbColorExtensions.ToArgbColor(RgbColor)"/> method throws
+        /// an <see cref="ArgumentNullException"/> when the color parameter is <c>null</c>.
+        /// </summary>
+        [Fact]
+        public void ToArgbColor_NullColor_Throws()
+        {
+            // Arrange
+            RgbColor target = null;
+
+            // Act
+            var expected = Assert.Throws<ArgumentNullException>(() => target.ToArgbColor());
 
             // Assert
             Assert.NotNull(expected);

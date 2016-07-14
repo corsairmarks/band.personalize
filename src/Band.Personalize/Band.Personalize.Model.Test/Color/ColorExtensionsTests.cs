@@ -58,5 +58,43 @@ namespace Band.Personalize.Model.Test.Color
             Assert.Equal(target.G, result.Green);
             Assert.Equal(target.B, result.Blue);
         }
+
+#pragma warning disable CS0419 // Ambiguous reference in cref attribute
+#pragma warning disable CS1574 // XML comment has cref attribute that could not be resolved
+#pragma warning disable CS1580 // Invalid type for parameter in XML comment cref attribute
+        /// <summary>
+        /// Verify the <see cref="ColorExtensions.ToRgbColor(Windows.UI.Color)"/> method maps
+        /// the correct fields from an instance of <see cref="Windows.UI.Color"/> to an instance of
+        /// <see cref="RgbColor"/>.
+        /// </summary>
+        /// <param name="alpha">The alpha channel saturation to test.</param>
+        /// <param name="red">The red channel color saturation to test.</param>
+        /// <param name="green">The green channel color saturation to test.</param>
+        /// <param name="blue">The blue channel color saturation to test.</param>
+#pragma warning restore CS0419 // Ambiguous reference in cref attribute
+#pragma warning restore CS1580 // Invalid type for parameter in XML comment cref attribute
+#pragma warning restore CS1574 // XML comment has cref attribute that could not be resolved
+        [Theory]
+        [ClassData(typeof(ArgbColorByteData))]
+        public void ToArgbColor_CreatesInstanceWithSameValues(byte alpha, byte red, byte green, byte blue)
+        {
+            // Arrange
+            var target = new Color
+            {
+                A = alpha,
+                R = red,
+                G = green,
+                B = blue,
+            };
+
+            // Act
+            var result = target.ToArgbColor();
+
+            // Assert
+            Assert.Equal(target.A, result.Alpha);
+            Assert.Equal(target.R, result.Red);
+            Assert.Equal(target.G, result.Green);
+            Assert.Equal(target.B, result.Blue);
+        }
     }
 }

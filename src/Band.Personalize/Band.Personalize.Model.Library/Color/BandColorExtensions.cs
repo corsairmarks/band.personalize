@@ -30,5 +30,15 @@ namespace Band.Personalize.Model.Library.Color
         {
             return new RgbColor(color.R, color.G, color.B);
         }
+
+        /// <summary>
+        /// Convert the <paramref name="color"/> to a new instance of <see cref="ArgbColor"/>.
+        /// </summary>
+        /// <param name="color">The <see cref="BandColor"/> to convert.</param>
+        /// <returns>A new instance of <see cref="ArgbColor"/></returns>
+        public static ArgbColor ToArgbColor(this BandColor color)
+        {
+            return new ArgbColor(byte.MaxValue, color.R, color.G, color.B);
+        }
     }
 }
