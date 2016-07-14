@@ -221,10 +221,6 @@ namespace Band.Personalize.App.Universal.ViewModels
 
             this.RefreshPersonalizationCommand.Execute(0);
             this.RefreshPersonalizationCommand.Execute(1);
-
-            this.IsUseOriginalBandHeight = this.CurrentBand.HardwareRevision != HardwareRevision.Band
-                ? this.CurrentMeTileImage.PixelHeight <= 102
-                : true;
         }
 
         /// <summary>
@@ -249,7 +245,11 @@ namespace Band.Personalize.App.Universal.ViewModels
 
                     break;
                 case 1:
-                    this.CurrentMeTileImage = await this.bandPersonalizer.GetMeTileImage();
+                    var currentMeTileImage = await this.bandPersonalizer.GetMeTileImage();
+                    this.IsUseOriginalBandHeight = this.CurrentBand.HardwareRevision != HardwareRevision.Band
+                        ? currentMeTileImage.PixelHeight <= 102
+                        : true;
+                    this.CurrentMeTileImage = currentMeTileImage;
                     break;
                 default:
                     throw new ArgumentNullException($"Unhandled pivot index: {selectedPivotIndex}");
