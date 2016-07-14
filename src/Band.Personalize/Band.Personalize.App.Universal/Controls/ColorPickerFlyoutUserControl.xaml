@@ -1,0 +1,51 @@
+﻿<controls:BindableUserControl
+    x:Class="Band.Personalize.App.Universal.Controls.ColorPickerFlyoutUserControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="using:Band.Personalize.App.Universal.Controls"
+    xmlns:triggers="using:Band.Personalize.App.Universal.Triggers"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+    <Button x:Uid="ChooseColorButton" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
+        <Button.Flyout>
+            <Flyout x:Name="TheFlyout" Opening="TheFlyout_Opening">
+                <StackPanel x:Name="FlyoutPanel">
+                    <controls:ColorPickerUserControl x:Name="ColorPicker" UseAlpha="False" Margin="0,0,0,4" Color="{x:Bind Path=PickerColor, Mode=TwoWay}" />
+                    <StackPanel Orientation="Horizontal">
+                        <Button x:Uid="ConfirmButton" Content="Confirm" Click="ConfirmButton_Click" TabIndex="0" Margin="0,4,4,0" />
+                        <Button x:Uid="CancelButton" Content="Cancel" Click="CancelButton_Click" TabIndex="1" Margin="4,4,0,0" />
+                    </StackPanel>
+                </StackPanel>
+            </Flyout>
+        </Button.Flyout>
+        <StackPanel>
+            <Rectangle HorizontalAlignment="Stretch" MinHeight="24" Stroke="{ThemeResource SystemBaseHighColor}" StrokeThickness="{ThemeResource ButtonBorderThemeThickness}">
+                <Rectangle.Fill>
+                    <SolidColorBrush Color="{x:Bind Path=ColorOuter, Mode=OneWay}" />
+                </Rectangle.Fill>
+            </Rectangle>
+            <TextBlock x:Uid="ChooseColorTextBlock" Text="Choose" />
+        </StackPanel>
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup x:Name="OrientationStates">
+                <VisualState x:Name="Landscape">
+                    <VisualState.StateTriggers>
+                        <triggers:ApplicationViewOrientationTrigger ApplicationViewOrientation="Landscape" />
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="ColorPicker.Orientation" Value="Horizontal" />
+                    </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="Portrait">
+                    <VisualState.StateTriggers>
+                        <triggers:ApplicationViewOrientationTrigger ApplicationViewOrientation="Portrait" />
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="ColorPicker.Orientation" Value="Vertical" />
+                    </VisualState.Setters>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
+    </Button>
+</controls:BindableUserControl>

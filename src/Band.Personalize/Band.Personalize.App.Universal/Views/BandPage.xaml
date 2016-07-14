@@ -2,6 +2,7 @@
     x:Class="Band.Personalize.App.Universal.Views.BandPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="using:Band.Personalize.App.Universal.Controls"
     xmlns:designViewModels="using:Band.Personalize.App.Universal.ViewModels.Design"
     xmlns:prismMvvm="using:Prism.Windows.Mvvm"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -16,19 +17,34 @@
         </Grid.RowDefinitions>
         <Pivot Name="ThePivot">
             <PivotItem Header="Theme" x:Uid="ThemePivotItem" Margin="12">
-                <RelativePanel>
-                </RelativePanel>
+                <GridView
+                    ItemContainerStyle="{StaticResource ThemeColorTileContainer}"
+                    ItemsSource="{Binding Path=CurrentThemeColors, Mode=OneWay}">
+                    <GridView.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <ItemsWrapGrid ItemWidth="120" MaximumRowsOrColumns="3" Orientation="Horizontal" />
+                        </ItemsPanelTemplate>
+                    </GridView.ItemsPanel>
+                    <GridView.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel>
+                                <TextBlock Text="{Binding Path=Title, Mode=OneWay}" />
+                                <controls:ColorPickerFlyoutUserControl HorizontalContentAlignment="Stretch" ColorOuter="{Binding Path=Swatch, Mode=TwoWay}" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </GridView.ItemTemplate>
+                </GridView>
             </PivotItem>
             <PivotItem Header="Image" x:Uid="ImagePivotItem" Margin="12">
                 <StackPanel>
                     <Image Source="{Binding CurrentMeTileImage}" Stretch="None" HorizontalAlignment="Left" />
                     <Button x:Uid="BrowseButton" Content="Browse" Command="{Binding BrowserForMeTileImageCommand}" Margin="0,7" />
                     <ToggleSwitch
-                            x:Uid="BandVersionToggle"
-                            Header="Use original Band height (102px)"
-                            IsOn="{Binding IsUseOriginalBandHeight}"
-                            Visibility="{Binding CurrentBand.HardwareRevision, Converter={StaticResource HardwareRevisionToVisibilityConverter}}"
-                            IsEnabled="{Binding CurrentBand.HardwareRevision, Converter={StaticResource HardwareRevisionToBooleanConverter}}" />
+                        x:Uid="BandVersionToggle"
+                        Header="Use original Band height (102px)"
+                        IsOn="{Binding IsUseOriginalBandHeight}"
+                        Visibility="{Binding CurrentBand.HardwareRevision, Converter={StaticResource HardwareRevisionToVisibilityConverter}}"
+                        IsEnabled="{Binding CurrentBand.HardwareRevision, Converter={StaticResource HardwareRevisionToBooleanConverter}}" />
                 </StackPanel>
             </PivotItem>
         </Pivot>

@@ -10,6 +10,7 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Themes/AppStyles.xaml" />
             </ResourceDictionary.MergedDictionaries>
+            <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
             <converters:ByteToDoubleConverter x:Key="ByteToDoubleConverter" />
             <converters:ConnectionTypeToSymbolConverter x:Key="ConnectionTypeToSymbolConverter" />
             <converters:HardwareRevisionToBooleanConverter x:Key="HardwareRevisionToBooleanConverter" />

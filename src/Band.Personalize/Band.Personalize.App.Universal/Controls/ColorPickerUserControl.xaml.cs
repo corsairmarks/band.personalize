@@ -28,7 +28,7 @@ namespace Band.Personalize.App.Universal.Controls
     /// A custom <see cref="UserControl"/> for picking a <see cref="Windows.UI.Color"/>.
     /// </summary>
 #pragma warning restore CS0419 // Ambiguous reference in cref attribute
-    public partial class ColorPickerUserControl : BindableUserControl
+    public sealed partial class ColorPickerUserControl : BindableUserControl
     {
         /// <summary>
         /// Alpha dependency property.
@@ -37,7 +37,7 @@ namespace Band.Personalize.App.Universal.Controls
             nameof(UseAlpha),
             typeof(bool),
             typeof(ColorPickerUserControl),
-            new PropertyMetadata(true));
+            new PropertyMetadata(true, new PropertyChangedCallback(OnUseAlphaPropertyChanged)));
 
         /// <summary>
         /// Orientation dependency property.
@@ -66,6 +66,11 @@ namespace Band.Personalize.App.Universal.Controls
         /// The y-axis location of the picker target.
         /// </summary>
         private double pointY;
+
+        /// <summary>
+        /// The hexadecimal color string.
+        /// </summary>
+        private string hexadecimalString;
 
         /// <summary>
         /// The hue amount (used for the visual picker).
@@ -143,6 +148,38 @@ namespace Band.Personalize.App.Universal.Controls
         {
             get { return (Color)this.GetValue(ColorProperty); }
             set { this.SetValue(ColorProperty, value); }
+        }
+
+        /// <summary>
+        /// Gets or sets the hexadecimal color string.
+        /// </summary>
+        public string HexadecimalString
+        {
+            get
+            {
+                return this.hexadecimalString;
+            }
+
+            set
+            {
+                this.SetProperty(ref this.hexadecimalString, value);
+                if (this.UseAlpha)
+                {
+                    ArgbColor result;
+                    if (ArgbColor.TryFromArgbString(value, out result))
+                    {
+                        this.Color = result.ToColor();
+                    }
+                }
+                else
+                {
+                    RgbColor result;
+                    if (RgbColor.TryFromRgbString(value, out result))
+                    {
+                        this.Color = result.ToColor();
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -282,7 +319,7 @@ namespace Band.Personalize.App.Universal.Controls
         }
 
         /// <summary>
-        /// Gets the current color with alpha or not as appropriate base on <see cref="UseAlpha"/>.
+        /// Gets the current color based on the alpha and color channels.
         /// </summary>
         public Color SwatchColor
         {
@@ -290,9 +327,7 @@ namespace Band.Personalize.App.Universal.Controls
             {
                 return new Color
                 {
-                    A = this.UseAlpha
-                        ? this.Alpha
-                        : byte.MaxValue,
+                    A = this.Alpha,
                     R = this.Red,
                     G = this.Green,
                     B = this.Blue,
@@ -326,7 +361,7 @@ namespace Band.Personalize.App.Universal.Controls
                     var currentColor = new RgbColor(this.Red, this.Green, this.Blue);
                     var changedColor = new RgbColor(value, currentColor.Saturation, currentColor.Value).ToColor();
                     this.OnPropertyChanged(nameof(this.HueColor));
-                    this.OnPropertyChanged(nameof(this.SwatchColor));
+                    this.ChangeHexadecimalColor(changedColor);
                     this.Color = changedColor;
                 }
             }
@@ -339,7 +374,9 @@ namespace Band.Personalize.App.Universal.Controls
         {
             get
             {
-                return this.alpha;
+                return this.UseAlpha
+                    ? this.alpha
+                    : byte.MaxValue;
             }
 
             set
@@ -354,7 +391,7 @@ namespace Band.Personalize.App.Universal.Controls
                         G = this.Green,
                         B = this.Blue,
                     };
-                    this.OnPropertyChanged(nameof(this.SwatchColor));
+                    this.ChangeHexadecimalColor(changedColor);
                     this.Color = changedColor;
                 }
             }
@@ -388,8 +425,8 @@ namespace Band.Personalize.App.Universal.Controls
                         G = this.Green,
                         B = this.Blue,
                     };
-                    this.OnPropertyChanged(nameof(this.SwatchColor));
                     this.ChangeHue(changedColor);
+                    this.ChangeHexadecimalColor(changedColor);
                     this.Color = changedColor;
                 }
             }
@@ -423,8 +460,8 @@ namespace Band.Personalize.App.Universal.Controls
                         G = value,
                         B = this.Blue,
                     };
-                    this.OnPropertyChanged(nameof(this.SwatchColor));
                     this.ChangeHue(changedColor);
+                    this.ChangeHexadecimalColor(changedColor);
                     this.Color = changedColor;
                 }
             }
@@ -458,8 +495,8 @@ namespace Band.Personalize.App.Universal.Controls
                         G = this.Green,
                         B = value,
                     };
-                    this.OnPropertyChanged(nameof(this.SwatchColor));
                     this.ChangeHue(changedColor);
+                    this.ChangeHexadecimalColor(changedColor);
                     this.Color = changedColor;
                 }
             }
@@ -475,6 +512,20 @@ namespace Band.Personalize.App.Universal.Controls
         }
 
         /// <summary>
+        /// Represents the <see cref="PropertyChangedCallback"/> that is invoked when the effective property value of the <see cref="UseAlphaProperty"/> dependency property changes.
+        /// </summary>
+        /// <param name="d">The <see cref="DependencyObject"/> on which the property has changed value.</param>
+        /// <param name="e">Event data that is issued by any event that tracks changes to the effective value of this property.</param>
+        private static void OnUseAlphaPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var that = d as ColorPickerUserControl;
+            if (that != null && e != null && e.NewValue != e.OldValue)
+            {
+                that.ChangeHexadecimalColor(that.Color);
+            }
+        }
+
+        /// <summary>
         /// Represents the <see cref="PropertyChangedCallback"/> that is invoked when the effective property value of the <see cref="ColorProperty"/> dependency property changes.
         /// </summary>
         /// <param name="d">The <see cref="DependencyObject"/> on which the property has changed value.</param>
@@ -483,68 +534,65 @@ namespace Band.Personalize.App.Universal.Controls
         private static void OnColorPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var that = d as ColorPickerUserControl;
-            if (that != null)
+            if (that != null && e != null && e.NewValue != null && e.NewValue is Color)
             {
                 var newColor = (Color)e.NewValue;
-                if (newColor != null)
+                bool isAlphaSame = that.Alpha == newColor.A;
+                bool isRedSame = that.Red == newColor.R;
+                bool isGreenSame = that.Green == newColor.G;
+                bool isBlueSame = that.Blue == newColor.B;
+                if (!isAlphaSame)
                 {
-                    bool isAlphaSame = that.Alpha == newColor.A;
-                    bool isRedSame = that.Red == newColor.R;
-                    bool isGreenSame = that.Green == newColor.G;
-                    bool isBlueSame = that.Blue == newColor.B;
-                    if (!isAlphaSame)
-                    {
-                        that.SetProperty(ref that.alpha, newColor.A, nameof(that.Alpha));
-                    }
+                    that.SetProperty(ref that.alpha, newColor.A, nameof(that.Alpha));
+                }
 
-                    if (!isRedSame)
-                    {
-                        that.SetProperty(ref that.red, newColor.R, nameof(that.Red));
-                    }
+                if (!isRedSame)
+                {
+                    that.SetProperty(ref that.red, newColor.R, nameof(that.Red));
+                }
 
-                    if (!isGreenSame)
-                    {
-                        that.SetProperty(ref that.green, newColor.G, nameof(that.Green));
-                    }
+                if (!isGreenSame)
+                {
+                    that.SetProperty(ref that.green, newColor.G, nameof(that.Green));
+                }
 
-                    if (!isBlueSame)
-                    {
-                        that.SetProperty(ref that.blue, newColor.B, nameof(that.Blue));
-                    }
+                if (!isBlueSame)
+                {
+                    that.SetProperty(ref that.blue, newColor.B, nameof(that.Blue));
+                }
 
-                    if (!isAlphaSame)
-                    {
-                        that.OnPropertyChanged(nameof(that.AlphaStartColor));
-                        that.OnPropertyChanged(nameof(that.AlphaEndColor));
-                    }
+                if (!isAlphaSame)
+                {
+                    that.OnPropertyChanged(nameof(that.AlphaStartColor));
+                    that.OnPropertyChanged(nameof(that.AlphaEndColor));
+                }
 
-                    if (!isRedSame || !isGreenSame)
-                    {
-                        that.OnPropertyChanged(nameof(that.BlueStartColor));
-                        that.OnPropertyChanged(nameof(that.BlueEndColor));
-                    }
+                if (!isRedSame || !isGreenSame)
+                {
+                    that.OnPropertyChanged(nameof(that.BlueStartColor));
+                    that.OnPropertyChanged(nameof(that.BlueEndColor));
+                }
 
-                    if (!isRedSame || !isBlueSame)
-                    {
-                        that.OnPropertyChanged(nameof(that.GreenStartColor));
-                        that.OnPropertyChanged(nameof(that.GreenEndColor));
-                    }
+                if (!isRedSame || !isBlueSame)
+                {
+                    that.OnPropertyChanged(nameof(that.GreenStartColor));
+                    that.OnPropertyChanged(nameof(that.GreenEndColor));
+                }
 
-                    if (!isGreenSame || !isBlueSame)
-                    {
-                        that.OnPropertyChanged(nameof(that.RedStartColor));
-                        that.OnPropertyChanged(nameof(that.RedEndColor));
-                    }
+                if (!isGreenSame || !isBlueSame)
+                {
+                    that.OnPropertyChanged(nameof(that.RedStartColor));
+                    that.OnPropertyChanged(nameof(that.RedEndColor));
+                }
 
-                    if (!isRedSame || !isGreenSame || !isBlueSame)
-                    {
-                        that.ChangeHue(newColor);
-                    }
+                if (!isRedSame || !isGreenSame || !isBlueSame)
+                {
+                    that.ChangeHue(newColor);
+                }
 
-                    if (!isAlphaSame || !isRedSame || !isGreenSame || !isBlueSame)
-                    {
-                        that.OnPropertyChanged(nameof(that.SwatchColor));
-                    }
+                if (!isAlphaSame || !isRedSame || !isGreenSame || !isBlueSame)
+                {
+                    that.ChangeHexadecimalColor(newColor);
                 }
             }
         }
@@ -632,15 +680,29 @@ namespace Band.Personalize.App.Universal.Controls
         }
 
         /// <summary>
+        /// A <see cref="SizeChangedEventHandler"/> for the <see cref="FrameworkElement.SizeChanged"/> event of <see cref="PickerGrid"/>.
+        /// </summary>
+        /// <param name="sender">The object where the event handler is attached.</param>
+        /// <param name="e">Event data for the event.</param>
+        private void PickerGrid_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            var senderFrameworkElement = sender as FrameworkElement;
+            if (senderFrameworkElement != null)
+            {
+                this.UpdatePickPoint(new RgbColor(this.Red, this.Green, this.Blue));
+            }
+        }
+
+        /// <summary>
         /// Choose a color from the <see cref="PickerCanvas"/> based on pointer location.
         /// </summary>
         /// <param name="point">The location of the pointer.</param>
         private void PickColor(Point point)
         {
-            this.PointX = Math.Min(this.PickerCanvas.ActualWidth, Math.Max(0, point.X));
-            this.PointY = Math.Min(this.PickerCanvas.ActualHeight, Math.Max(0, point.Y));
+            this.PointX = Math.Min(this.PickerGrid.ActualWidth, Math.Max(0, point.X));
+            this.PointY = Math.Min(this.PickerGrid.ActualHeight, Math.Max(0, point.Y));
 
-            var changedColor = new RgbColor(this.Hue, this.PointX / this.PickerCanvas.ActualWidth, 1 - (this.PointY / this.PickerCanvas.ActualHeight)).ToColor();
+            var changedColor = new RgbColor(this.Hue, this.PointX / this.PickerGrid.ActualWidth, 1 - (this.PointY / this.PickerGrid.ActualHeight)).ToColor();
             changedColor.A = this.Alpha;
             this.Color = changedColor;
         }
@@ -653,9 +715,31 @@ namespace Band.Personalize.App.Universal.Controls
         {
             var rgbColor = color.ToRgbColor();
             this.SetProperty(ref this.hue, rgbColor.Hue, nameof(this.Hue));
-            this.PointX = this.PickerCanvas.ActualWidth * rgbColor.Saturation;
-            this.PointY = this.PickerCanvas.ActualHeight * (1 - rgbColor.Value);
+            this.UpdatePickPoint(rgbColor);
             this.OnPropertyChanged(nameof(this.HueColor));
+        }
+
+        /// <summary>
+        /// Changes the hexadecimal color to the specified <paramref name="color"/>.
+        /// </summary>
+        /// <param name="color">The target color .</param>
+        private void ChangeHexadecimalColor(Color color)
+        {
+            this.OnPropertyChanged(nameof(this.SwatchColor));
+            var convertedColor = this.UseAlpha
+                ? color.ToArgbColor()
+                : color.ToRgbColor();
+            this.SetProperty(ref this.hexadecimalString, convertedColor.ToString(), nameof(this.HexadecimalString));
+        }
+
+        /// <summary>
+        /// Update the visual pick point.
+        /// </summary>
+        /// <param name="color">The RGB color being represented.</param>
+        private void UpdatePickPoint(RgbColor color)
+        {
+            this.PointX = this.PickerGrid.ActualWidth * color.Saturation;
+            this.PointY = this.PickerGrid.ActualHeight * (1 - color.Value);
         }
     }
 }

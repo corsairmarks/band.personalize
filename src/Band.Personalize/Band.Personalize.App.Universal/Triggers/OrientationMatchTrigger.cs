@@ -12,24 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Band.Personalize.App.Universal.ViewModels.Design
+namespace Band.Personalize.App.Universal.Triggers
 {
-    using Controls;
-    using Windows.UI;
+    using Windows.UI.Xaml.Controls;
 
     /// <summary>
-    /// The design View Model for the <see cref="ColorPickerUserControl"/>.
+    /// A custom visual state trigger that watches a property of type <see cref="Orientation"/> for changes.
     /// </summary>
-    internal class DesignColorPickerViewModel : ColorPickerUserControl
+    public class OrientationMatchTrigger : PropertyMatchTrigger<Orientation>
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DesignColorPickerViewModel"/> class.
-        /// </summary>
-        public DesignColorPickerViewModel()
-        {
-            this.UseAlpha = true;
-            this.Orientation = Windows.UI.Xaml.Controls.Orientation.Vertical;
-            this.Color = Colors.Red;
-        }
     }
 }

@@ -15,7 +15,9 @@
 namespace Band.Personalize.App.Universal.ViewModels.Design
 {
     using Model.Library.Band;
+    using Prism.Windows.AppModel;
     using Prism.Windows.Navigation;
+    using Windows.ApplicationModel.Resources;
 
     /// <summary>
     /// The design View Model for the Band Page.
@@ -26,7 +28,7 @@ namespace Band.Personalize.App.Universal.ViewModels.Design
         /// Initializes a new instance of the <see cref="DesignBandPageViewModel"/> class.
         /// </summary>
         public DesignBandPageViewModel()
-            : base(BandPersonalizerStub.Instance)
+            : base(new ResourceLoaderAdapter(new ResourceLoader()), BandPersonalizerStub.Instance)
         {
             this.OnNavigatedTo(
                 new NavigatedToEventArgs

@@ -27,7 +27,7 @@ namespace Band.Personalize.Model.Library.Color
         /// Convert the <paramref name="color"/> to a new instance of <see cref="BandColor"/>.
         /// </summary>
         /// <param name="color">The <see cref="RgbColor"/> to convert.</param>
-        /// <returns>A new instance of <see cref="BandColor"/></returns>
+        /// <returns>A new instance of <see cref="BandColor"/>.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="color"/> is <c>null</c>.</exception>
         public static BandColor ToBandColor(this RgbColor color)
         {
@@ -44,7 +44,7 @@ namespace Band.Personalize.Model.Library.Color
         /// Convert the <paramref name="color"/> to a new instance of <see cref="Windows.UI.Color"/>.
         /// </summary>
         /// <param name="color">The <see cref="RgbColor"/> to convert.</param>
-        /// <returns>A new instance of <see cref="Windows.UI.Color"/></returns>
+        /// <returns>A new instance of <see cref="Windows.UI.Color"/>.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="color"/> is <c>null</c>.</exception>
 #pragma warning restore CS0419 // Ambiguous reference in cref attribute
         public static Color ToColor(this RgbColor color)
@@ -61,6 +61,22 @@ namespace Band.Personalize.Model.Library.Color
                 G = color.Green,
                 B = color.Blue,
             };
+        }
+
+        /// <summary>
+        /// Convert the <paramref name="color"/> to a new instance of <see cref="ArgbColor"/>.
+        /// </summary>
+        /// <param name="color">The <see cref="RgbColor"/> to convert.</param>
+        /// <returns>A new instance of <see cref="ArgbColor"/>.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="color"/> is <c>null</c>.</exception>
+        public static ArgbColor ToArgbColor(this RgbColor color)
+        {
+            if (color == null)
+            {
+                throw new ArgumentNullException(nameof(color));
+            }
+
+            return new ArgbColor(byte.MaxValue, color.Red, color.Green, color.Blue);
         }
     }
 }

@@ -117,6 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="AlphaChannel.Header" xml:space="preserve">
+    <value>A</value>
+  </data>
   <data name="ApplyAppBarButton.Label" xml:space="preserve">
     <value>Apply</value>
   </data>
@@ -126,11 +129,29 @@
   <data name="BandVersionToggle.Header" xml:space="preserve">
     <value>Use original Band height (102px)</value>
   </data>
+  <data name="BaseTextBox.Text" xml:space="preserve">
+    <value>Base</value>
+  </data>
+  <data name="BlueChannel.Header" xml:space="preserve">
+    <value>B</value>
+  </data>
   <data name="BrowseButton.Content" xml:space="preserve">
     <value>Browse</value>
   </data>
   <data name="CancelAppBarButton.Label" xml:space="preserve">
     <value>Cancel</value>
+  </data>
+  <data name="CancelButton.Content" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="ChooseColorTextBlock.Text" xml:space="preserve">
+    <value>Choose…</value>
+  </data>
+  <data name="ConfirmButton.Content" xml:space="preserve">
+    <value>Confirm</value>
+  </data>
+  <data name="GreenChannel.Header" xml:space="preserve">
+    <value>G</value>
   </data>
   <data name="HardwareRevision.Band" xml:space="preserve">
     <value>Band</value>
@@ -138,11 +159,29 @@
   <data name="HardwareRevision.Band2" xml:space="preserve">
     <value>Band 2</value>
   </data>
+  <data name="HighContrastTextBox.Text" xml:space="preserve">
+    <value>High Contrast</value>
+  </data>
+  <data name="HighlightTextBox.Text" xml:space="preserve">
+    <value>Highlight</value>
+  </data>
   <data name="ImagePivotItem.Header" xml:space="preserve">
     <value>Image</value>
   </data>
+  <data name="LowlightTextBox.Text" xml:space="preserve">
+    <value>Lowlight</value>
+  </data>
+  <data name="MutedTextBox.Text" xml:space="preserve">
+    <value>Muted</value>
+  </data>
+  <data name="RedChannel.Header" xml:space="preserve">
+    <value>R</value>
+  </data>
   <data name="RefreshAppBarButton.Label" xml:space="preserve">
     <value>Refresh</value>
+  </data>
+  <data name="SecondaryTextTextBox.Text" xml:space="preserve">
+    <value>Secondary Text</value>
   </data>
   <data name="ThemePivotItem.Header" xml:space="preserve">
     <value>Theme</value>

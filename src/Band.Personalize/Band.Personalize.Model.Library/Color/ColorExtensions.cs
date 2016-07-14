@@ -34,5 +34,17 @@ namespace Band.Personalize.Model.Library.Color
         {
             return new RgbColor(color.R, color.G, color.B);
         }
+
+#pragma warning disable CS0419 // Ambiguous reference in cref attribute
+        /// <summary>
+        /// Convert the <paramref name="color"/> to a new instance of <see cref="ArgbColor"/>.
+        /// </summary>
+        /// <param name="color">The <see cref="Windows.UI.Color"/> to convert.</param>
+        /// <returns>A new instance of <see cref="ArgbColor"/></returns>
+#pragma warning restore CS0419 // Ambiguous reference in cref attribute
+        public static ArgbColor ToArgbColor(this Color color)
+        {
+            return new ArgbColor(color.A, color.R, color.G, color.B);
+        }
     }
 }
