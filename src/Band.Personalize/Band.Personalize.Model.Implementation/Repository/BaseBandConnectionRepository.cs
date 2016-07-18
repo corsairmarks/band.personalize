@@ -49,9 +49,9 @@ namespace Band.Personalize.Model.Implementation.Repository
         /// <param name="band">The Band to which to connect.</param>
         /// <param name="clientAction">The action to be executed while connected.</param>
         /// <returns>An asynchronous task that returns when work is complete.</returns>
-        protected async Task ConnectAndPerformAction(IBandInfo band, Action<IBandClient> clientAction)
+        protected async Task ConnectAndPerformActionAsync(IBandInfo band, Func<IBandClient, Task> clientAction)
         {
-            await this.ConnectAndPerformAction(band, CancellationToken.None, (bc, t) => clientAction(bc));
+            await this.ConnectAndPerformActionAsync(band, CancellationToken.None, (bc, t) => clientAction(bc));
         }
 
         /// <summary>
@@ -61,7 +61,7 @@ namespace Band.Personalize.Model.Implementation.Repository
         /// <param name="token">The <see cref="CancellationToken"/> to observe.</param>
         /// <param name="clientAction">The action to be executed while connected.</param>
         /// <returns>An asynchronous task that returns when work is complete.</returns>
-        protected async Task ConnectAndPerformAction(IBandInfo band, CancellationToken token, Action<IBandClient, CancellationToken> clientAction)
+        protected async Task ConnectAndPerformActionAsync(IBandInfo band, CancellationToken token, Func<IBandClient, CancellationToken, Task> clientAction)
         {
             if (!token.IsCancellationRequested)
             {
@@ -69,7 +69,7 @@ namespace Band.Personalize.Model.Implementation.Repository
                 {
                     using (var theBand = await this.BandClientManager.ConnectAsync(band))
                     {
-                        clientAction(theBand, token);
+                        await clientAction(theBand, token);
                     }
                 }
                 catch (BandException e)
@@ -86,9 +86,9 @@ namespace Band.Personalize.Model.Implementation.Repository
         /// <param name="band">The Band to which to connect.</param>
         /// <param name="clientFunction">The function to be executed while connected.</param>
         /// <returns>An asynchronous task that returns <typeparamref name="T"/> when work is complete.</returns>
-        protected async Task<T> ConnectAndPerformFunction<T>(IBandInfo band, Func<IBandClient, Task<T>> clientFunction)
+        protected async Task<T> ConnectAndPerformFunctionAsync<T>(IBandInfo band, Func<IBandClient, Task<T>> clientFunction)
         {
-            return await this.ConnectAndPerformFunction(band, CancellationToken.None, (bc, t) => clientFunction(bc));
+            return await this.ConnectAndPerformFunctionAsync(band, CancellationToken.None, (bc, t) => clientFunction(bc));
         }
 
         /// <summary>
@@ -99,7 +99,7 @@ namespace Band.Personalize.Model.Implementation.Repository
         /// <param name="token">The <see cref="CancellationToken"/> to observe.</param>
         /// <param name="clientFunction">The function to be executed while connected.</param>
         /// <returns>An asynchronous task that returns <typeparamref name="T"/> when work is complete.</returns>
-        protected async Task<T> ConnectAndPerformFunction<T>(IBandInfo band, CancellationToken token, Func<IBandClient, CancellationToken, Task<T>> clientFunction)
+        protected async Task<T> ConnectAndPerformFunctionAsync<T>(IBandInfo band, CancellationToken token, Func<IBandClient, CancellationToken, Task<T>> clientFunction)
         {
             if (!token.IsCancellationRequested)
             {

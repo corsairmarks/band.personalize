@@ -62,7 +62,7 @@ namespace Band.Personalize.Model.Implementation.Repository
                     break;
                 }
 
-                bands.Add(await this.ConnectAndPerformFunction(bandInfo, async bc => new Band(bandInfo, await this.GetHardwareVersion(bc, token))));
+                bands.Add(await this.ConnectAndPerformFunctionAsync(bandInfo, async bc => new Band(bandInfo, await this.GetHardwareVersion(bc, token))));
             }
 
             return new ReadOnlyCollection<IBand>(bands);

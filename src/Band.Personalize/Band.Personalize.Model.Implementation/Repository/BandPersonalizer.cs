@@ -61,14 +61,14 @@ namespace Band.Personalize.Model.Implementation.Repository
             var bandTheme = new BandTheme
             {
                 Base = theme.Base.ToBandColor(),
-                HighContrast = theme.Base.ToBandColor(),
-                Highlight = theme.Base.ToBandColor(),
-                Lowlight = theme.Base.ToBandColor(),
-                Muted = theme.Base.ToBandColor(),
-                SecondaryText = theme.Base.ToBandColor(),
+                HighContrast = theme.HighContrast.ToBandColor(),
+                Highlight = theme.Highlight.ToBandColor(),
+                Lowlight = theme.Lowlight.ToBandColor(),
+                Muted = theme.Muted.ToBandColor(),
+                SecondaryText = theme.SecondaryText.ToBandColor(),
             };
 
-            await this.ConnectAndPerformAction(band.BandInfo, token, async (bc, t) => await bc.PersonalizationManager.SetThemeAsync(bandTheme, t));
+            await this.ConnectAndPerformActionAsync(band.BandInfo, token, async (bc, t) => await bc.PersonalizationManager.SetThemeAsync(bandTheme, t));
         }
 
         /// <summary>
@@ -85,7 +85,7 @@ namespace Band.Personalize.Model.Implementation.Repository
                 throw new ArgumentNullException(nameof(band));
             }
 
-            var bandTheme = await this.ConnectAndPerformFunction(band.BandInfo, token, async (bc, t) => await bc.PersonalizationManager.GetThemeAsync(t));
+            var bandTheme = await this.ConnectAndPerformFunctionAsync(band.BandInfo, token, async (bc, t) => await bc.PersonalizationManager.GetThemeAsync(t));
 
             return bandTheme != null
                 ? new RgbColorTheme
@@ -115,7 +115,7 @@ namespace Band.Personalize.Model.Implementation.Repository
                 throw new ArgumentNullException(nameof(band));
             }
 
-            await this.ConnectAndPerformAction(band.BandInfo, token, async (bc, t) => await bc.PersonalizationManager.SetMeTileImageAsync(bitmap.ToBandImage(), t));
+            await this.ConnectAndPerformActionAsync(band.BandInfo, token, async (bc, t) => await bc.PersonalizationManager.SetMeTileImageAsync(bitmap.ToBandImage(), t));
         }
 
         /// <summary>
@@ -132,7 +132,7 @@ namespace Band.Personalize.Model.Implementation.Repository
                 throw new ArgumentNullException(nameof(band));
             }
 
-            var bandImage = await this.ConnectAndPerformFunction(band.BandInfo, token, async (bc, t) => await bc.PersonalizationManager.GetMeTileImageAsync(t));
+            var bandImage = await this.ConnectAndPerformFunctionAsync(band.BandInfo, token, async (bc, t) => await bc.PersonalizationManager.GetMeTileImageAsync(t));
             return bandImage != null ? bandImage.ToWriteableBitmap() : null;
         }
     }
