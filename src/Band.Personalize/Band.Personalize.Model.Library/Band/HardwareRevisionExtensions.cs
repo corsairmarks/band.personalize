@@ -29,6 +29,7 @@ namespace Band.Personalize.Model.Library.Band
         /// </summary>
         private static readonly IReadOnlyDictionary<HardwareRevision, IReadOnlyCollection<Dimension2D>> BandHardwareRevisionToMeTileImageDimensionsMap = new ReadOnlyDictionary<HardwareRevision, IReadOnlyCollection<Dimension2D>>(new Dictionary<HardwareRevision, IReadOnlyCollection<Dimension2D>>
         {
+            { HardwareRevision.Unknown, new Dimension2D[0] },
             { HardwareRevision.Band, new ReadOnlyCollection<Dimension2D>(new[] { new Dimension2D(310, 102), }) },
             { HardwareRevision.Band2, new ReadOnlyCollection<Dimension2D>(new[] { new Dimension2D(310, 102), new Dimension2D(310, 128), }) },
         });
@@ -44,6 +45,19 @@ namespace Band.Personalize.Model.Library.Band
             return version < 20
                 ? HardwareRevision.Band
                 : HardwareRevision.Band2;
+        }
+
+        /// <summary>
+        /// Convert the specific hardware version number into a major hardware revision level, or return <see cref="HardwareRevision.Unknown"/>
+        /// when <paramref name="version"/> is <c>null</c>.
+        /// </summary>
+        /// <param name="version">The specific hardware version.</param>
+        /// <returns>If <paramref name="version"/> has a vlue, the major <see cref="HardwareRevision"/> for this specific <paramref name="version"/>; otherwise, <see cref="HardwareRevision.Unknown"/>.</returns>
+        public static HardwareRevision ToHardwareRevision(this int? version)
+        {
+            return version.HasValue
+                ? ToHardwareRevision(version.Value)
+                : HardwareRevision.Unknown;
         }
 
         /// <summary>
@@ -73,7 +87,7 @@ namespace Band.Personalize.Model.Library.Band
         /// <exception cref="NotImplementedException">When <paramref name="hardwareRevision"/> is a value that does not have dimension mappings.</exception>
         public static Dimension2D GetDefaultMeTileDimensions(this HardwareRevision hardwareRevision)
         {
-            return GetAllowedMeTileDimensions(hardwareRevision).Last();
+            return GetAllowedMeTileDimensions(hardwareRevision).LastOrDefault();
         }
     }
 }

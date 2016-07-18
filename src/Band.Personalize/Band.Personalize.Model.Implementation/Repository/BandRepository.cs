@@ -69,16 +69,13 @@ namespace Band.Personalize.Model.Implementation.Repository
         /// <param name="bandClient">The Band client</param>
         /// <param name="token">The <see cref="CancellationToken"/> to observe.</param>
         /// <returns>An asynchronous task that returns the hardware version of the Band when it completes.</returns>
-        protected async Task<int> GetHardwareVersion(IBandClient bandClient, CancellationToken token)
+        protected async Task<int?> GetHardwareVersion(IBandClient bandClient, CancellationToken token)
         {
             var hardwareVersionString = await bandClient.GetHardwareVersionAsync(token);
             int hardwareVersion;
-            if (int.TryParse(hardwareVersionString, out hardwareVersion))
-            {
-                return hardwareVersion;
-            }
-
-            return -1; // TODO: What to return on not-parse?
+            return int.TryParse(hardwareVersionString, out hardwareVersion)
+                ? hardwareVersion
+                : null as int?;
         }
     }
 }

@@ -40,7 +40,7 @@ namespace Band.Personalize.App.Universal.ViewModels.Design
         /// <summary>
         /// Gets or sets the connection type between the application host and the Microsoft Band.
         /// </summary>
-        public int HardwareVersion { get; set; }
+        public int? HardwareVersion { get; set; }
 
         /// <summary>
         /// Gets or sets the Band info.

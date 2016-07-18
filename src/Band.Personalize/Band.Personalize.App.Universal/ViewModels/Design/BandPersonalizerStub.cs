@@ -122,7 +122,7 @@ namespace Band.Personalize.App.Universal.ViewModels.Design
                 throw new ArgumentNullException(nameof(band));
             }
 
-            var dimensions = band.HardwareRevision.GetDefaultMeTileDimensions();
+            var dimensions = band.HardwareRevision.GetDefaultMeTileDimensions() ?? HardwareRevision.Band.GetDefaultMeTileDimensions();
             var uri = new Uri(band.HardwareRevision == HardwareRevision.Band
                 ? "ms-appx:///Assets/band.png"
                 : "ms-appx:///Assets/band2.png");
@@ -133,7 +133,7 @@ namespace Band.Personalize.App.Universal.ViewModels.Design
                 await bitmap.SetSourceAsync(stream);
             }
 
-            return await Task.FromResult(bitmap);
+            return bitmap;
         }
     }
 }

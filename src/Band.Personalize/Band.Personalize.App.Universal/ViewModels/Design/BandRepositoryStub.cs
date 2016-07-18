@@ -44,14 +44,14 @@ namespace Band.Personalize.App.Universal.ViewModels.Design
                     Name = "Sample Band 2",
                     ConnectionType = ConnectionType.Usb,
                     HardwareRevision = HardwareRevision.Band2,
-                    HardwareVersion = 20,
+                    HardwareVersion = 26,
                 },
                 new BandStub
                 {
                     Name = "Sample Unknown Band",
                     ConnectionType = ConnectionType.Unknown,
-                    HardwareRevision = HardwareRevision.Band2,
-                    HardwareVersion = 400,
+                    HardwareRevision = HardwareRevision.Unknown,
+                    HardwareVersion = null,
                 },
             });
 

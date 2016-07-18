@@ -34,7 +34,7 @@ namespace Band.Personalize.Model.Library.Band
         /// <summary>
         /// Gets the specific hardware version.
         /// </summary>
-        int HardwareVersion { get; }
+        int? HardwareVersion { get; }
 
         /// <summary>
         /// Gets the connection type between the application host and the Microsoft Band.

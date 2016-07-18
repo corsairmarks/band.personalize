@@ -27,7 +27,7 @@ namespace Band.Personalize.Model.Implementation.Repository
         /// </summary>
         /// <param name="bandInfo">Band information from the Band SDK.</param>
         /// <param name="hardwareVersion">The hardware verision, which requires a second connection.</param>
-        public Band(IBandInfo bandInfo, int hardwareVersion)
+        public Band(IBandInfo bandInfo, int? hardwareVersion)
         {
             this.BandInfo = bandInfo;
             this.HardwareVersion = hardwareVersion;
@@ -50,7 +50,7 @@ namespace Band.Personalize.Model.Implementation.Repository
         /// <summary>
         /// Gets the specific hardware version.
         /// </summary>
-        public int HardwareVersion { get; }
+        public int? HardwareVersion { get; }
 
         /// <summary>
         /// Gets the connection type between the application host and the Microsoft Band.

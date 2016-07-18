@@ -33,10 +33,16 @@ namespace Band.Personalize.Model.Test.Band
         public static readonly IEnumerable<object[]> HardwareVersionToHardwareRevisionMap = Enumerable.Range(-1, 21).Select(i => new object[] { i, HardwareRevision.Band, }).Concat(Enumerable.Range(20, 10).Select(i => new object[] { i, HardwareRevision.Band2, }));
 
         /// <summary>
+        /// A map of hardware version to major hardware revision, including <c>null</c>.
+        /// </summary>
+        public static readonly IEnumerable<object[]> NullableHardwareVersionToHardwareRevisionMap = HardwareVersionToHardwareRevisionMap.Concat(new[] { new object[] { null as int?, HardwareRevision.Unknown, }, });
+
+        /// <summary>
         /// A map of hardware revision to allowed Me Tile image dimensions.
         /// </summary>
         public static readonly IEnumerable<object[]> BandHardwareRevisionToAllowedImageDimensionsMap = new[]
         {
+            new object[] { HardwareRevision.Unknown, new Dimension2D[0], },
             new object[] { HardwareRevision.Band, new[] { new Dimension2D(310, 102), } },
             new object[] { HardwareRevision.Band2, new[] { new Dimension2D(310, 102), new Dimension2D(310, 128), } },
         };
@@ -46,6 +52,7 @@ namespace Band.Personalize.Model.Test.Band
         /// </summary>
         public static readonly IEnumerable<object[]> BandHardwareRevisionToDefaultImageDimensionsMap = new[]
         {
+            new object[] { HardwareRevision.Unknown, null, },
             new object[] { HardwareRevision.Band, new Dimension2D(310, 102), },
             new object[] { HardwareRevision.Band2, new Dimension2D(310, 128), },
         };
@@ -59,6 +66,23 @@ namespace Band.Personalize.Model.Test.Band
         [Theory]
         [MemberData(nameof(HardwareVersionToHardwareRevisionMap))]
         public void ToHardwareRevision_ConvertsToCorrectValue(int hardwareVersion, HardwareRevision expectedHardwareRevision)
+        {
+            // Act
+            var result = hardwareVersion.ToHardwareRevision();
+
+            // Assert
+            Assert.Equal(expectedHardwareRevision, result);
+        }
+
+        /// <summary>
+        /// Verify the <see cref="HardwareRevisionExtensions.ToHardwareRevision(int)"/> method converts values below 20
+        /// to <see cref="HardwareRevision.Band"/> and values 20 and above to <see cref="HardwareRevision.Band2"/>.
+        /// </summary>
+        /// <param name="hardwareVersion">The specific hardware version.</param>
+        /// <param name="expectedHardwareRevision">The expected result.</param>
+        [Theory]
+        [MemberData(nameof(NullableHardwareVersionToHardwareRevisionMap))]
+        public void NullableToHardwareRevision_ConvertsToCorrectValue(int? hardwareVersion, HardwareRevision expectedHardwareRevision)
         {
             // Act
             var result = hardwareVersion.ToHardwareRevision();
@@ -125,7 +149,6 @@ namespace Band.Personalize.Model.Test.Band
             var result = hardwareRevision.GetDefaultMeTileDimensions();
 
             // Assert
-            Assert.NotNull(result);
             Assert.Equal(expectedDimensions, result);
         }
     }

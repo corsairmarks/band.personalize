@@ -16,8 +16,8 @@
         <DataTemplate x:Key="BandTile">
             <Button
                 x:Name="BandTile"
-                Style="{StaticResource BandTile}"
-                Command="{Binding DataContext.NavigateToBandPageCommand, ElementName=TheGrid}"
+                Style="{StaticResource ResourceKey=BandTile}"
+                Command="{Binding Path=DataContext.NavigateToBandPageCommand, ElementName=TheGrid}"
                 CommandParameter="{Binding}">
                 <RelativePanel>
                     <TextBlock
@@ -41,16 +41,16 @@
                             <behaviors:BindToControlHeightOrWidthBehavior SourceObject="{Binding ElementName=Ellipse}" ScaleFactor="0.65" />
                         </i:Interaction.Behaviors>
                         <SymbolIcon
-                            Symbol="{Binding ConnectionType, Converter={StaticResource ConnectionTypeToSymbolConverter}}"
+                            Symbol="{Binding Path=ConnectionType, Converter={StaticResource ResourceKey=ConnectionTypeToSymbolConverter}}"
                             Foreground="{Binding Path=Background, ElementName=BandTile, Mode=OneWay}" />
                     </Viewbox>
                     <StackPanel
                         RelativePanel.AlignBottomWithPanel="True"
                         RelativePanel.AlignLeftWithPanel="True"
                         Orientation="Horizontal">
-                        <TextBlock Text="{Binding HardwareRevision}" Margin="0,0,2,0" />
+                        <TextBlock Text="{Binding Path=HardwareRevision}" Margin="0,0,2,0" />
                         <TextBlock Text="(" />
-                        <TextBlock Text="{Binding HardwareVersion}" />
+                        <TextBlock Text="{Binding Path=HardwareVersion, TargetNullValue=?}" />
                         <TextBlock Text=")" />
                     </StackPanel>
                 </RelativePanel>
@@ -67,8 +67,8 @@
         <Grid Name="TheGridViewContainer">
             <GridView
                 x:Name="LargeGridView"
-                ItemTemplate="{StaticResource BandTile}"
-                ItemContainerStyle="{StaticResource BandTileContainer}"
+                ItemTemplate="{StaticResource ResourceKey=BandTile}"
+                ItemContainerStyle="{StaticResource ResourceKey=BandTileContainer}"
                 ItemsSource="{Binding Path=ConnectedBands}"
                 Visibility="Collapsed">
                 <GridView.ItemsPanel>
@@ -89,8 +89,8 @@
             </GridView>
             <GridView
                 x:Name="MediumGridView"
-                ItemTemplate="{StaticResource BandTile}"
-                ItemContainerStyle="{StaticResource BandTileContainer}"
+                ItemTemplate="{StaticResource ResourceKey=BandTile}"
+                ItemContainerStyle="{StaticResource ResourceKey=BandTileContainer}"
                 ItemsSource="{Binding Path=ConnectedBands}"
                 Visibility="Collapsed">
                 <GridView.ItemsPanel>
@@ -111,8 +111,8 @@
             </GridView>
             <GridView
                 x:Name="SmallGridView"
-                ItemTemplate="{StaticResource BandTile}"
-                ItemContainerStyle="{StaticResource BandTileContainer}"
+                ItemTemplate="{StaticResource ResourceKey=BandTile}"
+                ItemContainerStyle="{StaticResource ResourceKey=BandTileContainer}"
                 ItemsSource="{Binding Path=ConnectedBands}"
                 Visibility="Collapsed">
                 <GridView.ItemsPanel>
