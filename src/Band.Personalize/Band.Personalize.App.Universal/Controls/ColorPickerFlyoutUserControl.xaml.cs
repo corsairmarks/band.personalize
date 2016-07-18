@@ -110,7 +110,7 @@ namespace Band.Personalize.App.Universal.Controls
         /// <param name="e">The event data.</param>
         private void TheFlyout_Opening(object sender, object e)
         {
-            this.PickerColor = this.ColorOuter; // TODO: should this remember state or clear?  for now, the data resets when opened
+            this.PickerColor = this.ColorOuter;
         }
     }
 }

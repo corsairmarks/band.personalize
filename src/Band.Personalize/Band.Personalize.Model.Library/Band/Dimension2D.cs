@@ -71,7 +71,5 @@ namespace Band.Personalize.Model.Library.Band
             var hash = ((long)17 * this.Width) + this.Height;
             return hash.GetHashCode();
         }
-
-        // TODO: unit tests for Equals and GetHashCode
     }
 }
