@@ -45,9 +45,9 @@ namespace Band.Personalize.App.Universal
         /// This is the first line of authored code executed, and as such is the logical equivalent of main() or WinMain().
         /// </summary>
         public App()
+            : base()
         {
             this.InitializeComponent();
-            this.Suspending += this.OnSuspending;
         }
 
         /// <summary>
@@ -69,30 +69,16 @@ namespace Band.Personalize.App.Universal
             }
 #endif
 
-            if (e != null)
-            {
-                if (!string.IsNullOrWhiteSpace(e.Arguments))
-                {
-                    // The app was launched from a Secondary Tile
-                    // Navigate to the item's page
-                    this.NavigationService.Navigate("ItemDetail", e.Arguments);
-                }
-                else if (e.PreviousExecutionState == ApplicationExecutionState.Terminated)
-                {
-                    // TODO: Load state from previously suspended application
-                    this.NavigationService.RestoreSavedNavigation();
-                }
-                else
-                {
-                    this.NavigateToDefaultPage();
-                }
-            }
-            else
+            if (e == null || e.PreviousExecutionState != ApplicationExecutionState.Terminated)
             {
                 this.NavigateToDefaultPage();
             }
+            else
+            {
+                // TODO: Load state from previously suspended application
+                this.NavigationService.RestoreSavedNavigation();
+            }
 
-            Window.Current.Activate();
             return Task.CompletedTask;
         }
 
@@ -140,23 +126,6 @@ namespace Band.Personalize.App.Universal
         private bool NavigateToDefaultPage()
         {
             return this.NavigationService.Navigate("Main", null);
-        }
-
-        /// <summary>
-        /// Invoked when application execution is being suspended.  Application state is saved
-        /// without knowing whether the application will be terminated or resumed with the contents
-        /// of memory still intact.
-        /// </summary>
-        /// <param name="sender">The source of the suspend request.</param>
-        /// <param name="e">Details about the suspend request.</param>
-        private void OnSuspending(object sender, SuspendingEventArgs e)
-        {
-            var deferral = e.SuspendingOperation.GetDeferral();
-
-            // TODO: Save application state and stop any background activity
-            this.NavigationService.Suspending();
-
-            deferral.Complete();
         }
     }
 }
