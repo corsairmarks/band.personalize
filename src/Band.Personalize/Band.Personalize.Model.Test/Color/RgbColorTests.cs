@@ -100,11 +100,18 @@ namespace Band.Personalize.Model.Test.Color
         [ClassData(typeof(HsvColorDoubleData))]
         public void CtorHsv_SetsProperties(double hue, double saturation, double value)
         {
+            // Arrange
+            double expectedHue = hue % 360;
+            if (expectedHue < 0)
+            {
+                expectedHue += 360;
+            }
+
             // Act
             var result = new RgbColor(hue, saturation, value);
 
             // Assert
-            Assert.Equal(hue, result.Hue);
+            Assert.Equal(expectedHue, result.Hue);
             Assert.Equal(saturation, result.Saturation);
             Assert.Equal(value, result.Value);
         }

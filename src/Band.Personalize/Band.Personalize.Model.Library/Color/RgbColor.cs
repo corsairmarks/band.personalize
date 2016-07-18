@@ -68,13 +68,13 @@ namespace Band.Personalize.Model.Library.Color
                 throw new ArgumentOutOfRangeException(nameof(value), value, "Must be between 0 and 1, inclusive");
             }
 
-            // TODO: unit tests or large positive and negative rotation
+            hue %= 360;
             if (hue < 0)
             {
-                hue = Math.Abs(hue + 360);
+                hue += 360;
             }
 
-            this.Hue = hue % 360;
+            this.Hue = hue;
             this.Saturation = saturation;
             this.Value = value;
 
