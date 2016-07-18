@@ -65,16 +65,9 @@ namespace Band.Personalize.Model.Implementation.Repository
         {
             if (!token.IsCancellationRequested)
             {
-                try
+                using (var theBand = await this.BandClientManager.ConnectAsync(band))
                 {
-                    using (var theBand = await this.BandClientManager.ConnectAsync(band))
-                    {
-                        await clientAction(theBand, token);
-                    }
-                }
-                catch (BandException e)
-                {
-                    // TODO: report failure to the user
+                    await clientAction(theBand, token);
                 }
             }
         }
@@ -103,16 +96,9 @@ namespace Band.Personalize.Model.Implementation.Repository
         {
             if (!token.IsCancellationRequested)
             {
-                try
+                using (var theBand = await this.BandClientManager.ConnectAsync(band))
                 {
-                    using (var theBand = await this.BandClientManager.ConnectAsync(band))
-                    {
-                        return await clientFunction(theBand, token);
-                    }
-                }
-                catch (BandException e)
-                {
-                    // TODO: report failure to the user
+                    return await clientFunction(theBand, token);
                 }
             }
 

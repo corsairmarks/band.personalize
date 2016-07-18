@@ -207,10 +207,19 @@ namespace Band.Personalize.App.Universal.ViewModels
                 cancellationToken = this.refreshCancellationTokenSource.Token;
             });
 
-            var bands = await this.bandRepository.GetBands(cancellationToken);
-            this.connectedBands.Clear();
+            IReadOnlyList<IBand> bands;
+            try
+            {
+                bands = await this.bandRepository.GetBands(cancellationToken);
+            }
+            catch (OperationCanceledException)
+            {
+                bands = new ReadOnlyCollection<IBand>(new IBand[0]);
+            }
+
             if (bands != null && bands.Any())
             {
+                this.connectedBands.Clear();
                 foreach (var band in bands)
                 {
                     this.connectedBands.Add(band);
