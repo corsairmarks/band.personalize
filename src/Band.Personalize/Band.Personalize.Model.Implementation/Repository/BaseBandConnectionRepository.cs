@@ -63,12 +63,10 @@ namespace Band.Personalize.Model.Implementation.Repository
         /// <returns>An asynchronous task that returns when work is complete.</returns>
         protected async Task ConnectAndPerformActionAsync(IBandInfo band, CancellationToken token, Func<IBandClient, CancellationToken, Task> clientAction)
         {
-            if (!token.IsCancellationRequested)
+            token.ThrowIfCancellationRequested();
+            using (var theBand = await this.BandClientManager.ConnectAsync(band))
             {
-                using (var theBand = await this.BandClientManager.ConnectAsync(band))
-                {
-                    await clientAction(theBand, token);
-                }
+                await clientAction(theBand, token);
             }
         }
 
@@ -94,15 +92,11 @@ namespace Band.Personalize.Model.Implementation.Repository
         /// <returns>An asynchronous task that returns <typeparamref name="T"/> when work is complete.</returns>
         protected async Task<T> ConnectAndPerformFunctionAsync<T>(IBandInfo band, CancellationToken token, Func<IBandClient, CancellationToken, Task<T>> clientFunction)
         {
-            if (!token.IsCancellationRequested)
+            token.ThrowIfCancellationRequested();
+            using (var theBand = await this.BandClientManager.ConnectAsync(band))
             {
-                using (var theBand = await this.BandClientManager.ConnectAsync(band))
-                {
-                    return await clientFunction(theBand, token);
-                }
+                return await clientFunction(theBand, token);
             }
-
-            return default(T); // TODO: does this make sense?
         }
     }
 }

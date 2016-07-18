@@ -57,11 +57,6 @@ namespace Band.Personalize.Model.Implementation.Repository
             var bands = new List<IBand>(bandInfos.Count());
             foreach (var bandInfo in bandInfos)
             {
-                if (token.IsCancellationRequested)
-                {
-                    break;
-                }
-
                 bands.Add(await this.ConnectAndPerformFunctionAsync(bandInfo, async bc => new Band(bandInfo, await this.GetHardwareVersion(bc, token))));
             }
 
@@ -76,17 +71,14 @@ namespace Band.Personalize.Model.Implementation.Repository
         /// <returns>An asynchronous task that returns the hardware version of the Band when it completes.</returns>
         protected async Task<int> GetHardwareVersion(IBandClient bandClient, CancellationToken token)
         {
-            if (!token.IsCancellationRequested)
+            var hardwareVersionString = await bandClient.GetHardwareVersionAsync(token);
+            int hardwareVersion;
+            if (int.TryParse(hardwareVersionString, out hardwareVersion))
             {
-                var hardwareVersionString = await bandClient.GetHardwareVersionAsync(token);
-                int hardwareVersion;
-                if (int.TryParse(hardwareVersionString, out hardwareVersion))
-                {
-                    return hardwareVersion;
-                }
+                return hardwareVersion;
             }
 
-            return -1; // TODO: What to return on not-parse, and cancel?
+            return -1; // TODO: What to return on not-parse?
         }
     }
 }
