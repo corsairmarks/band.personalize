@@ -103,16 +103,7 @@ namespace Band.Personalize.App.Universal
         protected override void OnRegisterKnownTypesForSerialization()
         {
             // Set up the list of known types for the SuspensionManager
-            // this.SessionStateService.RegisterKnownType(typeof(Address));
-            // this.SessionStateService.RegisterKnownType(typeof(PaymentMethod));
-            // this.SessionStateService.RegisterKnownType(typeof(UserInfo));
-            // this.SessionStateService.RegisterKnownType(typeof(CheckoutDataViewModel));
-            // this.SessionStateService.RegisterKnownType(typeof(ObservableCollection<CheckoutDataViewModel>));
-            // this.SessionStateService.RegisterKnownType(typeof(ShippingMethod));
-            // this.SessionStateService.RegisterKnownType(typeof(Dictionary<string, Collection<string>>));
-            // this.SessionStateService.RegisterKnownType(typeof(Order));
-            // this.SessionStateService.RegisterKnownType(typeof(Product));
-            // this.SessionStateService.RegisterKnownType(typeof(Collection<Product>));
+            // this.SessionStateService.RegisterKnownType(typeof(Type));
         }
 
         /// <summary>
@@ -129,13 +120,6 @@ namespace Band.Personalize.App.Universal
             this.Container.RegisterInstance<IEventAggregator>(this.EventAggregator);
             this.Container.RegisterInstance<IResourceLoader>(new ResourceLoaderAdapter(new ResourceLoader()));
 
-            // Register services
-            // this.Container.RegisterType<IAccountService, AccountService>(new ContainerControlledLifetimeManager());
-            // this.Container.RegisterType<ICredentialStore, RoamingCredentialStore>(new ContainerControlledLifetimeManager());
-            // this.Container.RegisterType<ICacheService, TemporaryFolderCacheService>(new ContainerControlledLifetimeManager());
-            // this.Container.RegisterType<ISecondaryTileService, SecondaryTileService>(new ContainerControlledLifetimeManager());
-            // this.Container.RegisterType<IAlertMessageService, AlertMessageService>(new ContainerControlledLifetimeManager());
-
             // Register repositories
 #if DEBUG && STUB
             this.Container.RegisterInstance<IBandPersonalizer>(BandPersonalizerStub.Instance);
@@ -146,11 +130,6 @@ namespace Band.Personalize.App.Universal
             this.Container.RegisterType<IBandRepository, BandRepository>(new ContainerControlledLifetimeManager());
 #endif
 
-            // Register child view models
-            // this.Container.RegisterType<IShippingAddressUserControlViewModel, ShippingAddressUserControlViewModel>();
-            // this.Container.RegisterType<IBillingAddressUserControlViewModel, BillingAddressUserControlViewModel>();
-            // this.Container.RegisterType<IPaymentMethodUserControlViewModel, PaymentMethodUserControlViewModel>();
-            // this.Container.RegisterType<ISignInUserControlViewModel, SignInUserControlViewModel>();
             return base.OnInitializeAsync(e);
         }
 
