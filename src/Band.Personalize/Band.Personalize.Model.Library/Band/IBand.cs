@@ -14,6 +14,8 @@
 
 namespace Band.Personalize.Model.Library.Band
 {
+    using Microsoft.Band;
+
     /// <summary>
     /// Information about a Microsoft Band.
     /// </summary>
@@ -38,5 +40,10 @@ namespace Band.Personalize.Model.Library.Band
         /// Gets the connection type between the application host and the Microsoft Band.
         /// </summary>
         ConnectionType ConnectionType { get; }
+
+        /// <summary>
+        /// Gets the SDK <see cref="IBandInfo"/> for this Band.
+        /// </summary>
+        IBandInfo BandInfo { get; }
     }
 }

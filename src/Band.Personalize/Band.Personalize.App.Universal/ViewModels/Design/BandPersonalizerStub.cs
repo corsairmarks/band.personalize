@@ -15,10 +15,12 @@
 namespace Band.Personalize.App.Universal.ViewModels.Design
 {
     using System;
+    using System.Threading;
     using System.Threading.Tasks;
     using Model.Library.Band;
     using Model.Library.Repository;
     using Model.Library.Theme;
+    using Windows.Storage;
     using Windows.Storage.Streams;
     using Windows.UI.Xaml.Media.Imaging;
 
@@ -48,42 +50,90 @@ namespace Band.Personalize.App.Universal.ViewModels.Design
         }
 
         /// <summary>
-        /// Sets the <paramref name="theme"/> of the current Band.
+        /// Sets the <paramref name="theme"/> of the <paramref name="band"/>.
         /// </summary>
+        /// <param name="band">The band for which to set the theme.</param>
         /// <param name="theme">The theme to set.</param>
+        /// <param name="token">The <see cref="CancellationToken"/> to observe.</param>
         /// <returns>An asynchronous task that returns when work is complete.</returns>
-        public async Task SetTheme(RgbColorTheme theme)
+        /// <exception cref="ArgumentNullException"><paramref name="band"/> or <paramref name="theme"/> is <c>null</c>.</exception>
+        public async Task SetTheme(IBand band, RgbColorTheme theme, CancellationToken token)
         {
+            if (band == null)
+            {
+                throw new ArgumentNullException(nameof(band));
+            }
+            else if (theme == null)
+            {
+                throw new ArgumentNullException(nameof(theme));
+            }
+
             await Task.CompletedTask;
         }
 
         /// <summary>
-        /// Gets the current color theme of the current Band.
+        /// Gets the current color theme of the <paramref name="band"/>.
         /// </summary>
+        /// <param name="band">The band from which to get the theme.</param>
+        /// <param name="token">The <see cref="CancellationToken"/> to observe.</param>
         /// <returns>An asynchronous task that returns the current color theme when it completes.</returns>
-        public async Task<RgbColorTheme> GetTheme()
+        /// <exception cref="ArgumentNullException"><paramref name="band"/> is <c>null</c>.</exception>
+        public async Task<RgbColorTheme> GetTheme(IBand band, CancellationToken token)
         {
-            return await Task.FromResult(DefaultThemes.Band2.Electric);
+            if (band == null)
+            {
+                throw new ArgumentNullException(nameof(band));
+            }
+
+            return await Task.FromResult(band.HardwareRevision == HardwareRevision.Band
+                ? DefaultThemes.Band.Blue
+                : DefaultThemes.Band2.Electric);
         }
 
         /// <summary>
-        /// Sets the Me Tile image to the image contained in the <paramref name="stream"/>, sizing it for the specified Band hardware.
+        /// Sets the Me Tile image to the image contained in the <paramref name="bitmap"/>, which is assumed to be sized for the specified Band hardware.
         /// </summary>
-        /// <param name="stream">A stream that contains the image to set.</param>
-        /// <param name="hardwareSizingFor">The band version to determine the allowable Me Tile image dimensions.</param>
+        /// <param name="band">The band for which to set the Me Tile image.</param>
+        /// <param name="bitmap">A bitmap that contains the image to set, with the correct dimensions.</param>
+        /// <param name="token">The <see cref="CancellationToken"/> to observe.</param>
         /// <returns>An asynchronous task that returns when work is complete.</returns>
-        public async Task SetMeTileImage(IRandomAccessStream stream, HardwareRevision hardwareSizingFor)
+        /// <exception cref="ArgumentNullException"><paramref name="band"/> or <paramref name="bitmap"/> is <c>null</c>.</exception>
+        public async Task SetMeTileImage(IBand band, WriteableBitmap bitmap, CancellationToken token)
         {
+            if (band == null)
+            {
+                throw new ArgumentNullException(nameof(band));
+            }
+
             await Task.CompletedTask;
         }
 
         /// <summary>
-        /// Gets the current Me Tile image of the current Band.
+        /// Gets the current Me Tile image of the <paramref name="band"/>.
         /// </summary>
+        /// <param name="band">The band from which to get the Me Tile Image.</param>
+        /// <param name="token">The <see cref="CancellationToken"/> to observe.</param>
         /// <returns>An asynchronous task that returns the current Me Tile image when it completes.</returns>
-        public async Task<BitmapSource> GetMeTileImage()
+        /// <exception cref="ArgumentNullException"><paramref name="band"/> is <c>null</c>.</exception>
+        public async Task<WriteableBitmap> GetMeTileImage(IBand band, CancellationToken token)
         {
-            return await Task.FromResult(new BitmapImage(new Uri("ms-appx:///Assets/band2.png")));
+            if (band == null)
+            {
+                throw new ArgumentNullException(nameof(band));
+            }
+
+            var dimensions = band.HardwareRevision.GetDefaultMeTileDimensions();
+            var uri = new Uri(band.HardwareRevision == HardwareRevision.Band
+                ? "ms-appx:///Assets/band.png"
+                : "ms-appx:///Assets/band2.png");
+            var storageFile = await StorageFile.GetFileFromApplicationUriAsync(uri);
+            var bitmap = new WriteableBitmap(dimensions.Width, dimensions.Height);
+            using (var stream = await storageFile.OpenReadAsync())
+            {
+                await bitmap.SetSourceAsync(stream);
+            }
+
+            return await Task.FromResult(bitmap);
         }
     }
 }

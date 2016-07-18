@@ -18,6 +18,7 @@ namespace Band.Personalize.App.Universal.ViewModels
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
     using System.Windows.Input;
     using Model.Library.Band;
@@ -69,7 +70,7 @@ namespace Band.Personalize.App.Universal.ViewModels
         /// <summary>
         /// The currently-selected Me Tile image.
         /// </summary>
-        private BitmapSource currentMeTileImage;
+        private WriteableBitmap currentMeTileImage;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BandPageViewModel"/> class.
@@ -116,9 +117,10 @@ namespace Band.Personalize.App.Universal.ViewModels
                 var chosenFile = await picker.PickSingleFileAsync();
                 if (chosenFile != null)
                 {
-                    var bitmap = new BitmapImage();
-                    bitmap.DecodePixelWidth = 310;
-                    bitmap.DecodePixelHeight = 128; // TODO: probably get from a control on the page which size to use
+                    var dimensions = this.IsUseOriginalBandHeight
+                        ? HardwareRevision.Band.GetDefaultMeTileDimensions()
+                        : this.CurrentBand.HardwareRevision.GetDefaultMeTileDimensions();
+                    var bitmap = new WriteableBitmap(dimensions.Width, dimensions.Height);
                     using (var stream = await chosenFile.OpenReadAsync())
                     {
                         await bitmap.SetSourceAsync(stream);
@@ -191,7 +193,7 @@ namespace Band.Personalize.App.Universal.ViewModels
         /// <summary>
         /// Gets or sets the currently-selected Me Tile image.
         /// </summary>
-        public BitmapSource CurrentMeTileImage
+        public WriteableBitmap CurrentMeTileImage
         {
             get { return this.currentMeTileImage; }
             set { this.SetProperty(ref this.currentMeTileImage, value); }
@@ -233,7 +235,7 @@ namespace Band.Personalize.App.Universal.ViewModels
             switch (selectedPivotIndex)
             {
                 case 0:
-                    var themeColors = this.RgbColorThemeToCollection(await this.bandPersonalizer.GetTheme());
+                    var themeColors = this.RgbColorThemeToCollection(await this.bandPersonalizer.GetTheme(this.CurrentBand, CancellationToken.None));
                     this.currentThemeColors.Clear();
                     if (themeColors != null && themeColors.Any())
                     {
@@ -245,9 +247,10 @@ namespace Band.Personalize.App.Universal.ViewModels
 
                     break;
                 case 1:
-                    var currentMeTileImage = await this.bandPersonalizer.GetMeTileImage();
+                    var originalBandDimensions = HardwareRevision.Band.GetDefaultMeTileDimensions();
+                    var currentMeTileImage = await this.bandPersonalizer.GetMeTileImage(this.CurrentBand, CancellationToken.None);
                     this.IsUseOriginalBandHeight = this.CurrentBand.HardwareRevision != HardwareRevision.Band
-                        ? currentMeTileImage.PixelHeight <= 102
+                        ? currentMeTileImage.PixelHeight <= originalBandDimensions.Height
                         : true;
                     this.CurrentMeTileImage = currentMeTileImage;
                     break;
@@ -266,7 +269,7 @@ namespace Band.Personalize.App.Universal.ViewModels
             switch (selectedPivotIndex)
             {
                 case 0:
-                    await this.bandPersonalizer.SetTheme(new RgbColorTheme
+                    var newRgbColorTheme = new RgbColorTheme
                     {
                         Base = this.CurrentThemeColors[0].Swatch.ToRgbColor(),
                         HighContrast = this.CurrentThemeColors[1].Swatch.ToRgbColor(),
@@ -274,10 +277,12 @@ namespace Band.Personalize.App.Universal.ViewModels
                         Highlight = this.CurrentThemeColors[3].Swatch.ToRgbColor(),
                         Muted = this.CurrentThemeColors[4].Swatch.ToRgbColor(),
                         SecondaryText = this.CurrentThemeColors[5].Swatch.ToRgbColor(),
-                    });
+                    };
+
+                    await this.bandPersonalizer.SetTheme(this.CurrentBand, newRgbColorTheme, CancellationToken.None);
                     break;
                 case 1:
-                    await this.bandPersonalizer.SetMeTileImage(null, HardwareRevision.Band2);
+                    await this.bandPersonalizer.SetMeTileImage(this.CurrentBand, this.CurrentMeTileImage, CancellationToken.None);
                     break;
                 default:
                     throw new ArgumentNullException($"Unhandled pivot index: {selectedPivotIndex}");

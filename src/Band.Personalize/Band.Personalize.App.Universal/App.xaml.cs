@@ -142,7 +142,6 @@ namespace Band.Personalize.App.Universal
             this.Container.RegisterInstance<IBandRepository>(BandRepositoryStub.Instance);
 #else
             this.Container.RegisterInstance<IBandClientManager>(BandClientManager.Instance);
-            this.Container.RegisterInstance<Func<IBand>>(() => null); // TODO: actually get the "currently selected Band" (child container?)
             this.Container.RegisterType<IBandPersonalizer, BandPersonalizer>(new ContainerControlledLifetimeManager());
             this.Container.RegisterType<IBandRepository, BandRepository>(new ContainerControlledLifetimeManager());
 #endif

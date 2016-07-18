@@ -15,6 +15,7 @@
 namespace Band.Personalize.Model.Implementation.Repository
 {
     using System;
+    using System.Threading;
     using System.Threading.Tasks;
     using Library.Band;
     using Library.Color;
@@ -30,33 +31,33 @@ namespace Band.Personalize.Model.Implementation.Repository
     public class BandPersonalizer : BaseBandConnectionRepository, IBandPersonalizer
     {
         /// <summary>
-        /// A function to get the current Band.
-        /// </summary>
-        private readonly Func<IBandInfo> getCurrentBand;
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="BandPersonalizer"/> class.
         /// </summary>
         /// <param name="bandClientManager">The Band client manager.</param>
-        /// <param name="getCurrentBand">A function to get the current Band.</param>
-        public BandPersonalizer(IBandClientManager bandClientManager, Func<IBandInfo> getCurrentBand)
+        public BandPersonalizer(IBandClientManager bandClientManager)
             : base(bandClientManager)
         {
-            if (getCurrentBand == null)
-            {
-                throw new ArgumentNullException(nameof(getCurrentBand));
-            }
-
-            this.getCurrentBand = getCurrentBand;
         }
 
         /// <summary>
-        /// Sets the <paramref name="theme"/> of the current Band.
+        /// Sets the <paramref name="theme"/> of the <paramref name="band"/>.
         /// </summary>
+        /// <param name="band">The band for which to set the theme.</param>
         /// <param name="theme">The theme to set.</param>
+        /// <param name="token">The <see cref="CancellationToken"/> to observe.</param>
         /// <returns>An asynchronous task that returns when work is complete.</returns>
-        public async Task SetTheme(RgbColorTheme theme)
+        /// <exception cref="ArgumentNullException"><paramref name="band"/> or <paramref name="theme"/> is <c>null</c>.</exception>
+        public async Task SetTheme(IBand band, RgbColorTheme theme, CancellationToken token)
         {
+            if (band == null)
+            {
+                throw new ArgumentNullException(nameof(band));
+            }
+            else if (theme == null)
+            {
+                throw new ArgumentNullException(nameof(theme));
+            }
+
             var bandTheme = new BandTheme
             {
                 Base = theme.Base.ToBandColor(),
@@ -67,51 +68,72 @@ namespace Band.Personalize.Model.Implementation.Repository
                 SecondaryText = theme.Base.ToBandColor(),
             };
 
-            await this.ConnectAndPerformAction(this.getCurrentBand(), async bc => await bc.PersonalizationManager.SetThemeAsync(bandTheme));
+            await this.ConnectAndPerformAction(band.BandInfo, token, async (bc, t) => await bc.PersonalizationManager.SetThemeAsync(bandTheme, t));
         }
 
         /// <summary>
-        /// Gets the current color theme of the current Band.
+        /// Gets the current color theme of the <paramref name="band"/>.
         /// </summary>
+        /// <param name="band">The band from which to get the theme.</param>
+        /// <param name="token">The <see cref="CancellationToken"/> to observe.</param>
         /// <returns>An asynchronous task that returns the current color theme when it completes.</returns>
-        public async Task<RgbColorTheme> GetTheme()
+        /// <exception cref="ArgumentNullException"><paramref name="band"/> is <c>null</c>.</exception>
+        public async Task<RgbColorTheme> GetTheme(IBand band, CancellationToken token)
         {
-            var bandTheme = await this.ConnectAndPerformFunction(this.getCurrentBand(), async bc => await bc.PersonalizationManager.GetThemeAsync());
-
-            return new RgbColorTheme
+            if (band == null)
             {
-                Base = bandTheme.Base.ToRgbColor(),
-                HighContrast = bandTheme.HighContrast.ToRgbColor(),
-                Highlight = bandTheme.Highlight.ToRgbColor(),
-                Lowlight = bandTheme.Lowlight.ToRgbColor(),
-                Muted = bandTheme.Muted.ToRgbColor(),
-                SecondaryText = bandTheme.SecondaryText.ToRgbColor(),
-            };
+                throw new ArgumentNullException(nameof(band));
+            }
+
+            var bandTheme = await this.ConnectAndPerformFunction(band.BandInfo, token, async (bc, t) => await bc.PersonalizationManager.GetThemeAsync(t));
+
+            return bandTheme != null
+                ? new RgbColorTheme
+                {
+                    Base = bandTheme.Base.ToRgbColor(),
+                    HighContrast = bandTheme.HighContrast.ToRgbColor(),
+                    Highlight = bandTheme.Highlight.ToRgbColor(),
+                    Lowlight = bandTheme.Lowlight.ToRgbColor(),
+                    Muted = bandTheme.Muted.ToRgbColor(),
+                    SecondaryText = bandTheme.SecondaryText.ToRgbColor(),
+                }
+                : null;
         }
 
         /// <summary>
-        /// Sets the Me Tile image to the image contained in the <paramref name="stream"/>, sizing it for the specified Band hardware.
+        /// Sets the Me Tile image to the image contained in the <paramref name="bitmap"/>, which is assumed to be sized for the specified Band hardware.
         /// </summary>
-        /// <param name="stream">A stream that contains the image to set.</param>
-        /// <param name="hardwareSizingFor">The band version to determine the allowable Me Tile image dimensions.</param>
+        /// <param name="band">The band for which to set the Me Tile image.</param>
+        /// <param name="bitmap">A bitmap that contains the image to set, with the correct dimensions.</param>
+        /// <param name="token">The <see cref="CancellationToken"/> to observe.</param>
         /// <returns>An asynchronous task that returns when work is complete.</returns>
-        public async Task SetMeTileImage(IRandomAccessStream stream, HardwareRevision hardwareSizingFor)
+        /// <exception cref="ArgumentNullException"><paramref name="band"/> or <paramref name="bitmap"/> is <c>null</c>.</exception>
+        public async Task SetMeTileImage(IBand band, WriteableBitmap bitmap, CancellationToken token)
         {
-            var dimensions = hardwareSizingFor.GetDefaultMeTileDimensions();
-            var bitmap = new WriteableBitmap(dimensions.Width, dimensions.Height);
-            await bitmap.SetSourceAsync(stream);
-            var meTileImage = bitmap.ToBandImage();
+            if (band == null)
+            {
+                throw new ArgumentNullException(nameof(band));
+            }
 
-            await this.ConnectAndPerformAction(this.getCurrentBand(), async bc => await bc.PersonalizationManager.SetMeTileImageAsync(meTileImage));
+            await this.ConnectAndPerformAction(band.BandInfo, token, async (bc, t) => await bc.PersonalizationManager.SetMeTileImageAsync(bitmap.ToBandImage(), t));
         }
 
         /// <summary>
-        /// Gets the current Me Tile image of the current Band.
+        /// Gets the current Me Tile image of the <paramref name="band"/>.
         /// </summary>
+        /// <param name="band">The band from which to get the Me Tile Image.</param>
+        /// <param name="token">The <see cref="CancellationToken"/> to observe.</param>
         /// <returns>An asynchronous task that returns the current Me Tile image when it completes.</returns>
-        public async Task<BitmapSource> GetMeTileImage()
+        /// <exception cref="ArgumentNullException"><paramref name="band"/> is <c>null</c>.</exception>
+        public async Task<WriteableBitmap> GetMeTileImage(IBand band, CancellationToken token)
         {
-            return (await this.ConnectAndPerformFunction(this.getCurrentBand(), async bc => await bc.PersonalizationManager.GetMeTileImageAsync())).ToWriteableBitmap();
+            if (band == null)
+            {
+                throw new ArgumentNullException(nameof(band));
+            }
+
+            var bandImage = await this.ConnectAndPerformFunction(band.BandInfo, token, async (bc, t) => await bc.PersonalizationManager.GetMeTileImageAsync(t));
+            return bandImage != null ? bandImage.ToWriteableBitmap() : null;
         }
     }
 }

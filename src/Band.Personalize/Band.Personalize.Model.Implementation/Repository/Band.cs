@@ -29,16 +29,18 @@ namespace Band.Personalize.Model.Implementation.Repository
         /// <param name="hardwareVersion">The hardware verision, which requires a second connection.</param>
         public Band(IBandInfo bandInfo, int hardwareVersion)
         {
-            this.Name = bandInfo.Name;
+            this.BandInfo = bandInfo;
             this.HardwareVersion = hardwareVersion;
             this.HardwareRevision = hardwareVersion.ToHardwareRevision();
-            this.ConnectionType = bandInfo.ConnectionType.ToConnectionType();
         }
 
         /// <summary>
         /// Gets the name.
         /// </summary>
-        public string Name { get; }
+        public string Name
+        {
+            get { return this.BandInfo.Name; }
+        }
 
         /// <summary>
         /// Gets the hardware major revision level.
@@ -53,6 +55,14 @@ namespace Band.Personalize.Model.Implementation.Repository
         /// <summary>
         /// Gets the connection type between the application host and the Microsoft Band.
         /// </summary>
-        public ConnectionType ConnectionType { get; }
+        public ConnectionType ConnectionType
+        {
+            get { return this.BandInfo.ConnectionType.ToConnectionType(); }
+        }
+
+        /// <summary>
+        /// Gets the SDK <see cref="IBandInfo"/> for this Band.
+        /// </summary>
+        public IBandInfo BandInfo { get; }
     }
 }
