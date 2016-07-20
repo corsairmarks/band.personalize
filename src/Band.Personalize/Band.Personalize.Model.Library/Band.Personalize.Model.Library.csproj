@@ -129,6 +129,7 @@
     <Compile Include="Color\RgbColor.cs" />
     <Compile Include="Color\RgbColorExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Repository\IBandClientManagerExtensions.cs" />
     <Compile Include="Repository\IBandPersonalizer.cs" />
     <Compile Include="Repository\IBandRepository.cs" />
     <Compile Include="Theme\DefaultThemes.cs" />

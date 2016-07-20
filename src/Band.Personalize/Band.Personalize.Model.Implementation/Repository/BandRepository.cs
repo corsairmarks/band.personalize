@@ -14,6 +14,7 @@
 
 namespace Band.Personalize.Model.Implementation.Repository
 {
+    using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Linq;
@@ -26,15 +27,25 @@ namespace Band.Personalize.Model.Implementation.Repository
     /// <summary>
     /// A facade for retrieving information about Microsoft Bands.
     /// </summary>
-    public class BandRepository : BaseBandConnectionRepository, IBandRepository
+    public class BandRepository : IBandRepository
     {
+        /// <summary>
+        /// The Band client manager.
+        /// </summary>
+        private readonly IBandClientManager bandClientManager;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="BandRepository"/> class.
         /// </summary>
         /// <param name="bandClientManager">The Band client manager.</param>
         public BandRepository(IBandClientManager bandClientManager)
-            : base(bandClientManager)
         {
+            if (bandClientManager == null)
+            {
+                throw new ArgumentNullException(nameof(bandClientManager));
+            }
+
+            this.bandClientManager = bandClientManager;
         }
 
         /// <summary>
@@ -53,11 +64,11 @@ namespace Band.Personalize.Model.Implementation.Repository
         /// <returns>An asynchronous task that returns a read-only collection of connected Bands when it completes.</returns>
         public async Task<IReadOnlyList<IBand>> GetBands(CancellationToken token)
         {
-            var bandInfos = await this.BandClientManager.GetBandsAsync();
+            var bandInfos = await this.bandClientManager.GetBandsAsync();
             var bands = new List<IBand>(bandInfos.Count());
             foreach (var bandInfo in bandInfos)
             {
-                bands.Add(await this.ConnectAndPerformFunctionAsync(bandInfo, async bc => new Band(bandInfo, await this.GetHardwareVersion(bc, token))));
+                bands.Add(await this.bandClientManager.ConnectAndPerformFunctionAsync(bandInfo, token, async (bc, t) => new Band(bandInfo, await this.GetHardwareVersion(bc, t))));
             }
 
             return new ReadOnlyCollection<IBand>(bands);

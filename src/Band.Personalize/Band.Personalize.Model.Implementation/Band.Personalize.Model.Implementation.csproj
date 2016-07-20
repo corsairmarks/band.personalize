@@ -126,7 +126,6 @@
     <Compile Include="Repository\Band.cs" />
     <Compile Include="Repository\BandPersonalizer.cs" />
     <Compile Include="Repository\BandRepository.cs" />
-    <Compile Include="Repository\BaseBandConnectionRepository.cs" />
     <EmbeddedResource Include="Properties\Band.Personalize.Model.Implementation.rd.xml" />
   </ItemGroup>
   <ItemGroup>
