@@ -31,6 +31,11 @@ namespace Band.Personalize.Model.Test.Repository
     public class BandRepositoryTests
     {
         /// <summary>
+        /// The <see cref="Mock"/> repository.
+        /// </summary>
+        private static readonly MockRepository MockRepository = new MockRepository(MockBehavior.Strict);
+
+        /// <summary>
         /// Gets sample Band version strings mapped to the expected <see cref="Nullable{Int32}"/> representation.
         /// </summary>
         public static IEnumerable<object[]> BandHardwareVersions
@@ -45,11 +50,6 @@ namespace Band.Personalize.Model.Test.Repository
                 };
             }
         }
-
-        /// <summary>
-        /// The <see cref="Mock"/> repository.
-        /// </summary>
-        private static readonly MockRepository MockRepository = new MockRepository(MockBehavior.Strict);
 
         /// <summary>
         /// Verify the <see cref="BandRepository(IBandClientManager)"/> constructor throws an
