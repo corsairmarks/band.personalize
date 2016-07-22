@@ -22,7 +22,6 @@ namespace Band.Personalize.Model.Implementation.Repository
     using Library.Repository;
     using Library.Theme;
     using Microsoft.Band;
-    using Windows.Storage.Streams;
     using Windows.UI.Xaml.Media.Imaging;
 
     /// <summary>
