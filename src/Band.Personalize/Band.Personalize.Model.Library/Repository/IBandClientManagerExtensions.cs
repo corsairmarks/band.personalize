@@ -25,23 +25,23 @@ namespace Band.Personalize.Model.Library.Repository
     public static class IBandClientManagerExtensions
     {
         /// <summary>
-        /// Connect to the specified <paramref name="band"/> and execute the <paramref name="clientAction"/>.
+        /// Connect to the specified <paramref name="bandInfo"/> and execute the <paramref name="clientAction"/>.
         /// </summary>
         /// <param name="bandClientManager">The Band client manager.</param>
-        /// <param name="band">The Band to which to connect.</param>
+        /// <param name="bandInfo">The Band to which to connect.</param>
         /// <param name="token">The <see cref="CancellationToken"/> to observe.</param>
         /// <param name="clientAction">The action to be executed while connected.</param>
         /// <returns>An asynchronous task that returns when work is complete.</returns>
-        /// <exception cref="ArgumentNullException"><paramref name="bandClientManager"/>, <paramref name="band"/>, or <paramref name="clientAction"/> is <c>null</c>.</exception>
-        public static async Task ConnectAndPerformActionAsync(this IBandClientManager bandClientManager, IBandInfo band, CancellationToken token, Func<IBandClient, CancellationToken, Task> clientAction)
+        /// <exception cref="ArgumentNullException"><paramref name="bandClientManager"/>, <paramref name="bandInfo"/>, or <paramref name="clientAction"/> is <c>null</c>.</exception>
+        public static async Task ConnectAndPerformActionAsync(this IBandClientManager bandClientManager, IBandInfo bandInfo, CancellationToken token, Func<IBandClient, CancellationToken, Task> clientAction)
         {
             if (bandClientManager == null)
             {
                 throw new ArgumentNullException(nameof(bandClientManager));
             }
-            else if (band == null)
+            else if (bandInfo == null)
             {
-                throw new ArgumentNullException(nameof(band));
+                throw new ArgumentNullException(nameof(bandInfo));
             }
             else if (clientAction == null)
             {
@@ -49,31 +49,31 @@ namespace Band.Personalize.Model.Library.Repository
             }
 
             token.ThrowIfCancellationRequested();
-            using (var theBand = await bandClientManager.ConnectAsync(band))
+            using (var theBand = await bandClientManager.ConnectAsync(bandInfo))
             {
                 await clientAction(theBand, token);
             }
         }
 
         /// <summary>
-        /// Connect to the specified <paramref name="band"/> and execute the <paramref name="clientFunction"/>.
+        /// Connect to the specified <paramref name="bandInfo"/> and execute the <paramref name="clientFunction"/>.
         /// </summary>
         /// <typeparam name="T">The return type of the <paramref name="clientFunction"/>.</typeparam>
         /// <param name="bandClientManager">The Band client manager.</param>
-        /// <param name="band">The Band to which to connect.</param>
+        /// <param name="bandInfo">The Band to which to connect.</param>
         /// <param name="token">The <see cref="CancellationToken"/> to observe.</param>
         /// <param name="clientFunction">The function to be executed while connected.</param>
         /// <returns>An asynchronous task that returns <typeparamref name="T"/> when work is complete.</returns>
-        /// <exception cref="ArgumentNullException"><paramref name="bandClientManager"/>, <paramref name="band"/>, or <paramref name="clientFunction"/> is <c>null</c>.</exception>
-        public static async Task<T> ConnectAndPerformFunctionAsync<T>(this IBandClientManager bandClientManager, IBandInfo band, CancellationToken token, Func<IBandClient, CancellationToken, Task<T>> clientFunction)
+        /// <exception cref="ArgumentNullException"><paramref name="bandClientManager"/>, <paramref name="bandInfo"/>, or <paramref name="clientFunction"/> is <c>null</c>.</exception>
+        public static async Task<T> ConnectAndPerformFunctionAsync<T>(this IBandClientManager bandClientManager, IBandInfo bandInfo, CancellationToken token, Func<IBandClient, CancellationToken, Task<T>> clientFunction)
         {
             if (bandClientManager == null)
             {
                 throw new ArgumentNullException(nameof(bandClientManager));
             }
-            else if (band == null)
+            else if (bandInfo == null)
             {
-                throw new ArgumentNullException(nameof(band));
+                throw new ArgumentNullException(nameof(bandInfo));
             }
             else if (clientFunction == null)
             {
@@ -81,7 +81,7 @@ namespace Band.Personalize.Model.Library.Repository
             }
 
             token.ThrowIfCancellationRequested();
-            using (var theBand = await bandClientManager.ConnectAsync(band))
+            using (var theBand = await bandClientManager.ConnectAsync(bandInfo))
             {
                 return await clientFunction(theBand, token);
             }
