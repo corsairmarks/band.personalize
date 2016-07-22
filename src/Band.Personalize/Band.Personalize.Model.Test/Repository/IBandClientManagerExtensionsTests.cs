@@ -139,27 +139,24 @@ namespace Band.Personalize.Model.Test.Repository
             var mockBandClientManager = MockRepository.Create<IBandClientManager>();
             mockBandClientManager.Setup(bcm => bcm.ConnectAsync(It.IsIn(bandInfo))).Returns(Task.FromResult(bandClient));
             var bandClientManager = mockBandClientManager.Object;
-            using (var cancellationTokenSource = new CancellationTokenSource())
+            var token = new CancellationToken(false);
+            var clientActionCallCount = 0;
+            Func<IBandClient, CancellationToken, Task> clientAction = (bc, t) =>
             {
-                var token = cancellationTokenSource.Token;
-                var clientActionCallCount = 0;
-                Func<IBandClient, CancellationToken, Task> clientAction = (bc, t) =>
-                {
-                    Assert.StrictEqual(bandClient, bc);
-                    Assert.StrictEqual(token, t);
-                    clientActionCallCount++;
+                Assert.StrictEqual(bandClient, bc);
+                Assert.StrictEqual(token, t);
+                clientActionCallCount++;
 
-                    return Task.CompletedTask;
-                };
+                return Task.CompletedTask;
+            };
 
-                // Act / Assert
-                await bandClientManager.ConnectAndPerformActionAsync(bandInfo, token, clientAction);
+            // Act / Assert
+            await bandClientManager.ConnectAndPerformActionAsync(bandInfo, token, clientAction);
 
-                // Assert
-                mockBandClientManager.Verify(bcm => bcm.ConnectAsync(It.IsAny<IBandInfo>()), Times.Never);
-                mockBandClient.Verify(bc => bc.Dispose(), Times.Once);
-                Assert.Equal(1, clientActionCallCount);
-            }
+            // Assert
+            mockBandClientManager.Verify(bcm => bcm.ConnectAsync(It.IsAny<IBandInfo>()), Times.Never);
+            mockBandClient.Verify(bc => bc.Dispose(), Times.Once);
+            Assert.Equal(1, clientActionCallCount);
         }
 
         /// <summary>
@@ -269,29 +266,26 @@ namespace Band.Personalize.Model.Test.Repository
             var mockBandClientManager = MockRepository.Create<IBandClientManager>();
             mockBandClientManager.Setup(bcm => bcm.ConnectAsync(bandInfo)).Returns(Task.FromResult(bandClient));
             var bandClientManager = mockBandClientManager.Object;
-            using (var cancellationTokenSource = new CancellationTokenSource())
+            var token = new CancellationToken(false);
+            var clientFunctionCallCount = 0;
+            Func<IBandClient, CancellationToken, Task<object>> clientFunction = (bc, t) =>
             {
-                var token = cancellationTokenSource.Token;
-                var clientFunctionCallCount = 0;
-                Func<IBandClient, CancellationToken, Task<object>> clientFunction = (bc, t) =>
-                {
-                    Assert.StrictEqual(bandClient, bc);
-                    Assert.StrictEqual(token, t);
-                    clientFunctionCallCount++;
+                Assert.StrictEqual(bandClient, bc);
+                Assert.StrictEqual(token, t);
+                clientFunctionCallCount++;
 
-                    return Task.FromResult(new object());
-                };
+                return Task.FromResult(new object());
+            };
 
-                // Act / Assert
-                var result = await bandClientManager.ConnectAndPerformFunctionAsync(bandInfo, token, clientFunction);
+            // Act / Assert
+            var result = await bandClientManager.ConnectAndPerformFunctionAsync(bandInfo, token, clientFunction);
 
-                // Assert
-                mockBandClientManager.Verify(bcm => bcm.ConnectAsync(bandInfo), Times.Once);
-                mockBandClient.Verify(bc => bc.Dispose(), Times.Once);
-                Assert.Equal(1, clientFunctionCallCount);
-                Assert.NotNull(result);
-                Assert.IsAssignableFrom<object>(result);
-            }
+            // Assert
+            mockBandClientManager.Verify(bcm => bcm.ConnectAsync(bandInfo), Times.Once);
+            mockBandClient.Verify(bc => bc.Dispose(), Times.Once);
+            Assert.Equal(1, clientFunctionCallCount);
+            Assert.NotNull(result);
+            Assert.IsAssignableFrom<object>(result);
         }
     }
 }
