@@ -123,6 +123,10 @@ namespace Band.Personalize.Model.Implementation.Repository
             {
                 throw new ArgumentNullException(nameof(band));
             }
+            else if (bitmap == null)
+            {
+                throw new ArgumentNullException(nameof(bitmap));
+            }
 
             await this.bandClientManager.ConnectAndPerformActionAsync(band.BandInfo, token, async (bc, t) => await bc.PersonalizationManager.SetMeTileImageAsync(bitmap.ToBandImage(), t));
         }
