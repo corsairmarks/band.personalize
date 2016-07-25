@@ -28,9 +28,10 @@ namespace Band.Personalize.Model.Implementation.Repository
         /// Initializes a new instance of the <see cref="Band"/> class.
         /// </summary>
         /// <param name="bandInfo">Band information from the Band SDK.</param>
-        /// <param name="hardwareVersion">The hardware verision, which requires a second connection.</param>
+        /// <param name="isConnected">Whether this Band is currently connected.</param>
+        /// <param name="hardwareVersion">The hardware version, which is only available when the Band is connected.</param>
         /// <exception cref="ArgumentNullException"><paramref name="bandInfo"/> is <c>null</c>.</exception>
-        public Band(IBandInfo bandInfo, int? hardwareVersion)
+        public Band(IBandInfo bandInfo, bool isConnected, int? hardwareVersion)
         {
             if (bandInfo == null)
             {
@@ -38,6 +39,7 @@ namespace Band.Personalize.Model.Implementation.Repository
             }
 
             this.BandInfo = bandInfo;
+            this.IsConnected = isConnected;
             this.HardwareVersion = hardwareVersion;
             this.HardwareRevision = hardwareVersion.ToHardwareRevision();
         }
@@ -51,6 +53,19 @@ namespace Band.Personalize.Model.Implementation.Repository
         }
 
         /// <summary>
+        /// Gets the connection type between the application host and the Microsoft Band.
+        /// </summary>
+        public ConnectionType ConnectionType
+        {
+            get { return this.BandInfo.ConnectionType.ToConnectionType(); }
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether this Band is connected.
+        /// </summary>
+        public bool IsConnected { get; }
+
+        /// <summary>
         /// Gets the hardware major revision level.
         /// </summary>
         public HardwareRevision HardwareRevision { get; }
@@ -59,14 +74,6 @@ namespace Band.Personalize.Model.Implementation.Repository
         /// Gets the specific hardware version.
         /// </summary>
         public int? HardwareVersion { get; }
-
-        /// <summary>
-        /// Gets the connection type between the application host and the Microsoft Band.
-        /// </summary>
-        public ConnectionType ConnectionType
-        {
-            get { return this.BandInfo.ConnectionType.ToConnectionType(); }
-        }
 
         /// <summary>
         /// Gets the SDK <see cref="IBandInfo"/> for this Band.

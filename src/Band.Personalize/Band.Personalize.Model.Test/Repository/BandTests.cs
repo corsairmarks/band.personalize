@@ -31,7 +31,7 @@ namespace Band.Personalize.Model.Test.Repository
         private static readonly MockRepository MockRepository = new MockRepository(MockBehavior.Strict);
 
         /// <summary>
-        /// Verify the <see cref="Implementation.Repository.Band(IBandInfo, int?)"/> constructor throws an
+        /// Verify the <see cref="Implementation.Repository.Band(IBandInfo, bool, int?)"/> constructor throws an
         /// <see cref="ArgumentNullException"/> when the <see cref="IBandInfo"/> parameter is <c>null</c>.
         /// </summary>
         [Fact]
@@ -39,10 +39,11 @@ namespace Band.Personalize.Model.Test.Repository
         {
             // Arrange
             IBandInfo bandInfo = null;
+            var isConnected = false;
             int? hardwareVersion = null;
 
             // Act
-            var expected = Assert.Throws<ArgumentNullException>(() => new Implementation.Repository.Band(bandInfo, hardwareVersion));
+            var expected = Assert.Throws<ArgumentNullException>(() => new Implementation.Repository.Band(bandInfo, isConnected, hardwareVersion));
 
             // Assert
             Assert.NotNull(expected);
@@ -50,7 +51,7 @@ namespace Band.Personalize.Model.Test.Repository
         }
 
         /// <summary>
-        /// Verify the <see cref="Implementation.Repository.Band(IBandInfo, int?)"/> constructor creates an
+        /// Verify the <see cref="Implementation.Repository.Band(IBandInfo, bool, int?)"/> constructor creates an
         /// instance when provided valid parameter(s).  <c>null</c> is a vlaid parameter for the hardware version.
         /// </summary>
         [Fact]
@@ -58,19 +59,21 @@ namespace Band.Personalize.Model.Test.Repository
         {
             // Arrange
             var bandInfo = MockRepository.Create<IBandInfo>().Object;
+            var isConnected = false;
             int? hardwareVersion = null;
 
             // Act
-            var result = new Implementation.Repository.Band(bandInfo, hardwareVersion);
+            var result = new Implementation.Repository.Band(bandInfo, isConnected, hardwareVersion);
 
             // Assert
             Assert.NotNull(result);
+            Assert.Equal(isConnected, result.IsConnected);
             Assert.Null(result.HardwareVersion);
             Assert.Equal(hardwareVersion.ToHardwareRevision(), result.HardwareRevision);
         }
 
         /// <summary>
-        /// Verify the <see cref="Implementation.Repository.Band(IBandInfo, int?)"/> constructor creates an
+        /// Verify the <see cref="Implementation.Repository.Band(IBandInfo, bool, int?)"/> constructor creates an
         /// instance when provided valid parameter(s).
         /// </summary>
         [Fact]
@@ -78,13 +81,15 @@ namespace Band.Personalize.Model.Test.Repository
         {
             // Arrange
             var bandInfo = MockRepository.Create<IBandInfo>().Object;
+            var isConnected = true;
             var hardwareVersion = 1;
 
             // Act
-            var result = new Implementation.Repository.Band(bandInfo, hardwareVersion);
+            var result = new Implementation.Repository.Band(bandInfo, isConnected, hardwareVersion);
 
             // Assert
             Assert.NotNull(result);
+            Assert.Equal(isConnected, result.IsConnected);
             Assert.Equal(hardwareVersion, result.HardwareVersion);
             Assert.Equal(hardwareVersion.ToHardwareRevision(), result.HardwareRevision);
         }
@@ -101,10 +106,11 @@ namespace Band.Personalize.Model.Test.Repository
             mockBandInfo.SetupGet(bi => bi.Name).Returns("Name");
             mockBandInfo.SetupGet(bi => bi.ConnectionType).Returns(BandConnectionType.Bluetooth);
             var bandInfo = mockBandInfo.Object;
+            var isConnected = false;
             var hardwareVersion = 1;
 
             // Act
-            var result = new Implementation.Repository.Band(bandInfo, hardwareVersion);
+            var result = new Implementation.Repository.Band(bandInfo, isConnected, hardwareVersion);
 
             // Assert
             Assert.NotNull(result);

@@ -15,8 +15,9 @@
 namespace Band.Personalize.Model.Test.Repository
 {
     using System;
-    using System.Collections;
     using System.Collections.Generic;
+    using System.Linq;
+    using System.Reflection;
     using System.Threading;
     using System.Threading.Tasks;
     using Implementation.Repository;
@@ -86,7 +87,7 @@ namespace Band.Personalize.Model.Test.Repository
         }
 
         /// <summary>
-        /// Verify the <see cref="BandRepository.GetBands(CancellationToken)"/> method finds all connected Bands and returns
+        /// Verify the <see cref="BandRepository.GetPairedBands(CancellationToken)"/> method finds all paired Bands and returns
         /// information about then, including the hardware revision.
         /// </summary>
         /// <param name="hardwareVersion">The string hardware representation to return as sample data.</param>
@@ -94,7 +95,7 @@ namespace Band.Personalize.Model.Test.Repository
         /// <returns>An asynchronous task that returns when the test is complete.</returns>
         [Theory]
         [MemberData(nameof(BandHardwareVersions))]
-        public async Task GetBands_ReturnsBands(string hardwareVersion, int? expectedHardwareVersion)
+        public async Task GetBands_Connected_ReturnsBands(string hardwareVersion, int? expectedHardwareVersion)
         {
             // Arrange
             var mockBandInfo = MockRepository.Create<IBandInfo>();
@@ -113,7 +114,7 @@ namespace Band.Personalize.Model.Test.Repository
             var target = new BandRepository(bandClientManager);
 
             // Act
-            var results = await target.GetBands(token);
+            var results = await target.GetPairedBands(token);
 
             // Assert
             Assert.NotNull(results);
@@ -122,8 +123,51 @@ namespace Band.Personalize.Model.Test.Repository
                 Assert.StrictEqual(bandInfo, b.BandInfo);
                 Assert.Equal(bandInfo.Name, b.Name);
                 Assert.Equal(bandInfo.ConnectionType.ToConnectionType(), b.ConnectionType);
+                Assert.Equal(true, b.IsConnected);
                 Assert.Equal(expectedHardwareVersion, b.HardwareVersion);
                 Assert.Equal(expectedHardwareVersion.ToHardwareRevision(), b.HardwareRevision);
+            });
+        }
+
+        /// <summary>
+        /// Verify the <see cref="BandRepository.GetPairedBands(CancellationToken)"/> method finds all paired Bands and returns
+        /// information about then, including the hardware revision.
+        /// </summary>
+        /// <returns>An asynchronous task that returns when the test is complete.</returns>
+        [Fact]
+        public async Task GetBands_NotConnected_ReturnsBands()
+        {
+            // Arrange
+            var mockBandInfo = MockRepository.Create<IBandInfo>();
+            mockBandInfo.SetupGet(bi => bi.Name).Returns("Name");
+            mockBandInfo.SetupGet(bi => bi.ConnectionType).Returns(BandConnectionType.Bluetooth);
+            var bandInfo = mockBandInfo.Object;
+            var token = new CancellationToken(false);
+            var mockBandClientManager = MockRepository.Create<IBandClientManager>();
+            mockBandClientManager.Setup(bcm => bcm.GetBandsAsync()).Returns(Task.FromResult(new[] { bandInfo, }));
+
+            // WORKAROUND: THe Band SDK does not expose public constructors for its exceptions, so testing handlers for them requires reflection
+            var parameterlessConstructor = typeof(BandIOException)
+                .GetConstructors(BindingFlags.Instance | BindingFlags.NonPublic)
+                .Single(ctor => !ctor.GetParameters().Any());
+            var exception = (BandIOException)parameterlessConstructor.Invoke(new object[0]);
+            mockBandClientManager.Setup(bcm => bcm.ConnectAsync(bandInfo)).Throws(exception);
+            var bandClientManager = mockBandClientManager.Object;
+            var target = new BandRepository(bandClientManager);
+
+            // Act
+            var results = await target.GetPairedBands(token);
+
+            // Assert
+            Assert.NotNull(results);
+            Assert.Collection(results, b =>
+            {
+                Assert.StrictEqual(bandInfo, b.BandInfo);
+                Assert.Equal(bandInfo.Name, b.Name);
+                Assert.Equal(bandInfo.ConnectionType.ToConnectionType(), b.ConnectionType);
+                Assert.Equal(false, b.IsConnected);
+                Assert.Equal(null, b.HardwareVersion);
+                Assert.Equal(HardwareRevision.Unknown, b.HardwareRevision);
             });
         }
     }

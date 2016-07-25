@@ -83,7 +83,7 @@ namespace Band.Personalize.App.Universal.ViewModels.Design
         /// <returns>An asynchronous task that returns a read-only collection of connected Bands when it completes.</returns>
         public async Task<IReadOnlyList<IBand>> GetBands()
         {
-            return await this.GetBands(CancellationToken.None);
+            return await this.GetPairedBands(CancellationToken.None);
         }
 
         /// <summary>
@@ -91,7 +91,7 @@ namespace Band.Personalize.App.Universal.ViewModels.Design
         /// </summary>
         /// <param name="token">The <see cref="CancellationToken"/> to observe.</param>
         /// <returns>An asynchronous task that returns a read-only collection of connected Bands when it completes.</returns>
-        public async Task<IReadOnlyList<IBand>> GetBands(CancellationToken token)
+        public async Task<IReadOnlyList<IBand>> GetPairedBands(CancellationToken token)
         {
             return await Task.FromResult(DefaultBands);
         }

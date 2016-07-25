@@ -200,7 +200,7 @@ namespace Band.Personalize.App.Universal.ViewModels
             IReadOnlyList<IBand> bands;
             try
             {
-                bands = await this.bandRepository.GetBands(cancellationToken);
+                bands = await this.bandRepository.GetPairedBands(cancellationToken);
             }
             catch (OperationCanceledException)
             {
