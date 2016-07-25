@@ -29,6 +29,16 @@ namespace Band.Personalize.Model.Library.Band
         string Name { get; }
 
         /// <summary>
+        /// Gets the connection type between the application host and the Microsoft Band.
+        /// </summary>
+        ConnectionType ConnectionType { get; }
+
+        /// <summary>
+        /// Gets a value indicating whether this Band is connected.
+        /// </summary>
+        bool IsConnected { get; }
+
+        /// <summary>
         /// Gets the hardware major revision level.
         /// </summary>
         HardwareRevision HardwareRevision { get; }
@@ -37,11 +47,6 @@ namespace Band.Personalize.Model.Library.Band
         /// Gets the specific hardware version.
         /// </summary>
         int? HardwareVersion { get; }
-
-        /// <summary>
-        /// Gets the connection type between the application host and the Microsoft Band.
-        /// </summary>
-        ConnectionType ConnectionType { get; }
 
         /// <summary>
         /// Gets the SDK <see cref="IBandInfo"/> for this Band.

@@ -49,17 +49,29 @@ namespace Band.Personalize.Model.Implementation.Repository
         }
 
         /// <summary>
-        /// Gets information about all Microsoft Bands connected to the application host.
+        /// Gets information about all Microsoft Bands paired with the application host.
         /// </summary>
         /// <param name="token">The <see cref="CancellationToken"/> to observe.</param>
-        /// <returns>An asynchronous task that returns a read-only collection of connected Bands when it completes.</returns>
-        public async Task<IReadOnlyList<IBand>> GetBands(CancellationToken token)
+        /// <returns>An asynchronous task that returns a read-only collection of paired Bands when it completes.</returns>
+        public async Task<IReadOnlyList<IBand>> GetPairedBands(CancellationToken token)
         {
             var bandInfos = await this.bandClientManager.GetBandsAsync();
             var bands = new List<IBand>(bandInfos.Count());
             foreach (var bandInfo in bandInfos)
             {
-                bands.Add(await this.bandClientManager.ConnectAndPerformFunctionAsync(bandInfo, token, async (bc, t) => new Band(bandInfo, await this.GetHardwareVersion(bc, t))));
+                int? hardwareVersion;
+                var isConnected = false;
+                try
+                {
+                    hardwareVersion = await this.bandClientManager.ConnectAndPerformFunctionAsync(bandInfo, token, async (bc, t) => await this.GetHardwareVersion(bc, t));
+                    isConnected = true;
+                }
+                catch (BandIOException)
+                {
+                    hardwareVersion = null;
+                }
+
+                bands.Add(new Band(bandInfo, isConnected, hardwareVersion));
             }
 
             return new ReadOnlyCollection<IBand>(bands);

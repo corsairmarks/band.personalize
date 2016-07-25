@@ -21,13 +21,13 @@ namespace Band.Personalize.App.Universal.ViewModels
     using System.Threading;
     using System.Threading.Tasks;
     using System.Windows.Input;
+    using Microsoft.Band;
     using Model.Library.Band;
     using Model.Library.Color;
     using Model.Library.Repository;
     using Model.Library.Theme;
     using Prism.Commands;
     using Prism.Windows.AppModel;
-    using Prism.Windows.Mvvm;
     using Prism.Windows.Navigation;
     using Windows.Storage.Pickers;
     using Windows.UI.Xaml.Media.Imaging;
@@ -35,7 +35,7 @@ namespace Band.Personalize.App.Universal.ViewModels
     /// <summary>
     /// The View Model for the Main Page.
     /// </summary>
-    public class BandPageViewModel : ViewModelBase
+    public class BandPageViewModel : BaseNavigationViewModel
     {
         /// <summary>
         /// The resource loader.
@@ -75,10 +75,12 @@ namespace Band.Personalize.App.Universal.ViewModels
         /// <summary>
         /// Initializes a new instance of the <see cref="BandPageViewModel"/> class.
         /// </summary>
+        /// <param name="navigationService">The navigation service.</param>
         /// <param name="resourceLoader">The resource loader.</param>
         /// <param name="bandPersonalizer">The Band personalizer.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="bandPersonalizer"/> is <c>null</c>.</exception>
-        public BandPageViewModel(IResourceLoader resourceLoader, IBandPersonalizer bandPersonalizer)
+        /// <exception cref="ArgumentNullException"><paramref name="resourceLoader"/> or <paramref name="bandPersonalizer"/> is <c>null</c>.</exception>
+        public BandPageViewModel(INavigationService navigationService, IResourceLoader resourceLoader, IBandPersonalizer bandPersonalizer)
+            : base(navigationService)
         {
             if (resourceLoader == null)
             {
@@ -95,15 +97,11 @@ namespace Band.Personalize.App.Universal.ViewModels
             this.CurrentThemeColors = new ReadOnlyObservableCollection<ThemeColorViewModel>(this.currentThemeColors);
 
             var refreshPersonalizationCommand = new CompositeCommand();
-            refreshPersonalizationCommand.RegisterCommand(new DelegateCommand(() => this.IsBusy = true, () => !this.IsBusy));
-            refreshPersonalizationCommand.RegisterCommand(DelegateCommand<int>.FromAsyncHandler(this.RefreshPersonalization));
-            refreshPersonalizationCommand.RegisterCommand(new DelegateCommand(() => this.IsBusy = false));
+            refreshPersonalizationCommand.RegisterCommand(DelegateCommand<int>.FromAsyncHandler(this.RefreshPersonalization, p => !this.IsBusy));
             this.RefreshPersonalizationCommand = refreshPersonalizationCommand;
 
             var applyPersonalizationCommand = new CompositeCommand();
-            applyPersonalizationCommand.RegisterCommand(new DelegateCommand(() => this.IsBusy = true, () => !this.IsBusy));
-            applyPersonalizationCommand.RegisterCommand(DelegateCommand<int>.FromAsyncHandler(this.ApplyPersonalization));
-            applyPersonalizationCommand.RegisterCommand(new DelegateCommand(() => this.IsBusy = false));
+            applyPersonalizationCommand.RegisterCommand(DelegateCommand<int>.FromAsyncHandler(this.ApplyPersonalization, p => !this.IsBusy));
             this.ApplyPersonalizationCommand = applyPersonalizationCommand;
 
             this.BrowserForMeTileImageCommand = DelegateCommand.FromAsyncHandler(async () =>
@@ -206,7 +204,7 @@ namespace Band.Personalize.App.Universal.ViewModels
         /// <param name="viewModelState">The state of the view model.</param>
         /// <exception cref="ArgumentNullException"><paramref name="e"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">The <see cref="NavigatedToEventArgs.Parameter"/> of <paramref name="e"/> is <c>null</c> or is not castable to <see cref="IBand"/>.</exception>
-        public override void OnNavigatedTo(NavigatedToEventArgs e, Dictionary<string, object> viewModelState)
+        public override async void OnNavigatedTo(NavigatedToEventArgs e, Dictionary<string, object> viewModelState)
         {
             base.OnNavigatedTo(e, viewModelState);
 
@@ -221,8 +219,25 @@ namespace Band.Personalize.App.Universal.ViewModels
 
             this.CurrentBand = e.Parameter as IBand;
 
-            this.RefreshPersonalizationCommand.Execute(0);
-            this.RefreshPersonalizationCommand.Execute(1);
+            try
+            {
+                await this.BlockUiAndExecute(async () => await Task.WhenAll(this.RefreshTheme(), this.RefreshMeTileImage()));
+            }
+            catch (BandException)
+            {
+                if (this.NavigationService.CanGoBack())
+                {
+                    this.NavigationService.GoBack();
+                }
+                else
+                {
+                    this.NavigationService.Navigate(PageNavigationTokens.MainPage, null);
+                }
+
+                this.NavigationService.RemoveLastPage(PageNavigationTokens.BandPage, e.Parameter);
+
+                throw;
+            }
         }
 
         /// <summary>
@@ -232,31 +247,51 @@ namespace Band.Personalize.App.Universal.ViewModels
         /// <returns>An asynchronous task that returns when work is complete.</returns>
         private async Task RefreshPersonalization(int selectedPivotIndex)
         {
-            switch (selectedPivotIndex)
+            await this.BlockUiAndExecute(async () =>
             {
-                case 0:
-                    var themeColors = this.RgbColorThemeToCollection(await this.bandPersonalizer.GetTheme(this.CurrentBand, CancellationToken.None));
-                    this.currentThemeColors.Clear();
-                    if (themeColors != null && themeColors.Any())
-                    {
-                        foreach (var themeColor in themeColors)
-                        {
-                            this.currentThemeColors.Add(themeColor);
-                        }
-                    }
+                switch (selectedPivotIndex)
+                {
+                    case 0:
+                        await this.RefreshTheme();
+                        break;
+                    case 1:
+                        await this.RefreshMeTileImage();
+                        break;
+                    default:
+                        throw new ArgumentNullException($"Unhandled pivot index: {selectedPivotIndex}");
+                }
+            });
+        }
 
-                    break;
-                case 1:
-                    var originalBandDimensions = HardwareRevision.Band.GetDefaultMeTileDimensions();
-                    var currentMeTileImage = await this.bandPersonalizer.GetMeTileImage(this.CurrentBand, CancellationToken.None);
-                    this.IsUseOriginalBandHeight = this.CurrentBand.HardwareRevision != HardwareRevision.Band
-                        ? currentMeTileImage.PixelHeight <= originalBandDimensions.Height
-                        : true;
-                    this.CurrentMeTileImage = currentMeTileImage;
-                    break;
-                default:
-                    throw new ArgumentNullException($"Unhandled pivot index: {selectedPivotIndex}");
+        /// <summary>
+        /// Refresh the dislayed theme options to display the values for the current Band.
+        /// </summary>
+        /// <returns>An asynchronous task that returns when work is complete.</returns>
+        private async Task RefreshTheme()
+        {
+            var themeColors = this.RgbColorThemeToCollection(await this.bandPersonalizer.GetTheme(this.CurrentBand, CancellationToken.None));
+            this.currentThemeColors.Clear();
+            if (themeColors != null && themeColors.Any())
+            {
+                foreach (var themeColor in themeColors)
+                {
+                    this.currentThemeColors.Add(themeColor);
+                }
             }
+        }
+
+        /// <summary>
+        /// Refresh the dislayed Me Tile image to display the image for the current Band.
+        /// </summary>
+        /// <returns>An asynchronous task that returns when work is complete.</returns>
+        private async Task RefreshMeTileImage()
+        {
+            var originalBandDimensions = HardwareRevision.Band.GetDefaultMeTileDimensions();
+            var currentMeTileImage = await this.bandPersonalizer.GetMeTileImage(this.CurrentBand, CancellationToken.None);
+            this.IsUseOriginalBandHeight = this.CurrentBand.HardwareRevision != HardwareRevision.Band
+                ? currentMeTileImage.PixelHeight <= originalBandDimensions.Height
+                : true;
+            this.CurrentMeTileImage = currentMeTileImage;
         }
 
         /// <summary>
@@ -266,27 +301,65 @@ namespace Band.Personalize.App.Universal.ViewModels
         /// <returns>An asynchronous task that returns when work is complete.</returns>
         private async Task ApplyPersonalization(int selectedPivotIndex)
         {
-            switch (selectedPivotIndex)
+            await this.BlockUiAndExecute(async () =>
             {
-                case 0:
-                    var newRgbColorTheme = new RgbColorTheme
-                    {
-                        Base = this.CurrentThemeColors[0].Swatch.ToRgbColor(),
-                        HighContrast = this.CurrentThemeColors[1].Swatch.ToRgbColor(),
-                        Lowlight = this.CurrentThemeColors[2].Swatch.ToRgbColor(),
-                        Highlight = this.CurrentThemeColors[3].Swatch.ToRgbColor(),
-                        Muted = this.CurrentThemeColors[4].Swatch.ToRgbColor(),
-                        SecondaryText = this.CurrentThemeColors[5].Swatch.ToRgbColor(),
-                    };
+                switch (selectedPivotIndex)
+                {
+                    case 0:
+                        await this.ApplyTheme();
+                        break;
+                    case 1:
+                        await this.ApplyMeTileImage();
+                        break;
+                    default:
+                        throw new ArgumentNullException($"Unhandled pivot index: {selectedPivotIndex}");
+                }
+            });
+        }
 
-                    await this.bandPersonalizer.SetTheme(this.CurrentBand, newRgbColorTheme, CancellationToken.None);
-                    break;
-                case 1:
-                    await this.bandPersonalizer.SetMeTileImage(this.CurrentBand, this.CurrentMeTileImage, CancellationToken.None);
-                    break;
-                default:
-                    throw new ArgumentNullException($"Unhandled pivot index: {selectedPivotIndex}");
+        /// <summary>
+        /// Block the UI by setting <see cref="IsBusy"/> to <c>true</c> while waiting for <paramref name="blockingAction"/> to execute.
+        /// </summary>
+        /// <param name="blockingAction">The action to perform while the UI is blocked.</param>
+        /// <returns>An asynchronous task that returns when work is complete.</returns>
+        private async Task BlockUiAndExecute(Func<Task> blockingAction)
+        {
+            if (blockingAction == null)
+            {
+                throw new ArgumentNullException(nameof(blockingAction));
             }
+
+            this.IsBusy = true;
+            await blockingAction();
+            this.IsBusy = false;
+        }
+
+        /// <summary>
+        /// Apply the selected theme colors the current Band.
+        /// </summary>
+        /// <returns>An asynchronous task that returns when work is complete.</returns>
+        private async Task ApplyTheme()
+        {
+            var newRgbColorTheme = new RgbColorTheme
+            {
+                Base = this.CurrentThemeColors[0].Swatch.ToRgbColor(),
+                HighContrast = this.CurrentThemeColors[1].Swatch.ToRgbColor(),
+                Lowlight = this.CurrentThemeColors[2].Swatch.ToRgbColor(),
+                Highlight = this.CurrentThemeColors[3].Swatch.ToRgbColor(),
+                Muted = this.CurrentThemeColors[4].Swatch.ToRgbColor(),
+                SecondaryText = this.CurrentThemeColors[5].Swatch.ToRgbColor(),
+            };
+
+            await this.bandPersonalizer.SetTheme(this.CurrentBand, newRgbColorTheme, CancellationToken.None);
+        }
+
+        /// <summary>
+        /// Apply the selected Me Tile image the current Band.
+        /// </summary>
+        /// <returns>An asynchronous task that returns when work is complete.</returns>
+        private async Task ApplyMeTileImage()
+        {
+            await this.bandPersonalizer.SetMeTileImage(this.CurrentBand, this.CurrentMeTileImage, CancellationToken.None);
         }
 
         /// <summary>

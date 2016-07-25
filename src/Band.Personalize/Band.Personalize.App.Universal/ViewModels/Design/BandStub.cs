@@ -33,6 +33,11 @@ namespace Band.Personalize.App.Universal.ViewModels.Design
         public ConnectionType ConnectionType { get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether this Band is connected.
+        /// </summary>
+        public bool IsConnected { get; set; }
+
+        /// <summary>
         /// Gets or sets the actual hardware version.
         /// </summary>
         public HardwareRevision HardwareRevision { get; set; }

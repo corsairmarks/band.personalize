@@ -27,10 +27,12 @@ namespace Band.Personalize.App.Universal
     using Prism.Windows;
     using Prism.Windows.AppModel;
     using Prism.Windows.Navigation;
+    using ViewModels;
     using ViewModels.Design;
     using Windows.ApplicationModel;
     using Windows.ApplicationModel.Activation;
     using Windows.ApplicationModel.Resources;
+    using Windows.UI.Popups;
     using Windows.UI.Xaml;
     using Windows.UI.Xaml.Data;
 
@@ -48,6 +50,7 @@ namespace Band.Personalize.App.Universal
             : base()
         {
             this.InitializeComponent();
+            this.UnhandledException += this.OnUnhandledBandException;
         }
 
         /// <summary>
@@ -125,7 +128,29 @@ namespace Band.Personalize.App.Universal
         /// <returns>Returns <c>true</c> if navigation succeeds; otherwise, <c>false</c>.</returns>
         private bool NavigateToDefaultPage()
         {
-            return this.NavigationService.Navigate("Main", null);
+            return this.NavigationService.Navigate(PageNavigationTokens.MainPage, null);
+        }
+
+        /// <summary>
+        /// Represents the method that will handle the <see cref="Application.UnhandledException"/> event for exceptions that are or descend from <see cref="BandException"/>.
+        /// </summary>
+        /// <param name="sender">The object where the handler is attached.</param>
+        /// <param name="e">Event data.</param>
+        private async void OnUnhandledBandException(object sender, UnhandledExceptionEventArgs e)
+        {
+            if (e != null)
+            {
+                // WORKAROUND: the UnhandledExceptionEventArgs.Exception value only returns useful information the first time it is accessed,
+                // so storing a local works around that limitation so that exception data can be used for reasoning about the error
+                // See: https://petermeinl.wordpress.com/2016/07/09/global-error-handling-for-uwp-apps/
+                var localException = e.Exception;
+                if (localException != null && localException is BandException)
+                {
+                    e.Handled = true;
+                    var messageDialog = new MessageDialog(e.Message);
+                    await messageDialog.ShowAsync();
+                }
+            }
         }
     }
 }
