@@ -59,7 +59,18 @@ namespace Band.Personalize.Model.Implementation.Repository
             var bands = new List<IBand>(bandInfos.Count());
             foreach (var bandInfo in bandInfos)
             {
-                bands.Add(await this.bandClientManager.ConnectAndPerformFunctionAsync(bandInfo, token, async (bc, t) => new Band(bandInfo, await this.GetHardwareVersion(bc, t))));
+                int? hardwareVersion;
+                try
+                {
+                    hardwareVersion = await this.bandClientManager.ConnectAndPerformFunctionAsync(bandInfo, token, async (bc, t) => await this.GetHardwareVersion(bc, t));
+                }
+                catch (BandIOException)
+                {
+                    // TODO: BandAccessDeniedException is BandIOException - might want different handling
+                    hardwareVersion = null;
+                }
+
+                bands.Add(new Band(bandInfo, hardwareVersion));
             }
 
             return new ReadOnlyCollection<IBand>(bands);
