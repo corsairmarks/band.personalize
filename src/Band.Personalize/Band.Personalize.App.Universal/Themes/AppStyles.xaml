@@ -14,7 +14,7 @@
         <Setter Property="FontSize" Value="72" />
         <Setter Property="Height" Value="96" />
     </Style>
-    <Style TargetType="Button" x:Key="BandTile">
+    <Style TargetType="Button" x:Key="BandTileButton">
         <Setter Property="Background" Value="{ThemeResource SystemControlForegroundAccentBrush}" />
         <Setter Property="Foreground" Value="{ThemeResource SystemControlForegroundChromeWhiteBrush}" />
         <Setter Property="HorizontalAlignment" Value="Stretch" />

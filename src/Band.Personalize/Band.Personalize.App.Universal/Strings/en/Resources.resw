@@ -124,7 +124,7 @@
     <value>Apply</value>
   </data>
   <data name="BandGridViewHeaderTextBlock.Text" xml:space="preserve">
-    <value>Connected Bands</value>
+    <value>Paired Bands</value>
   </data>
   <data name="BandVersionToggle.Header" xml:space="preserve">
     <value>Use original Band height (102px)</value>

@@ -25,7 +25,7 @@ namespace Band.Personalize.App.Universal.ViewModels.Design
         public DesignMainPageViewModel()
             : base(NavigationServiceStub.Instance, BandRepositoryStub.Instance)
         {
-            this.RefreshConnectedBandsCommand.Execute(null);
+            this.RefreshPairedBandsCommand.Execute(null);
         }
     }
 }

@@ -37,12 +37,12 @@ namespace Band.Personalize.App.Universal.ViewModels
         private readonly IBandRepository bandRepository;
 
         /// <summary>
-        /// A read-only collection of connected Bands.
+        /// A read-only collection of paired Bands.
         /// </summary>
-        private readonly ObservableCollection<IBand> connectedBands;
+        private readonly ObservableCollection<IBand> pairedBands;
 
         /// <summary>
-        /// A value indicationg whether the <see cref="RefreshConnectedBandsCommand"/> is busy.
+        /// A value indicationg whether the <see cref="RefreshPairedBandsCommand"/> is busy.
         /// </summary>
         private bool isBusy;
 
@@ -71,20 +71,20 @@ namespace Band.Personalize.App.Universal.ViewModels
             }
 
             this.bandRepository = bandRepository;
-            this.connectedBands = new ObservableCollection<IBand>();
-            this.ConnectedBands = new ReadOnlyObservableCollection<IBand>(this.connectedBands);
+            this.pairedBands = new ObservableCollection<IBand>();
+            this.PairedBands = new ReadOnlyObservableCollection<IBand>(this.pairedBands);
 
-            var cancelRefreshConnectedBandsCommand = new CompositeCommand();
-            cancelRefreshConnectedBandsCommand.RegisterCommand(DelegateCommand.FromAsyncHandler(this.CancelRefreshConnectedBands, () => this.IsBusy));
-            cancelRefreshConnectedBandsCommand.RegisterCommand(new DelegateCommand(() => this.IsBusy = false));
-            this.CancelRefreshConnectedBandsCommand = cancelRefreshConnectedBandsCommand;
+            var cancelRefreshPairedBandsCommand = new CompositeCommand();
+            cancelRefreshPairedBandsCommand.RegisterCommand(DelegateCommand.FromAsyncHandler(this.CancelRefreshPairedBands, () => this.IsBusy));
+            cancelRefreshPairedBandsCommand.RegisterCommand(new DelegateCommand(() => this.IsBusy = false));
+            this.CancelRefreshPairedBandsCommand = cancelRefreshPairedBandsCommand;
 
-            var refreshConnectedBandsCommand = new CompositeCommand();
-            refreshConnectedBandsCommand.RegisterCommand(new DelegateCommand(() => this.IsBusy = true));
-            refreshConnectedBandsCommand.RegisterCommand(DelegateCommand.FromAsyncHandler(this.CancelRefreshConnectedBands));
-            refreshConnectedBandsCommand.RegisterCommand(DelegateCommand.FromAsyncHandler(this.RefreshConnectedBands));
-            refreshConnectedBandsCommand.RegisterCommand(new DelegateCommand(() => this.IsBusy = false));
-            this.RefreshConnectedBandsCommand = refreshConnectedBandsCommand;
+            var refreshPairedBandsCommand = new CompositeCommand();
+            refreshPairedBandsCommand.RegisterCommand(new DelegateCommand(() => this.IsBusy = true));
+            refreshPairedBandsCommand.RegisterCommand(DelegateCommand.FromAsyncHandler(this.CancelRefreshPairedBands));
+            refreshPairedBandsCommand.RegisterCommand(DelegateCommand.FromAsyncHandler(this.RefreshPairedBands));
+            refreshPairedBandsCommand.RegisterCommand(new DelegateCommand(() => this.IsBusy = false));
+            this.RefreshPairedBandsCommand = refreshPairedBandsCommand;
 
             this.NavigateToBandPageCommand = new DelegateCommand<IBand>(b => this.NavigationService.Navigate(PageNavigationTokens.BandPage, b));
         }
@@ -100,12 +100,12 @@ namespace Band.Personalize.App.Universal.ViewModels
         /// <summary>
         /// Gets the "Refresh" command.
         /// </summary>
-        public ICommand RefreshConnectedBandsCommand { get; }
+        public ICommand RefreshPairedBandsCommand { get; }
 
         /// <summary>
         /// Gets the "Cancel" command.
         /// </summary>
-        public ICommand CancelRefreshConnectedBandsCommand { get; }
+        public ICommand CancelRefreshPairedBandsCommand { get; }
 
         /// <summary>
         /// Gets the "Band Page" navigation command.
@@ -122,9 +122,9 @@ namespace Band.Personalize.App.Universal.ViewModels
         }
 
         /// <summary>
-        /// Gets a read-only collection of connected Microsoft Bands.
+        /// Gets a read-only collection of paired Microsoft Bands.
         /// </summary>
-        public ReadOnlyObservableCollection<IBand> ConnectedBands { get; }
+        public ReadOnlyObservableCollection<IBand> PairedBands { get; }
 
         /// <summary>
         /// Called when navigation is performed to a page. You can use this method to load state if it is available.
@@ -141,9 +141,9 @@ namespace Band.Personalize.App.Universal.ViewModels
                 throw new ArgumentNullException(nameof(e));
             }
 
-            if (!this.ConnectedBands.Any())
+            if (!this.PairedBands.Any())
             {
-                this.RefreshConnectedBandsCommand.Execute(null);
+                this.RefreshPairedBandsCommand.Execute(null);
             }
         }
 
@@ -180,10 +180,10 @@ namespace Band.Personalize.App.Universal.ViewModels
         }
 
         /// <summary>
-        /// Refreshes the list of connected Bands.
+        /// Refreshes the list of paired Bands.
         /// </summary>
-        /// <returns>An asynchronous task that returns a read-only collection of connected Bands when it completes.</returns>
-        private async Task RefreshConnectedBands()
+        /// <returns>An asynchronous task that returns a read-only collection of paired Bands when it completes.</returns>
+        private async Task RefreshPairedBands()
         {
             CancellationToken cancellationToken;
 
@@ -209,10 +209,10 @@ namespace Band.Personalize.App.Universal.ViewModels
 
             if (bands != null && bands.Any())
             {
-                this.connectedBands.Clear();
+                this.pairedBands.Clear();
                 foreach (var band in bands)
                 {
-                    this.connectedBands.Add(band);
+                    this.pairedBands.Add(band);
                 }
             }
         }
@@ -221,7 +221,7 @@ namespace Band.Personalize.App.Universal.ViewModels
         /// Cancels the current "Refresh" operation, if one is in progress.
         /// </summary>
         /// <returns>An asynchronous task that returns when work is complete.</returns>
-        private async Task CancelRefreshConnectedBands()
+        private async Task CancelRefreshPairedBands()
         {
             await this.EnterRefreshSemaphore(() =>
             {
