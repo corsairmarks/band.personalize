@@ -24,12 +24,8 @@ namespace Band.Personalize.Model.Test.Repository
     using Microsoft.Band;
     using Microsoft.Band.Personalization;
     using Moq;
-    using Windows.ApplicationModel.Core;
-    using Windows.UI.Core;
-    using Windows.UI.Xaml;
     using Windows.UI.Xaml.Media.Imaging;
     using Xunit;
-    using System.Runtime.InteropServices.WindowsRuntime;
 
     /// <summary>
     /// Unit tests for the <see cref="BandPersonalizer"/> class.
@@ -209,7 +205,7 @@ namespace Band.Personalize.Model.Test.Repository
             var token = new CancellationToken(false);
             var bandClientManager = MockRepository.OneOf<IBandClientManager>();
             var target = new BandPersonalizer(bandClientManager);
-            await WaitForUiTask(async () =>
+            await TestHelper.WaitForUiTask(async () =>
             {
                 var bitmap = new WriteableBitmap(1, 1);
 
@@ -260,7 +256,7 @@ namespace Band.Personalize.Model.Test.Repository
             var band = mockBand.Object;
             var token = new CancellationToken(false);
             var target = new BandPersonalizer(GetMockedBandClientManagerAsync(pm => pm.SetMeTileImageAsync(It.IsNotNull<BandImage>(), token)));
-            await WaitForUiTask(async () =>
+            await TestHelper.WaitForUiTask(async () =>
             {
                 var bitmap = new WriteableBitmap(1, 1);
 
@@ -308,7 +304,7 @@ namespace Band.Personalize.Model.Test.Repository
             mockBand.SetupGet(b => b.BandInfo).Returns(bandInfo);
             var band = mockBand.Object;
             var token = new CancellationToken(false);
-            await WaitForUiTask(async () =>
+            await TestHelper.WaitForUiTask(async () =>
             {
                 var expectedBandImage = new WriteableBitmap(1, 1).ToBandImage();
                 var target = new BandPersonalizer(GetMockedBandClientManagerAsync(pm => pm.GetMeTileImageAsync(token), expectedBandImage));
@@ -319,55 +315,41 @@ namespace Band.Personalize.Model.Test.Repository
                 // Assert
                 // TODO: Verify the expected method was called?
                 Assert.NotNull(result);
-                AssertWriteableBitmapPixelBuffersEqual(expectedBandImage.ToWriteableBitmap(), result);
+                TestHelper.AssertWriteableBitmapPixelBuffersEqual(expectedBandImage.ToWriteableBitmap(), result);
             });
         }
 
-        public static async Task WaitForUiTask(Func<Task> uiActionAsync)
-        {
-            var taskSource = new TaskCompletionSource<object>();
-            await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
-            {
-                try
-                {
-                    await uiActionAsync();
-                    taskSource.SetResult(null);
-                }
-                catch (Exception e)
-                {
-                    taskSource.SetException(e);
-                }
-            });
-            await taskSource.Task;
-        }
-
-        public static void AssertWriteableBitmapPixelBuffersEqual(WriteableBitmap expected, WriteableBitmap actual)
-        {
-            if (expected == null)
-            {
-                throw new ArgumentNullException(nameof(expected));
-            }
-            else if (actual == null)
-            {
-                throw new ArgumentNullException(nameof(actual));
-            }
-
-            var expectedBytes = expected.PixelBuffer.ToArray();
-            var actualBytes = actual.PixelBuffer.ToArray();
-
-            Assert.Equal(expectedBytes, actualBytes);
-        }
-
+        /// <summary>
+        /// Creates a mock <see cref="IBandClientManager"/> that will return a mock <see cref="IBandClient"/> with a mock
+        /// <see cref="IBandPersonalizationManager"/> that has been configured with <paramref name="expectedPersonalizationManagerAction"/>.
+        /// </summary>
+        /// <param name="expectedPersonalizationManagerAction">An action to setup on the <see cref="IBandPersonalizationManager"/>.</param>
+        /// <returns>A mock <see cref="IBandClientManager"/>.</returns>
         private static IBandClientManager GetMockedBandClientManagerAsync(Expression<Func<IBandPersonalizationManager, Task>> expectedPersonalizationManagerAction)
         {
             return GetMockedBandClientManager(mpm => mpm.Setup(expectedPersonalizationManagerAction).Returns(Task.CompletedTask));
         }
 
+        /// <summary>
+        /// Creates a mock <see cref="IBandClientManager"/> that will return a mock <see cref="IBandClient"/> with a mock
+        /// <see cref="IBandPersonalizationManager"/> that has been configured with <paramref name="expectedPersonalizationManagerFunction"/>.
+        /// </summary>
+        /// <typeparam name="T">The return <see cref="Type"/> of <paramref name="expectedPersonalizationManagerFunction"/>.</typeparam>
+        /// <param name="expectedPersonalizationManagerFunction">A function to setup on the <see cref="IBandPersonalizationManager"/>.</param>
+        /// <param name="bandClientReturnValue">The value to return when the <paramref name="expectedPersonalizationManagerFunction"/> is called.</param>
+        /// <returns>A mock <see cref="IBandClientManager"/>.</returns>
         private static IBandClientManager GetMockedBandClientManagerAsync<T>(Expression<Func<IBandPersonalizationManager, Task<T>>> expectedPersonalizationManagerFunction, T bandClientReturnValue)
         {
             return GetMockedBandClientManager(mpm => mpm.Setup(expectedPersonalizationManagerFunction).Returns(Task.FromResult(bandClientReturnValue)));
         }
 
+        /// <summary>
+        /// Creates a mock <see cref="IBandClientManager"/> that will return a mock <see cref="IBandClient"/> with a mock
+        /// <see cref="IBandPersonalizationManager"/> that has been configured with <paramref name="configure"/>.
+        /// </summary>
+        /// <param name="configure">An action to configure the <see cref="IBandPersonalizationManager"/>.</param>
+        /// <returns>A mock <see cref="IBandClientManager"/>.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="configure"/> is <c>null</c>.</exception>
         private static IBandClientManager GetMockedBandClientManager(Action<Mock<IBandPersonalizationManager>> configure)
         {
             if (configure == null)
