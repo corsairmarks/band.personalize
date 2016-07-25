@@ -24,19 +24,13 @@ namespace Band.Personalize.App.Universal.ViewModels
     using Model.Library.Band;
     using Model.Library.Repository;
     using Prism.Commands;
-    using Prism.Windows.Mvvm;
     using Prism.Windows.Navigation;
 
     /// <summary>
     /// The View Model for the Main Page.
     /// </summary>
-    public class MainPageViewModel : ViewModelBase, IDisposable
+    public class MainPageViewModel : BaseNavigationViewModel, IDisposable
     {
-        /// <summary>
-        /// The navigation service.
-        /// </summary>
-        private readonly INavigationService navigationService;
-
         /// <summary>
         /// The Band repository.
         /// </summary>
@@ -67,19 +61,15 @@ namespace Band.Personalize.App.Universal.ViewModels
         /// </summary>
         /// <param name="navigationService">The navigation service.</param>
         /// <param name="bandRepository">The Band repository.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="navigationService"/> or <paramref name="bandRepository"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="bandRepository"/> is <c>null</c>.</exception>
         public MainPageViewModel(INavigationService navigationService, IBandRepository bandRepository)
+            : base(navigationService)
         {
-            if (navigationService == null)
-            {
-                throw new ArgumentNullException(nameof(navigationService));
-            }
-            else if (bandRepository == null)
+            if (bandRepository == null)
             {
                 throw new ArgumentNullException(nameof(bandRepository));
             }
 
-            this.navigationService = navigationService;
             this.bandRepository = bandRepository;
             this.connectedBands = new ObservableCollection<IBand>();
             this.ConnectedBands = new ReadOnlyObservableCollection<IBand>(this.connectedBands);
@@ -96,7 +86,7 @@ namespace Band.Personalize.App.Universal.ViewModels
             refreshConnectedBandsCommand.RegisterCommand(new DelegateCommand(() => this.IsBusy = false));
             this.RefreshConnectedBandsCommand = refreshConnectedBandsCommand;
 
-            this.NavigateToBandPageCommand = new DelegateCommand<IBand>(b => this.navigationService.Navigate("Band", b));
+            this.NavigateToBandPageCommand = new DelegateCommand<IBand>(b => this.NavigationService.Navigate(PageNavigationTokens.BandPage, b));
         }
 
         /// <summary>

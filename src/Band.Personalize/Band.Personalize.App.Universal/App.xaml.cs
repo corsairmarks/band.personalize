@@ -27,6 +27,7 @@ namespace Band.Personalize.App.Universal
     using Prism.Windows;
     using Prism.Windows.AppModel;
     using Prism.Windows.Navigation;
+    using ViewModels;
     using ViewModels.Design;
     using Windows.ApplicationModel;
     using Windows.ApplicationModel.Activation;
@@ -127,7 +128,7 @@ namespace Band.Personalize.App.Universal
         /// <returns>Returns <c>true</c> if navigation succeeds; otherwise, <c>false</c>.</returns>
         private bool NavigateToDefaultPage()
         {
-            return this.NavigationService.Navigate("Main", null);
+            return this.NavigationService.Navigate(PageNavigationTokens.MainPage, null);
         }
 
         /// <summary>

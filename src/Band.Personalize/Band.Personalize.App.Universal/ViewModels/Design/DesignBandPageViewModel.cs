@@ -28,7 +28,7 @@ namespace Band.Personalize.App.Universal.ViewModels.Design
         /// Initializes a new instance of the <see cref="DesignBandPageViewModel"/> class.
         /// </summary>
         public DesignBandPageViewModel()
-            : base(new ResourceLoaderAdapter(new ResourceLoader()), BandPersonalizerStub.Instance)
+            : base(NavigationServiceStub.Instance, new ResourceLoaderAdapter(new ResourceLoader()), BandPersonalizerStub.Instance)
         {
             this.OnNavigatedTo(
                 new NavigatedToEventArgs
