@@ -22,7 +22,6 @@ namespace Band.Personalize.Model.Implementation.Repository
     using Library.Repository;
     using Library.Theme;
     using Microsoft.Band;
-    using Windows.Storage.Streams;
     using Windows.UI.Xaml.Media.Imaging;
 
     /// <summary>
@@ -123,6 +122,10 @@ namespace Band.Personalize.Model.Implementation.Repository
             if (band == null)
             {
                 throw new ArgumentNullException(nameof(band));
+            }
+            else if (bitmap == null)
+            {
+                throw new ArgumentNullException(nameof(bitmap));
             }
 
             await this.bandClientManager.ConnectAndPerformActionAsync(band.BandInfo, token, async (bc, t) => await bc.PersonalizationManager.SetMeTileImageAsync(bitmap.ToBandImage(), t));

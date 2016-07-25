@@ -14,7 +14,9 @@
 
 namespace Band.Personalize.Model.Library.Band
 {
+    using System;
     using Microsoft.Band;
+    using Microsoft.Band.Store;
 
     /// <summary>
     /// Information about a Microsoft Band.
@@ -44,6 +46,11 @@ namespace Band.Personalize.Model.Library.Band
         /// <summary>
         /// Gets the SDK <see cref="IBandInfo"/> for this Band.
         /// </summary>
+        /// <remarks>
+        /// This is exposed because the <see cref="BandClientManager.ConnectAsync(IBandInfo)"/> method in
+        /// <c>Microsoft.Band.Phone_UAP</c> breaks Liskov substitution and requires an instance of
+        /// <see cref="BluetoothDeviceInfo"/> or it will throw an <see cref="ArgumentException"/>.
+        /// </remarks>
         IBandInfo BandInfo { get; }
     }
 }

@@ -27,12 +27,6 @@ namespace Band.Personalize.Model.Library.Repository
         /// <summary>
         /// Gets information about all Microsoft Bands connected to the application host.
         /// </summary>
-        /// <returns>An asynchronous task that returns a read-only collection of connected Bands when it completes.</returns>
-        Task<IReadOnlyList<IBand>> GetBands();
-
-        /// <summary>
-        /// Gets information about all Microsoft Bands connected to the application host.
-        /// </summary>
         /// <param name="token">The <see cref="CancellationToken"/> to observe.</param>
         /// <returns>An asynchronous task that returns a read-only collection of connected Bands when it completes.</returns>
         Task<IReadOnlyList<IBand>> GetBands(CancellationToken token);

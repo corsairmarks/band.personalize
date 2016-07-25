@@ -14,8 +14,10 @@
 
 namespace Band.Personalize.Model.Implementation.Repository
 {
+    using System;
     using Library.Band;
     using Microsoft.Band;
+    using Microsoft.Band.Store;
 
     /// <summary>
     /// Information about a Microsoft Band.
@@ -27,8 +29,14 @@ namespace Band.Personalize.Model.Implementation.Repository
         /// </summary>
         /// <param name="bandInfo">Band information from the Band SDK.</param>
         /// <param name="hardwareVersion">The hardware verision, which requires a second connection.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="bandInfo"/> is <c>null</c>.</exception>
         public Band(IBandInfo bandInfo, int? hardwareVersion)
         {
+            if (bandInfo == null)
+            {
+                throw new ArgumentNullException(nameof(bandInfo));
+            }
+
             this.BandInfo = bandInfo;
             this.HardwareVersion = hardwareVersion;
             this.HardwareRevision = hardwareVersion.ToHardwareRevision();
@@ -63,6 +71,11 @@ namespace Band.Personalize.Model.Implementation.Repository
         /// <summary>
         /// Gets the SDK <see cref="IBandInfo"/> for this Band.
         /// </summary>
+        /// <remarks>
+        /// This is exposed because the <see cref="BandClientManager.ConnectAsync(IBandInfo)"/> method in
+        /// <c>Microsoft.Band.Phone_UAP</c> breaks Liskov substitution and requires an instance of
+        /// <see cref="BluetoothDeviceInfo"/> or it will throw an <see cref="ArgumentException"/>.
+        /// </remarks>
         public IBandInfo BandInfo { get; }
     }
 }
