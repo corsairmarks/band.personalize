@@ -21,6 +21,7 @@ namespace Band.Personalize.App.Universal.ViewModels.Design
     using System.Threading.Tasks;
     using Model.Library.Band;
     using Model.Library.Repository;
+    using Windows.ApplicationModel;
 
     /// <summary>
     /// A stub for a fake <see cref="IBandRepository"/>.
@@ -87,7 +88,16 @@ namespace Band.Personalize.App.Universal.ViewModels.Design
         /// <returns>An asynchronous task that returns a read-only collection of paired Bands when it completes.</returns>
         public async Task<IReadOnlyList<IBand>> GetPairedBands(CancellationToken token)
         {
-            return await Task.FromResult(DefaultBands);
+            if (DesignMode.DesignModeEnabled)
+            {
+                return await Task.FromResult(DefaultBands);
+            }
+            else
+            {
+                return await Task
+                    .Delay(5000, token)
+                    .ContinueWith(t => DefaultBands, TaskContinuationOptions.OnlyOnRanToCompletion);
+            }
         }
 
         #endregion
