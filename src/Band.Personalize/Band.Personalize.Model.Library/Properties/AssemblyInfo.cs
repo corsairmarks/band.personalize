@@ -42,6 +42,6 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyFileVersion("0.0.0.0")]
 [assembly: AssemblyInformationalVersion("0.0.0-rc1")]
 [assembly: ComVisible(false)]
-#if DEBUG
+#if DEBUG || TEST
 [assembly: InternalsVisibleTo("Band.Personalize.Model.Test")]
 #endif

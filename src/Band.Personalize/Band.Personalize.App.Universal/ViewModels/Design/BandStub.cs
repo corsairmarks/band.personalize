@@ -14,6 +14,7 @@
 
 namespace Band.Personalize.App.Universal.ViewModels.Design
 {
+    using Microsoft.Band;
     using Model.Library.Band;
 
     /// <summary>
@@ -32,6 +33,11 @@ namespace Band.Personalize.App.Universal.ViewModels.Design
         public ConnectionType ConnectionType { get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether this Band is connected.
+        /// </summary>
+        public bool IsConnected { get; set; }
+
+        /// <summary>
         /// Gets or sets the actual hardware version.
         /// </summary>
         public HardwareRevision HardwareRevision { get; set; }
@@ -39,6 +45,11 @@ namespace Band.Personalize.App.Universal.ViewModels.Design
         /// <summary>
         /// Gets or sets the connection type between the application host and the Microsoft Band.
         /// </summary>
-        public int HardwareVersion { get; set; }
+        public int? HardwareVersion { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Band info.
+        /// </summary>
+        public IBandInfo BandInfo { get; set; }
     }
 }

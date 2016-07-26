@@ -100,11 +100,18 @@ namespace Band.Personalize.Model.Test.Color
         [ClassData(typeof(HsvColorDoubleData))]
         public void CtorHsv_SetsProperties(double hue, double saturation, double value)
         {
+            // Arrange
+            double expectedHue = hue % 360;
+            if (expectedHue < 0)
+            {
+                expectedHue += 360;
+            }
+
             // Act
             var result = new RgbColor(hue, saturation, value);
 
             // Assert
-            Assert.Equal(hue, result.Hue);
+            Assert.Equal(expectedHue, result.Hue);
             Assert.Equal(saturation, result.Saturation);
             Assert.Equal(value, result.Value);
         }
@@ -709,7 +716,7 @@ namespace Band.Personalize.Model.Test.Color
         /// <param name="blue">The blue channel color saturation to test.</param>
         [Theory]
         [ClassData(typeof(RgbColorByteData))]
-        public void GetHashCode_ColorsAreEqual_AreEqual(byte red, byte green, byte blue)
+        public void GetHashCode_InstancesAreEqual_AreEqual(byte red, byte green, byte blue)
         {
             // Arrange
             var target1 = new RgbColor(red, green, blue);
@@ -720,7 +727,7 @@ namespace Band.Personalize.Model.Test.Color
             var result2 = target2.GetHashCode();
 
             // Assert
-            Assert.Equal(result1, result2);
+            Assert.True(result1 == result2);
         }
 
         /// <summary>

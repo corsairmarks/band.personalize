@@ -16,9 +16,10 @@
         <DataTemplate x:Key="BandTile">
             <Button
                 x:Name="BandTile"
-                Style="{StaticResource BandTile}"
-                Command="{Binding DataContext.NavigateToBandPageCommand, ElementName=TheGrid}"
-                CommandParameter="{Binding}">
+                Style="{StaticResource ResourceKey=BandTileButton}"
+                Command="{Binding Path=DataContext.NavigateToBandPageCommand, ElementName=TheGrid}"
+                CommandParameter="{Binding}"
+                IsEnabled="{Binding Path=IsConnected}">
                 <RelativePanel>
                     <TextBlock
                         RelativePanel.AlignTopWithPanel="True"
@@ -29,7 +30,8 @@
                         RelativePanel.AlignVerticalCenterWithPanel="True"
                         RelativePanel.AlignHorizontalCenterWithPanel="True"
                         x:Name="Ellipse"
-                        Fill="{ThemeResource SystemControlForegroundChromeWhiteBrush}">
+                        Stroke="{Binding Path=Foreground, ElementName=BandTileSymbol, Mode=OneWay}"
+                        StrokeThickness="4">
                         <i:Interaction.Behaviors>
                             <behaviors:BindToControlHeightOrWidthBehavior SourceObject="{Binding ElementName=BandTile}" ScaleFactor="0.35" />
                         </i:Interaction.Behaviors>
@@ -41,16 +43,16 @@
                             <behaviors:BindToControlHeightOrWidthBehavior SourceObject="{Binding ElementName=Ellipse}" ScaleFactor="0.65" />
                         </i:Interaction.Behaviors>
                         <SymbolIcon
-                            Symbol="{Binding ConnectionType, Converter={StaticResource ConnectionTypeToSymbolConverter}}"
-                            Foreground="{Binding Path=Background, ElementName=BandTile, Mode=OneWay}" />
+                            x:Name="BandTileSymbol"
+                            Symbol="{Binding Path=ConnectionType, Converter={StaticResource ResourceKey=ConnectionTypeToSymbolConverter}}" />
                     </Viewbox>
                     <StackPanel
                         RelativePanel.AlignBottomWithPanel="True"
                         RelativePanel.AlignLeftWithPanel="True"
                         Orientation="Horizontal">
-                        <TextBlock Text="{Binding HardwareRevision}" Margin="0,0,2,0" />
+                        <TextBlock Text="{Binding Path=HardwareRevision}" Margin="0,0,2,0" />
                         <TextBlock Text="(" />
-                        <TextBlock Text="{Binding HardwareVersion}" />
+                        <TextBlock Text="{Binding Path=HardwareVersion, TargetNullValue=?}" />
                         <TextBlock Text=")" />
                     </StackPanel>
                 </RelativePanel>
@@ -63,13 +65,13 @@
             <RowDefinition x:Name="CenterGridRow" />
             <RowDefinition x:Name="BottomGridRow" />
         </Grid.RowDefinitions>
-        <TextBlock x:Name="TheHeader" x:Uid="BandGridViewHeaderTextBlock" Text="Connected Bands" FontWeight="Bold" Margin="4,2" HorizontalAlignment="Left" VerticalAlignment="Center" />
+        <TextBlock x:Name="TheHeader" x:Uid="BandGridViewHeaderTextBlock" Text="Paired Bands" FontWeight="Bold" Margin="4,2" HorizontalAlignment="Left" VerticalAlignment="Center" />
         <Grid Name="TheGridViewContainer">
             <GridView
                 x:Name="LargeGridView"
-                ItemTemplate="{StaticResource BandTile}"
-                ItemContainerStyle="{StaticResource BandTileContainer}"
-                ItemsSource="{Binding Path=ConnectedBands}"
+                ItemTemplate="{StaticResource ResourceKey=BandTile}"
+                ItemContainerStyle="{StaticResource ResourceKey=BandTileContainer}"
+                ItemsSource="{Binding Path=PairedBands}"
                 Visibility="Collapsed">
                 <GridView.ItemsPanel>
                     <ItemsPanelTemplate>
@@ -89,9 +91,9 @@
             </GridView>
             <GridView
                 x:Name="MediumGridView"
-                ItemTemplate="{StaticResource BandTile}"
-                ItemContainerStyle="{StaticResource BandTileContainer}"
-                ItemsSource="{Binding Path=ConnectedBands}"
+                ItemTemplate="{StaticResource ResourceKey=BandTile}"
+                ItemContainerStyle="{StaticResource ResourceKey=BandTileContainer}"
+                ItemsSource="{Binding Path=PairedBands}"
                 Visibility="Collapsed">
                 <GridView.ItemsPanel>
                     <ItemsPanelTemplate>
@@ -111,9 +113,9 @@
             </GridView>
             <GridView
                 x:Name="SmallGridView"
-                ItemTemplate="{StaticResource BandTile}"
-                ItemContainerStyle="{StaticResource BandTileContainer}"
-                ItemsSource="{Binding Path=ConnectedBands}"
+                ItemTemplate="{StaticResource ResourceKey=BandTile}"
+                ItemContainerStyle="{StaticResource ResourceKey=BandTileContainer}"
+                ItemsSource="{Binding Path=PairedBands}"
                 Visibility="Collapsed">
                 <GridView.ItemsPanel>
                     <ItemsPanelTemplate>
@@ -133,8 +135,8 @@
             </GridView>
         </Grid>
         <CommandBar Name="TheCommandBar">
-            <AppBarButton x:Uid="RefreshAppBarButton" Icon="Refresh" Label="Refresh" Command="{Binding Path=RefreshConnectedBandsCommand}" />
-            <AppBarButton x:Uid="CancelAppBarButton" Icon="Cancel" Label="Cancel" Command="{Binding Path=CancelRefreshConnectedBandsCommand}" IsEnabled="{Binding Path=IsBusy}" />
+            <AppBarButton x:Uid="RefreshAppBarButton" Icon="Refresh" Label="Refresh" Command="{Binding Path=RefreshPairedBandsCommand}" />
+            <AppBarButton x:Uid="CancelAppBarButton" Icon="Cancel" Label="Cancel" Command="{Binding Path=CancelRefreshPairedBandsCommand}" IsEnabled="{Binding Path=IsBusy}" />
         </CommandBar>
         <VisualStateManager.VisualStateGroups>
             <VisualStateGroup x:Name="GridViewLayouts">

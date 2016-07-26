@@ -12,20 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Band.Personalize.App.Universal.ViewModels.Design
+namespace Band.Personalize.App.Universal.ViewModels
 {
     /// <summary>
-    /// The design View Model for the Main Page.
+    /// Page navigation tokens for application pages.
     /// </summary>
-    public class DesignMainPageViewModel : MainPageViewModel
+    public static class PageNavigationTokens
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="DesignMainPageViewModel"/> class.
+        /// The page token for the <see cref="MainPageViewModel"/>.
         /// </summary>
-        public DesignMainPageViewModel()
-            : base(NavigationServiceStub.Instance, BandRepositoryStub.Instance)
-        {
-            this.RefreshPairedBandsCommand.Execute(null);
-        }
+        public const string MainPage = "Main";
+
+        /// <summary>
+        /// THe page token for the <see cref="BandPageViewModel"/>.
+        /// </summary>
+        public const string BandPage = "Band";
     }
 }

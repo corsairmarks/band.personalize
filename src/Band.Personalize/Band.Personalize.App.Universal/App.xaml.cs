@@ -17,17 +17,22 @@ namespace Band.Personalize.App.Universal
     using System;
     using System.Diagnostics;
     using System.Threading.Tasks;
+    using Microsoft.Band;
     using Microsoft.Practices.Unity;
+    using Model.Implementation.Repository;
+    using Model.Library.Band;
     using Model.Library.Repository;
     using Prism.Events;
     using Prism.Unity.Windows;
     using Prism.Windows;
     using Prism.Windows.AppModel;
     using Prism.Windows.Navigation;
+    using ViewModels;
     using ViewModels.Design;
     using Windows.ApplicationModel;
     using Windows.ApplicationModel.Activation;
     using Windows.ApplicationModel.Resources;
+    using Windows.UI.Popups;
     using Windows.UI.Xaml;
     using Windows.UI.Xaml.Data;
 
@@ -42,9 +47,10 @@ namespace Band.Personalize.App.Universal
         /// This is the first line of authored code executed, and as such is the logical equivalent of main() or WinMain().
         /// </summary>
         public App()
+            : base()
         {
             this.InitializeComponent();
-            this.Suspending += this.OnSuspending;
+            this.UnhandledException += this.OnUnhandledBandException;
         }
 
         /// <summary>
@@ -66,30 +72,16 @@ namespace Band.Personalize.App.Universal
             }
 #endif
 
-            if (e != null)
-            {
-                if (!string.IsNullOrWhiteSpace(e.Arguments))
-                {
-                    // The app was launched from a Secondary Tile
-                    // Navigate to the item's page
-                    this.NavigationService.Navigate("ItemDetail", e.Arguments);
-                }
-                else if (e.PreviousExecutionState == ApplicationExecutionState.Terminated)
-                {
-                    // TODO: Load state from previously suspended application
-                    this.NavigationService.RestoreSavedNavigation();
-                }
-                else
-                {
-                    this.NavigateToDefaultPage();
-                }
-            }
-            else
+            if (e == null || e.PreviousExecutionState != ApplicationExecutionState.Terminated)
             {
                 this.NavigateToDefaultPage();
             }
+            else
+            {
+                // TODO: Load state from previously suspended application
+                this.NavigationService.RestoreSavedNavigation();
+            }
 
-            Window.Current.Activate();
             return Task.CompletedTask;
         }
 
@@ -100,16 +92,7 @@ namespace Band.Personalize.App.Universal
         protected override void OnRegisterKnownTypesForSerialization()
         {
             // Set up the list of known types for the SuspensionManager
-            // this.SessionStateService.RegisterKnownType(typeof(Address));
-            // this.SessionStateService.RegisterKnownType(typeof(PaymentMethod));
-            // this.SessionStateService.RegisterKnownType(typeof(UserInfo));
-            // this.SessionStateService.RegisterKnownType(typeof(CheckoutDataViewModel));
-            // this.SessionStateService.RegisterKnownType(typeof(ObservableCollection<CheckoutDataViewModel>));
-            // this.SessionStateService.RegisterKnownType(typeof(ShippingMethod));
-            // this.SessionStateService.RegisterKnownType(typeof(Dictionary<string, Collection<string>>));
-            // this.SessionStateService.RegisterKnownType(typeof(Order));
-            // this.SessionStateService.RegisterKnownType(typeof(Product));
-            // this.SessionStateService.RegisterKnownType(typeof(Collection<Product>));
+            // this.SessionStateService.RegisterKnownType(typeof(Type));
         }
 
         /// <summary>
@@ -126,22 +109,16 @@ namespace Band.Personalize.App.Universal
             this.Container.RegisterInstance<IEventAggregator>(this.EventAggregator);
             this.Container.RegisterInstance<IResourceLoader>(new ResourceLoaderAdapter(new ResourceLoader()));
 
-            // Register services
-            // this.Container.RegisterType<IAccountService, AccountService>(new ContainerControlledLifetimeManager());
-            // this.Container.RegisterType<ICredentialStore, RoamingCredentialStore>(new ContainerControlledLifetimeManager());
-            // this.Container.RegisterType<ICacheService, TemporaryFolderCacheService>(new ContainerControlledLifetimeManager());
-            // this.Container.RegisterType<ISecondaryTileService, SecondaryTileService>(new ContainerControlledLifetimeManager());
-            // this.Container.RegisterType<IAlertMessageService, AlertMessageService>(new ContainerControlledLifetimeManager());
-
             // Register repositories
+#if DEBUG && STUB
             this.Container.RegisterInstance<IBandPersonalizer>(BandPersonalizerStub.Instance);
             this.Container.RegisterInstance<IBandRepository>(BandRepositoryStub.Instance);
+#else
+            this.Container.RegisterInstance<IBandClientManager>(BandClientManager.Instance);
+            this.Container.RegisterType<IBandPersonalizer, BandPersonalizer>(new ContainerControlledLifetimeManager());
+            this.Container.RegisterType<IBandRepository, BandRepository>(new ContainerControlledLifetimeManager());
+#endif
 
-            // Register child view models
-            // this.Container.RegisterType<IShippingAddressUserControlViewModel, ShippingAddressUserControlViewModel>();
-            // this.Container.RegisterType<IBillingAddressUserControlViewModel, BillingAddressUserControlViewModel>();
-            // this.Container.RegisterType<IPaymentMethodUserControlViewModel, PaymentMethodUserControlViewModel>();
-            // this.Container.RegisterType<ISignInUserControlViewModel, SignInUserControlViewModel>();
             return base.OnInitializeAsync(e);
         }
 
@@ -151,24 +128,29 @@ namespace Band.Personalize.App.Universal
         /// <returns>Returns <c>true</c> if navigation succeeds; otherwise, <c>false</c>.</returns>
         private bool NavigateToDefaultPage()
         {
-            return this.NavigationService.Navigate("Main", null);
+            return this.NavigationService.Navigate(PageNavigationTokens.MainPage, null);
         }
 
         /// <summary>
-        /// Invoked when application execution is being suspended.  Application state is saved
-        /// without knowing whether the application will be terminated or resumed with the contents
-        /// of memory still intact.
+        /// Represents the method that will handle the <see cref="Application.UnhandledException"/> event for exceptions that are or descend from <see cref="BandException"/>.
         /// </summary>
-        /// <param name="sender">The source of the suspend request.</param>
-        /// <param name="e">Details about the suspend request.</param>
-        private void OnSuspending(object sender, SuspendingEventArgs e)
+        /// <param name="sender">The object where the handler is attached.</param>
+        /// <param name="e">Event data.</param>
+        private async void OnUnhandledBandException(object sender, UnhandledExceptionEventArgs e)
         {
-            var deferral = e.SuspendingOperation.GetDeferral();
-
-            // TODO: Save application state and stop any background activity
-            this.NavigationService.Suspending();
-
-            deferral.Complete();
+            if (e != null)
+            {
+                // WORKAROUND: the UnhandledExceptionEventArgs.Exception value only returns useful information the first time it is accessed,
+                // so storing a local works around that limitation so that exception data can be used for reasoning about the error
+                // See: https://petermeinl.wordpress.com/2016/07/09/global-error-handling-for-uwp-apps/
+                var localException = e.Exception;
+                if (localException != null && localException is BandException)
+                {
+                    e.Handled = true;
+                    var messageDialog = new MessageDialog(e.Message);
+                    await messageDialog.ShowAsync();
+                }
+            }
         }
     }
 }

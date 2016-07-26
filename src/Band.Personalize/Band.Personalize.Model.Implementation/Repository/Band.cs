@@ -12,41 +12,68 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Band.Personalize.Model.Library.Band
+namespace Band.Personalize.Model.Implementation.Repository
 {
     using System;
+    using Library.Band;
     using Microsoft.Band;
     using Microsoft.Band.Store;
 
     /// <summary>
     /// Information about a Microsoft Band.
     /// </summary>
-    public interface IBand
+    internal class Band : IBand
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Band"/> class.
+        /// </summary>
+        /// <param name="bandInfo">Band information from the Band SDK.</param>
+        /// <param name="isConnected">Whether this Band is currently connected.</param>
+        /// <param name="hardwareVersion">The hardware version, which is only available when the Band is connected.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="bandInfo"/> is <c>null</c>.</exception>
+        public Band(IBandInfo bandInfo, bool isConnected, int? hardwareVersion)
+        {
+            if (bandInfo == null)
+            {
+                throw new ArgumentNullException(nameof(bandInfo));
+            }
+
+            this.BandInfo = bandInfo;
+            this.IsConnected = isConnected;
+            this.HardwareVersion = hardwareVersion;
+            this.HardwareRevision = hardwareVersion.ToHardwareRevision();
+        }
+
         /// <summary>
         /// Gets the name.
         /// </summary>
-        string Name { get; }
+        public string Name
+        {
+            get { return this.BandInfo.Name; }
+        }
 
         /// <summary>
         /// Gets the connection type between the application host and the Microsoft Band.
         /// </summary>
-        ConnectionType ConnectionType { get; }
+        public ConnectionType ConnectionType
+        {
+            get { return this.BandInfo.ConnectionType.ToConnectionType(); }
+        }
 
         /// <summary>
         /// Gets a value indicating whether this Band is connected.
         /// </summary>
-        bool IsConnected { get; }
+        public bool IsConnected { get; }
 
         /// <summary>
         /// Gets the hardware major revision level.
         /// </summary>
-        HardwareRevision HardwareRevision { get; }
+        public HardwareRevision HardwareRevision { get; }
 
         /// <summary>
         /// Gets the specific hardware version.
         /// </summary>
-        int? HardwareVersion { get; }
+        public int? HardwareVersion { get; }
 
         /// <summary>
         /// Gets the SDK <see cref="IBandInfo"/> for this Band.
@@ -56,6 +83,6 @@ namespace Band.Personalize.Model.Library.Band
         /// <c>Microsoft.Band.Phone_UAP</c> breaks Liskov substitution and requires an instance of
         /// <see cref="BluetoothDeviceInfo"/> or it will throw an <see cref="ArgumentException"/>.
         /// </remarks>
-        IBandInfo BandInfo { get; }
+        public IBandInfo BandInfo { get; }
     }
 }

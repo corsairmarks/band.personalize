@@ -36,6 +36,7 @@ namespace Band.Personalize.App.Universal.ViewModels.Design
                 {
                     Name = "Sample Band",
                     ConnectionType = ConnectionType.Bluetooth,
+                    IsConnected = true,
                     HardwareRevision = HardwareRevision.Band,
                     HardwareVersion = 3,
                 },
@@ -43,15 +44,17 @@ namespace Band.Personalize.App.Universal.ViewModels.Design
                 {
                     Name = "Sample Band 2",
                     ConnectionType = ConnectionType.Usb,
+                    IsConnected = true,
                     HardwareRevision = HardwareRevision.Band2,
-                    HardwareVersion = 20,
+                    HardwareVersion = 26,
                 },
                 new BandStub
                 {
                     Name = "Sample Unknown Band",
                     ConnectionType = ConnectionType.Unknown,
-                    HardwareRevision = HardwareRevision.Band2,
-                    HardwareVersion = 400,
+                    IsConnected = false,
+                    HardwareRevision = HardwareRevision.Unknown,
+                    HardwareVersion = null,
                 },
             });
 
@@ -78,20 +81,11 @@ namespace Band.Personalize.App.Universal.ViewModels.Design
         #region IBandRepository Members
 
         /// <summary>
-        /// Gets information about all Microsoft Bands connected to the application host.
-        /// </summary>
-        /// <returns>An asynchronous task that returns a read-only collection of connected Bands when it completes.</returns>
-        public async Task<IReadOnlyList<IBand>> GetBands()
-        {
-            return await this.GetBands(CancellationToken.None);
-        }
-
-        /// <summary>
-        /// Gets information about all Microsoft Bands connected to the application host.
+        /// Gets information about all Microsoft Bands paired with the application host.
         /// </summary>
         /// <param name="token">The <see cref="CancellationToken"/> to observe.</param>
-        /// <returns>An asynchronous task that returns a read-only collection of connected Bands when it completes.</returns>
-        public async Task<IReadOnlyList<IBand>> GetBands(CancellationToken token)
+        /// <returns>An asynchronous task that returns a read-only collection of paired Bands when it completes.</returns>
+        public async Task<IReadOnlyList<IBand>> GetPairedBands(CancellationToken token)
         {
             return await Task.FromResult(DefaultBands);
         }

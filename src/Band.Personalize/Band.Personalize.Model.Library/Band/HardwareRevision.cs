@@ -20,6 +20,11 @@ namespace Band.Personalize.Model.Library.Band
     public enum HardwareRevision
     {
         /// <summary>
+        /// An unknown hardward revision.
+        /// </summary>
+        Unknown,
+
+        /// <summary>
         /// The original Microsoft Band.
         /// </summary>
         Band,

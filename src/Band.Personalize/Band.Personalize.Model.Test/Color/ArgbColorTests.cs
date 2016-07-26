@@ -847,7 +847,7 @@ namespace Band.Personalize.Model.Test.Color
         /// <param name="blue">The blue channel color saturation to test.</param>
         [Theory]
         [ClassData(typeof(ArgbColorByteData))]
-        public void GetHashCode_ColorsAreEqual_AreEqual(byte alpha, byte red, byte green, byte blue)
+        public void GetHashCode_InstancesAreEqual_AreEqual(byte alpha, byte red, byte green, byte blue)
         {
             // Arrange
             var target1 = new ArgbColor(alpha, red, green, blue);
@@ -858,7 +858,7 @@ namespace Band.Personalize.Model.Test.Color
             var result2 = target2.GetHashCode();
 
             // Assert
-            Assert.Equal(result1, result2);
+            Assert.True(result1 == result2);
         }
 
         /// <summary>

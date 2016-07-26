@@ -12,41 +12,40 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Band.Personalize.App.Universal.ViewModels.Design
+namespace Band.Personalize.Model.Implementation.Repository
 {
     using System;
     using System.Threading;
     using System.Threading.Tasks;
-    using Model.Library.Band;
-    using Model.Library.Repository;
-    using Model.Library.Theme;
-    using Windows.Storage;
-    using Windows.Storage.Streams;
+    using Library.Band;
+    using Library.Color;
+    using Library.Repository;
+    using Library.Theme;
+    using Microsoft.Band;
     using Windows.UI.Xaml.Media.Imaging;
 
     /// <summary>
-    /// A stub for a fake <see cref="IBandPersonalizer"/>.
+    /// A facade that limits available band operations to personalization.
     /// </summary>
-    internal class BandPersonalizerStub : IBandPersonalizer
+    public class BandPersonalizer : IBandPersonalizer
     {
         /// <summary>
-        /// The lazy-initialized singleton instanxe of <see cref="BandPersonalizerStub"/>.
+        /// The Band client manager.
         /// </summary>
-        private static readonly Lazy<BandPersonalizerStub> LazyInstance = new Lazy<BandPersonalizerStub>(() => new BandPersonalizerStub());
+        private readonly IBandClientManager bandClientManager;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="BandPersonalizerStub"/> class.
+        /// Initializes a new instance of the <see cref="BandPersonalizer"/> class.
         /// </summary>
-        private BandPersonalizerStub()
+        /// <param name="bandClientManager">The Band client manager.</param>
+        public BandPersonalizer(IBandClientManager bandClientManager)
         {
-        }
+            if (bandClientManager == null)
+            {
+                throw new ArgumentNullException(nameof(bandClientManager));
+            }
 
-        /// <summary>
-        /// Gets the singleton instance of <see cref="BandPersonalizerStub"/>.
-        /// </summary>
-        public static IBandPersonalizer Instance
-        {
-            get { return LazyInstance.Value; }
+            this.bandClientManager = bandClientManager;
         }
 
         /// <summary>
@@ -68,7 +67,17 @@ namespace Band.Personalize.App.Universal.ViewModels.Design
                 throw new ArgumentNullException(nameof(theme));
             }
 
-            await Task.CompletedTask;
+            var bandTheme = new BandTheme
+            {
+                Base = theme.Base.ToBandColor(),
+                HighContrast = theme.HighContrast.ToBandColor(),
+                Highlight = theme.Highlight.ToBandColor(),
+                Lowlight = theme.Lowlight.ToBandColor(),
+                Muted = theme.Muted.ToBandColor(),
+                SecondaryText = theme.SecondaryText.ToBandColor(),
+            };
+
+            await this.bandClientManager.ConnectAndPerformActionAsync(band.BandInfo, token, async (bc, t) => await bc.PersonalizationManager.SetThemeAsync(bandTheme, t));
         }
 
         /// <summary>
@@ -85,9 +94,19 @@ namespace Band.Personalize.App.Universal.ViewModels.Design
                 throw new ArgumentNullException(nameof(band));
             }
 
-            return await Task.FromResult(band.HardwareRevision == HardwareRevision.Band
-                ? DefaultThemes.Band.Blue
-                : DefaultThemes.Band2.Electric);
+            var bandTheme = await this.bandClientManager.ConnectAndPerformFunctionAsync(band.BandInfo, token, async (bc, t) => await bc.PersonalizationManager.GetThemeAsync(t));
+
+            return bandTheme != null
+                ? new RgbColorTheme
+                {
+                    Base = bandTheme.Base.ToRgbColor(),
+                    HighContrast = bandTheme.HighContrast.ToRgbColor(),
+                    Highlight = bandTheme.Highlight.ToRgbColor(),
+                    Lowlight = bandTheme.Lowlight.ToRgbColor(),
+                    Muted = bandTheme.Muted.ToRgbColor(),
+                    SecondaryText = bandTheme.SecondaryText.ToRgbColor(),
+                }
+                : null;
         }
 
         /// <summary>
@@ -104,8 +123,12 @@ namespace Band.Personalize.App.Universal.ViewModels.Design
             {
                 throw new ArgumentNullException(nameof(band));
             }
+            else if (bitmap == null)
+            {
+                throw new ArgumentNullException(nameof(bitmap));
+            }
 
-            await Task.CompletedTask;
+            await this.bandClientManager.ConnectAndPerformActionAsync(band.BandInfo, token, async (bc, t) => await bc.PersonalizationManager.SetMeTileImageAsync(bitmap.ToBandImage(), t));
         }
 
         /// <summary>
@@ -122,18 +145,8 @@ namespace Band.Personalize.App.Universal.ViewModels.Design
                 throw new ArgumentNullException(nameof(band));
             }
 
-            var dimensions = band.HardwareRevision.GetDefaultMeTileDimensions() ?? HardwareRevision.Band.GetDefaultMeTileDimensions();
-            var uri = new Uri(band.HardwareRevision == HardwareRevision.Band
-                ? "ms-appx:///Assets/band.png"
-                : "ms-appx:///Assets/band2.png");
-            var storageFile = await StorageFile.GetFileFromApplicationUriAsync(uri);
-            var bitmap = new WriteableBitmap(dimensions.Width, dimensions.Height);
-            using (var stream = await storageFile.OpenReadAsync())
-            {
-                await bitmap.SetSourceAsync(stream);
-            }
-
-            return bitmap;
+            var bandImage = await this.bandClientManager.ConnectAndPerformFunctionAsync(band.BandInfo, token, async (bc, t) => await bc.PersonalizationManager.GetMeTileImageAsync(t));
+            return bandImage != null ? bandImage.ToWriteableBitmap() : null;
         }
     }
 }

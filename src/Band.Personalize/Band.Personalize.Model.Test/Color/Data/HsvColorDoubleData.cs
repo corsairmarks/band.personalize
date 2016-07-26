@@ -28,7 +28,10 @@ namespace Band.Personalize.Model.Test.Color.Data
         /// </summary>
         private static IEnumerable<IEnumerable<double>> HsvDoubleTriplets { get; } = new[]
         {
-            new double[] { RgbColorData.DefaultHue, RgbColorData.DefaultSaturation, RgbColorData.DefaultValue, }
+            new double[] { RgbColorData.DefaultHue, RgbColorData.DefaultSaturation, RgbColorData.DefaultValue, },
+            new double[] { -(360 - RgbColorData.DefaultHue), RgbColorData.DefaultSaturation, RgbColorData.DefaultValue, },
+            new double[] { RgbColorData.DefaultHue - 720, RgbColorData.DefaultSaturation, RgbColorData.DefaultValue, },
+            new double[] { RgbColorData.DefaultHue + 360, RgbColorData.DefaultSaturation, RgbColorData.DefaultValue, },
         };
 
         #region IEnumerable<object[]> Members
