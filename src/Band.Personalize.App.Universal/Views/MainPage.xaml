@@ -67,76 +67,83 @@
         </Grid.RowDefinitions>
         <TextBlock x:Name="TheHeader" x:Uid="BandGridViewHeaderTextBlock" Text="Paired Bands" FontWeight="Bold" Margin="4,2" HorizontalAlignment="Left" VerticalAlignment="Center" />
         <Grid Name="TheGridViewContainer">
-            <GridView
-                x:Name="LargeGridView"
-                ItemTemplate="{StaticResource ResourceKey=BandTile}"
-                ItemContainerStyle="{StaticResource ResourceKey=BandTileContainer}"
-                ItemsSource="{Binding Path=PairedBands}"
-                Visibility="Collapsed">
-                <GridView.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <ItemsWrapGrid
-                            MaximumRowsOrColumns="4"
-                            Orientation="Horizontal"
-                            ScrollViewer.HorizontalScrollBarVisibility="Hidden"
-                            ScrollViewer.HorizontalScrollMode="Disabled"
-                            ScrollViewer.VerticalScrollBarVisibility="Auto"
-                            ScrollViewer.VerticalScrollMode="Auto">
-                            <i:Interaction.Behaviors>
-                                <behaviors:UniformRowsOrColumnsBehavior />
-                            </i:Interaction.Behaviors>
-                        </ItemsWrapGrid>
-                    </ItemsPanelTemplate>
-                </GridView.ItemsPanel>
-            </GridView>
-            <GridView
-                x:Name="MediumGridView"
-                ItemTemplate="{StaticResource ResourceKey=BandTile}"
-                ItemContainerStyle="{StaticResource ResourceKey=BandTileContainer}"
-                ItemsSource="{Binding Path=PairedBands}"
-                Visibility="Collapsed">
-                <GridView.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <ItemsWrapGrid
-                            MaximumRowsOrColumns="3"
-                            Orientation="Horizontal"
-                            ScrollViewer.HorizontalScrollBarVisibility="Hidden"
-                            ScrollViewer.HorizontalScrollMode="Disabled"
-                            ScrollViewer.VerticalScrollBarVisibility="Auto"
-                            ScrollViewer.VerticalScrollMode="Auto">
-                            <i:Interaction.Behaviors>
-                                <behaviors:UniformRowsOrColumnsBehavior />
-                            </i:Interaction.Behaviors>
-                        </ItemsWrapGrid>
-                    </ItemsPanelTemplate>
-                </GridView.ItemsPanel>
-            </GridView>
-            <GridView
-                x:Name="SmallGridView"
-                ItemTemplate="{StaticResource ResourceKey=BandTile}"
-                ItemContainerStyle="{StaticResource ResourceKey=BandTileContainer}"
-                ItemsSource="{Binding Path=PairedBands}"
-                Visibility="Collapsed">
-                <GridView.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <ItemsWrapGrid
-                            MaximumRowsOrColumns="2"
-                            Orientation="Horizontal"
-                            ScrollViewer.HorizontalScrollBarVisibility="Hidden"
-                            ScrollViewer.HorizontalScrollMode="Disabled"
-                            ScrollViewer.VerticalScrollBarVisibility="Auto"
-                            ScrollViewer.VerticalScrollMode="Auto">
-                            <i:Interaction.Behaviors>
-                                <behaviors:UniformRowsOrColumnsBehavior />
-                            </i:Interaction.Behaviors>
-                        </ItemsWrapGrid>
-                    </ItemsPanelTemplate>
-                </GridView.ItemsPanel>
-            </GridView>
+            <ProgressRing
+                MinWidth="76"
+                MinHeight="76"
+                IsActive="{Binding Path=IsBusy}"
+                Visibility="{Binding Path=IsBusy, Mode=OneWay, Converter={StaticResource ResourceKey=BooleanToVisibilityConverter}}" />
+            <Grid Visibility="{Binding Path=NotIsBusy, Mode=OneWay, Converter={StaticResource ResourceKey=BooleanToVisibilityConverter}}">
+                <GridView
+                    x:Name="LargeGridView"
+                    ItemTemplate="{StaticResource ResourceKey=BandTile}"
+                    ItemContainerStyle="{StaticResource ResourceKey=BandTileContainer}"
+                    ItemsSource="{Binding Path=PairedBands}"
+                    Visibility="Collapsed">
+                    <GridView.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <ItemsWrapGrid
+                                MaximumRowsOrColumns="4"
+                                Orientation="Horizontal"
+                                ScrollViewer.HorizontalScrollBarVisibility="Hidden"
+                                ScrollViewer.HorizontalScrollMode="Disabled"
+                                ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                ScrollViewer.VerticalScrollMode="Auto">
+                                <i:Interaction.Behaviors>
+                                    <behaviors:UniformRowsOrColumnsBehavior />
+                                </i:Interaction.Behaviors>
+                            </ItemsWrapGrid>
+                        </ItemsPanelTemplate>
+                    </GridView.ItemsPanel>
+                </GridView>
+                <GridView
+                    x:Name="MediumGridView"
+                    ItemTemplate="{StaticResource ResourceKey=BandTile}"
+                    ItemContainerStyle="{StaticResource ResourceKey=BandTileContainer}"
+                    ItemsSource="{Binding Path=PairedBands}"
+                    Visibility="Collapsed">
+                    <GridView.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <ItemsWrapGrid
+                                MaximumRowsOrColumns="3"
+                                Orientation="Horizontal"
+                                ScrollViewer.HorizontalScrollBarVisibility="Hidden"
+                                ScrollViewer.HorizontalScrollMode="Disabled"
+                                ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                ScrollViewer.VerticalScrollMode="Auto">
+                                <i:Interaction.Behaviors>
+                                    <behaviors:UniformRowsOrColumnsBehavior />
+                                </i:Interaction.Behaviors>
+                            </ItemsWrapGrid>
+                        </ItemsPanelTemplate>
+                    </GridView.ItemsPanel>
+                </GridView>
+                <GridView
+                    x:Name="SmallGridView"
+                    ItemTemplate="{StaticResource ResourceKey=BandTile}"
+                    ItemContainerStyle="{StaticResource ResourceKey=BandTileContainer}"
+                    ItemsSource="{Binding Path=PairedBands}"
+                    Visibility="Collapsed">
+                    <GridView.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <ItemsWrapGrid
+                                MaximumRowsOrColumns="2"
+                                Orientation="Horizontal"
+                                ScrollViewer.HorizontalScrollBarVisibility="Hidden"
+                                ScrollViewer.HorizontalScrollMode="Disabled"
+                                ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                ScrollViewer.VerticalScrollMode="Auto">
+                                <i:Interaction.Behaviors>
+                                    <behaviors:UniformRowsOrColumnsBehavior />
+                                </i:Interaction.Behaviors>
+                            </ItemsWrapGrid>
+                        </ItemsPanelTemplate>
+                    </GridView.ItemsPanel>
+                </GridView>
+            </Grid>
         </Grid>
         <CommandBar Name="TheCommandBar">
             <AppBarButton x:Uid="RefreshAppBarButton" Icon="Refresh" Label="Refresh" Command="{Binding Path=RefreshPairedBandsCommand}" />
-            <AppBarButton x:Uid="CancelAppBarButton" Icon="Cancel" Label="Cancel" Command="{Binding Path=CancelRefreshPairedBandsCommand}" IsEnabled="{Binding Path=IsBusy}" />
+            <AppBarButton x:Uid="CancelAppBarButton" Icon="Cancel" Label="Cancel" Command="{Binding Path=CancelRefreshPairedBandsCommand}" />
         </CommandBar>
         <VisualStateManager.VisualStateGroups>
             <VisualStateGroup x:Name="GridViewLayouts">

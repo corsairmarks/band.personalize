@@ -20,8 +20,10 @@ namespace Band.Personalize.App.Universal.ViewModels.Design
     using Model.Library.Band;
     using Model.Library.Repository;
     using Model.Library.Theme;
+    using Model.Library.Threading;
+    using Windows.ApplicationModel;
+    using Windows.ApplicationModel.Core;
     using Windows.Storage;
-    using Windows.Storage.Streams;
     using Windows.UI.Xaml.Media.Imaging;
 
     /// <summary>
@@ -68,7 +70,10 @@ namespace Band.Personalize.App.Universal.ViewModels.Design
                 throw new ArgumentNullException(nameof(theme));
             }
 
-            await Task.CompletedTask;
+            if (!DesignMode.DesignModeEnabled)
+            {
+                await Task.Delay(StubConstants.DefaultAsyncDelayMilliseconds, token);
+            }
         }
 
         /// <summary>
@@ -85,9 +90,18 @@ namespace Band.Personalize.App.Universal.ViewModels.Design
                 throw new ArgumentNullException(nameof(band));
             }
 
-            return await Task.FromResult(band.HardwareRevision == HardwareRevision.Band
+            var result = band.HardwareRevision == HardwareRevision.Band
                 ? DefaultThemes.Band.Blue
-                : DefaultThemes.Band2.Electric);
+                : DefaultThemes.Band2.Electric;
+
+            if (DesignMode.DesignModeEnabled)
+            {
+                return result;
+            }
+            else
+            {
+                return await Task.Delay(StubConstants.DefaultAsyncDelayMilliseconds, token).ContinueWith(t => result, TaskContinuationOptions.OnlyOnRanToCompletion);
+            }
         }
 
         /// <summary>
@@ -105,7 +119,10 @@ namespace Band.Personalize.App.Universal.ViewModels.Design
                 throw new ArgumentNullException(nameof(band));
             }
 
-            await Task.CompletedTask;
+            if (!DesignMode.DesignModeEnabled)
+            {
+                await Task.Delay(StubConstants.DefaultAsyncDelayMilliseconds, token);
+            }
         }
 
         /// <summary>
@@ -126,14 +143,24 @@ namespace Band.Personalize.App.Universal.ViewModels.Design
             var uri = new Uri(band.HardwareRevision == HardwareRevision.Band
                 ? "ms-appx:///Assets/band.png"
                 : "ms-appx:///Assets/band2.png");
-            var storageFile = await StorageFile.GetFileFromApplicationUriAsync(uri);
-            var bitmap = new WriteableBitmap(dimensions.Width, dimensions.Height);
-            using (var stream = await storageFile.OpenReadAsync())
-            {
-                await bitmap.SetSourceAsync(stream);
-            }
+            var meTileBitmap = await Task
+                .Delay(!DesignMode.DesignModeEnabled ? StubConstants.DefaultAsyncDelayMilliseconds : 0, token)
+                .ContinueWith(
+                    async t => await CoreApplication.MainView.CoreWindow.Dispatcher.WaitForRunAsync(async () =>
+                    {
+                        var storageFile = await StorageFile.GetFileFromApplicationUriAsync(uri);
+                        var bitmap = new WriteableBitmap(dimensions.Width, dimensions.Height);
+                        using (var stream = await storageFile.OpenReadAsync())
+                        {
+                            await bitmap.SetSourceAsync(stream);
+                        }
 
-            return bitmap;
+                        return bitmap;
+                    }),
+                    TaskContinuationOptions.OnlyOnRanToCompletion)
+                .Unwrap();
+
+            return meTileBitmap;
         }
     }
 }

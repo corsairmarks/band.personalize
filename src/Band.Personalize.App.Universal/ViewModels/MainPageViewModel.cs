@@ -74,17 +74,22 @@ namespace Band.Personalize.App.Universal.ViewModels
             this.pairedBands = new ObservableCollection<IBand>();
             this.PairedBands = new ReadOnlyObservableCollection<IBand>(this.pairedBands);
 
-            var cancelRefreshPairedBandsCommand = new CompositeCommand();
-            cancelRefreshPairedBandsCommand.RegisterCommand(DelegateCommand.FromAsyncHandler(this.CancelRefreshPairedBands, () => this.IsBusy));
-            cancelRefreshPairedBandsCommand.RegisterCommand(new DelegateCommand(() => this.IsBusy = false));
-            this.CancelRefreshPairedBandsCommand = cancelRefreshPairedBandsCommand;
+            this.CancelRefreshPairedBandsCommand = DelegateCommand.FromAsyncHandler(
+                async () =>
+                {
+                    await this
+                        .CancelRefreshPairedBands()
+                        .ContinueWith(t => this.IsBusy = false, TaskScheduler.FromCurrentSynchronizationContext());
+                },
+                () => this.IsBusy)
+                .ObservesProperty(() => this.IsBusy);
 
-            var refreshPairedBandsCommand = new CompositeCommand();
-            refreshPairedBandsCommand.RegisterCommand(new DelegateCommand(() => this.IsBusy = true));
-            refreshPairedBandsCommand.RegisterCommand(DelegateCommand.FromAsyncHandler(this.CancelRefreshPairedBands));
-            refreshPairedBandsCommand.RegisterCommand(DelegateCommand.FromAsyncHandler(this.RefreshPairedBands));
-            refreshPairedBandsCommand.RegisterCommand(new DelegateCommand(() => this.IsBusy = false));
-            this.RefreshPairedBandsCommand = refreshPairedBandsCommand;
+            this.RefreshPairedBandsCommand = DelegateCommand.FromAsyncHandler(async () =>
+            {
+                await this
+                    .CancelRefreshPairedBands()
+                    .ContinueWith(async t => await this.RefreshPairedBands(), TaskScheduler.FromCurrentSynchronizationContext());
+            });
 
             this.NavigateToBandPageCommand = new DelegateCommand<IBand>(b => this.NavigationService.Navigate(PageNavigationTokens.BandPage, b));
         }
@@ -117,8 +122,24 @@ namespace Band.Personalize.App.Universal.ViewModels
         /// </summary>
         public bool IsBusy
         {
-            get { return this.isBusy; }
-            private set { this.SetProperty(ref this.isBusy, value); }
+            get
+            {
+                return this.isBusy;
+            }
+
+            private set
+            {
+                this.SetProperty(ref this.isBusy, value);
+                this.OnPropertyChanged(nameof(this.NotIsBusy));
+            }
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether the "Refresh" command is not busy.
+        /// </summary>
+        public bool NotIsBusy
+        {
+            get { return !this.IsBusy; }
         }
 
         /// <summary>
@@ -132,7 +153,7 @@ namespace Band.Personalize.App.Universal.ViewModels
         /// <param name="e">The <see cref="NavigatedToEventArgs"/> instance containing the event data.</param>
         /// <param name="viewModelState">The state of the view model.</param>
         /// <exception cref="ArgumentNullException"><paramref name="e"/> is <c>null</c>.</exception>
-        public override void OnNavigatedTo(NavigatedToEventArgs e, Dictionary<string, object> viewModelState)
+        public override async void OnNavigatedTo(NavigatedToEventArgs e, Dictionary<string, object> viewModelState)
         {
             base.OnNavigatedTo(e, viewModelState);
 
@@ -141,9 +162,10 @@ namespace Band.Personalize.App.Universal.ViewModels
                 throw new ArgumentNullException(nameof(e));
             }
 
+            // TODO: store a list of previously queried bands for this session.  Maybe ICachingBandRepository of some sort?
             if (!this.PairedBands.Any())
             {
-                this.RefreshPairedBandsCommand.Execute(null);
+                await this.RefreshPairedBands();
             }
         }
 
@@ -182,11 +204,10 @@ namespace Band.Personalize.App.Universal.ViewModels
         /// <summary>
         /// Refreshes the list of paired Bands.
         /// </summary>
-        /// <returns>An asynchronous task that returns a read-only collection of paired Bands when it completes.</returns>
+        /// <returns>An asynchronous task that returns when work is complete.</returns>
         private async Task RefreshPairedBands()
         {
-            CancellationToken cancellationToken;
-
+            CancellationToken token;
             await this.EnterRefreshSemaphore(() =>
             {
                 if (this.refreshCancellationTokenSource == null)
@@ -194,19 +215,22 @@ namespace Band.Personalize.App.Universal.ViewModels
                     this.refreshCancellationTokenSource = new CancellationTokenSource();
                 }
 
-                cancellationToken = this.refreshCancellationTokenSource.Token;
+                token = this.refreshCancellationTokenSource.Token;
             });
 
-            IReadOnlyList<IBand> bands;
-            try
-            {
-                bands = await this.bandRepository.GetPairedBands(cancellationToken);
-            }
-            catch (OperationCanceledException)
-            {
-                bands = new ReadOnlyCollection<IBand>(new IBand[0]);
-            }
+            this.IsBusy = true;
+            await Task
+                .Run(async () => await this.bandRepository.GetPairedBands(token), token)
+                .ContinueWith(t => this.UpdatePairedBands(t.Result), CancellationToken.None, TaskContinuationOptions.OnlyOnRanToCompletion, TaskScheduler.FromCurrentSynchronizationContext())
+                .ContinueWith(t => this.IsBusy = false, TaskScheduler.FromCurrentSynchronizationContext());
+        }
 
+        /// <summary>
+        /// Update the UI to show the specified <paramref name="bands"/>.
+        /// </summary>
+        /// <param name="bands">The Bands to display in the UI.</param>
+        private void UpdatePairedBands(IReadOnlyList<IBand> bands)
+        {
             if (bands != null && bands.Any())
             {
                 this.pairedBands.Clear();

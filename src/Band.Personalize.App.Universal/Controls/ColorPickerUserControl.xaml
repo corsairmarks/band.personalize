@@ -113,7 +113,7 @@
             </Grid>
             <controls:RgbColorChannelUserControl
                 x:Uid="AlphaChannel"
-                Visibility="{x:Bind Path=UseAlpha, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
+                Visibility="{x:Bind Path=UseAlpha, Mode=OneWay, Converter={StaticResource ResourceKey=BooleanToVisibilityConverter}}"
                 Header="A"
                 Channel="{x:Bind Path=Alpha, Mode=TwoWay, FallbackValue=0}">
                 <controls:RgbColorChannelUserControl.SliderTrackBackground>
