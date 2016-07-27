@@ -21,12 +21,12 @@
                     <ProgressRing
                         MinWidth="76"
                         MinHeight="76"
-                        IsActive="{Binding Path=IsBusy}"
-                        Visibility="{Binding Path=IsBusy, Mode=OneWay, Converter={StaticResource ResourceKey=BooleanToVisibilityConverter}}" />
+                        IsActive="{Binding Path=IsThemeBusy}"
+                        Visibility="{Binding Path=IsThemeBusy, Mode=OneWay, Converter={StaticResource ResourceKey=BooleanToVisibilityConverter}}" />
                     <GridView
                         ItemContainerStyle="{StaticResource ResourceKey=ThemeColorTileContainer}"
                         ItemsSource="{Binding Path=CurrentThemeColors, Mode=OneWay}"
-                        Visibility="{Binding Path=NotIsBusy, Mode=OneWay, Converter={StaticResource ResourceKey=BooleanToVisibilityConverter}}">
+                        Visibility="{Binding Path=NotIsThemeBusy, Mode=OneWay, Converter={StaticResource ResourceKey=BooleanToVisibilityConverter}}">
                         <GridView.ItemsPanel>
                             <ItemsPanelTemplate>
                                 <ItemsWrapGrid ItemWidth="120" MaximumRowsOrColumns="3" Orientation="Horizontal" />
@@ -48,9 +48,9 @@
                     <ProgressRing
                         MinWidth="76"
                         MinHeight="76"
-                        IsActive="{Binding Path=IsBusy}"
-                        Visibility="{Binding Path=IsBusy, Mode=OneWay, Converter={StaticResource ResourceKey=BooleanToVisibilityConverter}}" />
-                    <StackPanel Visibility="{Binding Path=NotIsBusy, Mode=OneWay, Converter={StaticResource ResourceKey=BooleanToVisibilityConverter}}">
+                        IsActive="{Binding Path=IsMeTileImageBusy}"
+                        Visibility="{Binding Path=IsMeTileImageBusy, Mode=OneWay, Converter={StaticResource ResourceKey=BooleanToVisibilityConverter}}" />
+                    <StackPanel Visibility="{Binding Path=NotIsMeTileImageBusy, Mode=OneWay, Converter={StaticResource ResourceKey=BooleanToVisibilityConverter}}">
                         <Image Source="{Binding Path=CurrentMeTileImage}" Stretch="None" HorizontalAlignment="Left" />
                         <Button x:Uid="BrowseButton" Content="Browse" Command="{Binding Path=BrowserForMeTileImageCommand}" Margin="0,7" />
                         <ToggleSwitch

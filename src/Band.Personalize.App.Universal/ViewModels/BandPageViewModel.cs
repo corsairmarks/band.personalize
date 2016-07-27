@@ -63,9 +63,14 @@ namespace Band.Personalize.App.Universal.ViewModels
         private bool isUseOriginalBandHeight;
 
         /// <summary>
-        /// A value indicationg whether the <see cref="RefreshPersonalizationCommand"/> is busy.
+        /// A value indicationg whether the <see cref="RefreshPersonalizationCommand"/> is busy for the <see cref="CurrentThemeColors"/>.
         /// </summary>
-        private bool isBusy;
+        private bool isThemeBusy;
+
+        /// <summary>
+        /// A value indicationg whether the <see cref="RefreshPersonalizationCommand"/> is busy for the <see cref="CurrentMeTileImage"/>.
+        /// </summary>
+        private bool isMeTileImageBusy;
 
         /// <summary>
         /// The currently-selected Me Tile image.
@@ -97,12 +102,14 @@ namespace Band.Personalize.App.Universal.ViewModels
             this.CurrentThemeColors = new ReadOnlyObservableCollection<ThemeColorViewModel>(this.currentThemeColors);
 
             this.RefreshPersonalizationCommand = DelegateCommand<int>
-                .FromAsyncHandler(this.RefreshPersonalizationAsync, p => this.NotIsBusy)
-                .ObservesProperty(() => this.NotIsBusy);
+                .FromAsyncHandler(this.RefreshPersonalizationAsync, this.NotIsPivotBusy)
+                .ObservesProperty(() => this.NotIsThemeBusy)
+                .ObservesProperty(() => this.NotIsMeTileImageBusy);
 
             this.ApplyPersonalizationCommand = DelegateCommand<int>
-                .FromAsyncHandler(this.ApplyPersonalizationAsync, p => this.NotIsBusy)
-                .ObservesProperty(() => this.NotIsBusy);
+                .FromAsyncHandler(this.ApplyPersonalizationAsync, this.NotIsPivotBusy)
+                .ObservesProperty(() => this.NotIsThemeBusy)
+                .ObservesProperty(() => this.NotIsMeTileImageBusy);
 
             this.BrowserForMeTileImageCommand = DelegateCommand.FromAsyncHandler(async () =>
             {
@@ -166,28 +173,53 @@ namespace Band.Personalize.App.Universal.ViewModels
         }
 
         /// <summary>
-        /// Gets a value indicating whether the "Refresh" command is busy.
+        /// Gets a value indicating whether the "Refresh" command is busy for the <see cref="CurrentThemeColors"/>.
         /// </summary>
-        public bool IsBusy
+        public bool IsThemeBusy
         {
             get
             {
-                return this.isBusy;
+                return this.isThemeBusy;
             }
 
             private set
             {
-                this.SetProperty(ref this.isBusy, value);
-                this.OnPropertyChanged(nameof(this.NotIsBusy));
+                this.SetProperty(ref this.isThemeBusy, value);
+                this.OnPropertyChanged(nameof(this.NotIsThemeBusy));
             }
         }
 
         /// <summary>
-        /// Gets a value indicating whether the "Refresh" command is busy.
+        /// Gets a value indicating whether the "Refresh" command is busy for the <see cref="CurrentMeTileImage"/>.
         /// </summary>
-        public bool NotIsBusy
+        public bool IsMeTileImageBusy
         {
-            get { return !this.IsBusy; }
+            get
+            {
+                return this.isMeTileImageBusy;
+            }
+
+            private set
+            {
+                this.SetProperty(ref this.isMeTileImageBusy, value);
+                this.OnPropertyChanged(nameof(this.NotIsMeTileImageBusy));
+            }
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether the "Refresh" command is not busy <see cref="CurrentThemeColors"/>.
+        /// </summary>
+        public bool NotIsThemeBusy
+        {
+            get { return !this.IsThemeBusy; }
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether the "Refresh" command is not busy <see cref="CurrentMeTileImage"/>.
+        /// </summary>
+        public bool NotIsMeTileImageBusy
+        {
+            get { return !this.IsMeTileImageBusy; }
         }
 
         /// <summary>
@@ -228,7 +260,9 @@ namespace Band.Personalize.App.Universal.ViewModels
 
             try
             {
-                await this.WrapWithUiBlockWhileExecuting(() => Task.WhenAll(this.BeginInvokeRefreshTheme(), this.BeginInvokeRefreshMeTileImage()));
+                this.IsThemeBusy = this.IsMeTileImageBusy = true;
+                await Task.WhenAll(this.BeginInvokeRefreshTheme(), this.BeginInvokeRefreshMeTileImage());
+                this.IsThemeBusy = this.IsMeTileImageBusy = false;
             }
             catch (BandException)
             {
@@ -257,10 +291,10 @@ namespace Band.Personalize.App.Universal.ViewModels
             switch (selectedPivotIndex)
             {
                 case 0:
-                    await this.WrapWithUiBlockWhileExecuting(this.BeginInvokeRefreshTheme);
+                    await this.WrapWithUiBlockWhileExecuting(b => this.IsThemeBusy = b, this.BeginInvokeRefreshTheme);
                     break;
                 case 1:
-                    await this.WrapWithUiBlockWhileExecuting(this.BeginInvokeRefreshMeTileImage);
+                    await this.WrapWithUiBlockWhileExecuting(b => this.IsMeTileImageBusy = b, this.BeginInvokeRefreshMeTileImage);
                     break;
                 default:
                     throw new ArgumentNullException($"Unhandled pivot index: {selectedPivotIndex}");
@@ -320,20 +354,21 @@ namespace Band.Personalize.App.Universal.ViewModels
         }
 
         /// <summary>
-        /// Wrap a <see cref="Task"/> with a UI block by setting <see cref="IsBusy"/> to <c>true</c> before invoking
-        /// the task and continuing with setting <see cref="IsBusy"/> to <c>false</c> when the task is completed.
+        /// Wrap a <see cref="Task"/> with a UI block by setting <paramref name="setBusy"/> to <c>true</c> before invoking
+        /// the task and continuing with setting <paramref name="setBusy"/> to <c>false</c> when the task is completed.
         /// </summary>
+        /// <param name="setBusy">An <see cref="Action{Boolean}"/> that updates a busy indicator before and after <paramref name="getAndBeginInvokeBlockingTask"/>.</param>
         /// <param name="getAndBeginInvokeBlockingTask">A function that begins invocation an action to perform while the UI is blocked.</param>
         /// <returns>An asynchronous task that returns when work is complete.</returns>
-        private Task WrapWithUiBlockWhileExecuting(Func<Task> getAndBeginInvokeBlockingTask)
+        private Task WrapWithUiBlockWhileExecuting(Action<bool> setBusy, Func<Task> getAndBeginInvokeBlockingTask)
         {
             if (getAndBeginInvokeBlockingTask == null)
             {
                 throw new ArgumentNullException(nameof(getAndBeginInvokeBlockingTask));
             }
 
-            this.IsBusy = true;
-            return getAndBeginInvokeBlockingTask().ContinueWith(t => this.IsBusy = false, TaskScheduler.FromCurrentSynchronizationContext());
+            setBusy(true);
+            return getAndBeginInvokeBlockingTask().ContinueWith(t => setBusy(false), TaskScheduler.FromCurrentSynchronizationContext());
         }
 
         /// <summary>
@@ -346,10 +381,10 @@ namespace Band.Personalize.App.Universal.ViewModels
             switch (selectedPivotIndex)
             {
                 case 0:
-                    await this.WrapWithUiBlockWhileExecuting(this.BeginInvokeApplyTheme);
+                    await this.WrapWithUiBlockWhileExecuting(b => this.IsThemeBusy = b, this.BeginInvokeApplyTheme);
                     break;
                 case 1:
-                    await this.WrapWithUiBlockWhileExecuting(this.BeginInvokeApplyMeTileImage);
+                    await this.WrapWithUiBlockWhileExecuting(b => this.IsMeTileImageBusy = b, this.BeginInvokeApplyMeTileImage);
                     break;
                 default:
                     throw new ArgumentNullException($"Unhandled pivot index: {selectedPivotIndex}");
@@ -382,6 +417,24 @@ namespace Band.Personalize.App.Universal.ViewModels
         private Task BeginInvokeApplyMeTileImage()
         {
             return this.bandPersonalizer.SetMeTileImage(this.CurrentBand, this.CurrentMeTileImage, CancellationToken.None);
+        }
+
+        /// <summary>
+        /// Get whether the specified section of the pivot is not busy.
+        /// </summary>
+        /// <param name="selectedPivotIndex">The index of the active pivot view.</param>
+        /// <returns>An asynchronous task that returns when work is complete.</returns>
+        private bool NotIsPivotBusy(int selectedPivotIndex)
+        {
+            switch (selectedPivotIndex)
+            {
+                case 0:
+                    return this.NotIsThemeBusy;
+                case 1:
+                    return this.NotIsMeTileImageBusy;
+                default:
+                    throw new ArgumentNullException($"Unhandled pivot index: {selectedPivotIndex}");
+            }
         }
 
         /// <summary>
