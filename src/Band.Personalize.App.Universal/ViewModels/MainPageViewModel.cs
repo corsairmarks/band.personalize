@@ -74,12 +74,15 @@ namespace Band.Personalize.App.Universal.ViewModels
             this.pairedBands = new ObservableCollection<IBand>();
             this.PairedBands = new ReadOnlyObservableCollection<IBand>(this.pairedBands);
 
-            this.CancelRefreshPairedBandsCommand = DelegateCommand.FromAsyncHandler(async () =>
-            {
-                await this
-                    .CancelRefreshPairedBands()
-                    .ContinueWith(t => this.IsBusy = false, TaskScheduler.FromCurrentSynchronizationContext());
-            });
+            this.CancelRefreshPairedBandsCommand = DelegateCommand.FromAsyncHandler(
+                async () =>
+                {
+                    await this
+                        .CancelRefreshPairedBands()
+                        .ContinueWith(t => this.IsBusy = false, TaskScheduler.FromCurrentSynchronizationContext());
+                },
+                () => this.IsBusy)
+                .ObservesProperty(() => this.IsBusy);
 
             this.RefreshPairedBandsCommand = DelegateCommand.FromAsyncHandler(async () =>
             {

@@ -21,9 +21,11 @@ namespace Band.Personalize.Model.Test.Repository
     using Implementation.Repository;
     using Library.Band;
     using Library.Theme;
+    using Library.Threading;
     using Microsoft.Band;
     using Microsoft.Band.Personalization;
     using Moq;
+    using Windows.ApplicationModel.Core;
     using Windows.UI.Xaml.Media.Imaging;
     using Xunit;
 
@@ -205,7 +207,7 @@ namespace Band.Personalize.Model.Test.Repository
             var token = new CancellationToken(false);
             var bandClientManager = MockRepository.OneOf<IBandClientManager>();
             var target = new BandPersonalizer(bandClientManager);
-            await TestHelper.WaitForUiTask(async () =>
+            await CoreApplication.MainView.CoreWindow.Dispatcher.WaitForRunAsync(async () =>
             {
                 var bitmap = new WriteableBitmap(1, 1);
 
@@ -256,7 +258,7 @@ namespace Band.Personalize.Model.Test.Repository
             var band = mockBand.Object;
             var token = new CancellationToken(false);
             var target = new BandPersonalizer(GetMockedBandClientManagerAsync(pm => pm.SetMeTileImageAsync(It.IsNotNull<BandImage>(), token)));
-            await TestHelper.WaitForUiTask(async () =>
+            await CoreApplication.MainView.CoreWindow.Dispatcher.WaitForRunAsync(async () =>
             {
                 var bitmap = new WriteableBitmap(1, 1);
 
@@ -304,7 +306,7 @@ namespace Band.Personalize.Model.Test.Repository
             mockBand.SetupGet(b => b.BandInfo).Returns(bandInfo);
             var band = mockBand.Object;
             var token = new CancellationToken(false);
-            await TestHelper.WaitForUiTask(async () =>
+            await CoreApplication.MainView.CoreWindow.Dispatcher.WaitForRunAsync(async () =>
             {
                 var expectedBandImage = new WriteableBitmap(1, 1).ToBandImage();
                 var target = new BandPersonalizer(GetMockedBandClientManagerAsync(pm => pm.GetMeTileImageAsync(token), expectedBandImage));

@@ -135,6 +135,7 @@
     <Compile Include="ViewModels\Design\BandRepositoryStub.cs" />
     <Compile Include="ViewModels\Design\BandStub.cs" />
     <Compile Include="ViewModels\Design\DesignBandPageViewModel.cs" />
+    <Compile Include="ViewModels\Design\StubConstants.cs" />
     <Compile Include="ViewModels\Design\DesignMainPageViewModel.cs" />
     <Compile Include="ViewModels\Design\NavigationServiceStub.cs" />
     <Compile Include="ViewModels\MainPageViewModel.cs" />

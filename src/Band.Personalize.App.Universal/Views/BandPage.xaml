@@ -17,35 +17,50 @@
         </Grid.RowDefinitions>
         <Pivot Name="ThePivot">
             <PivotItem Header="Theme" x:Uid="ThemePivotItem" Margin="12">
-                <GridView
-                    ItemContainerStyle="{StaticResource ResourceKey=ThemeColorTileContainer}"
-                    ItemsSource="{Binding Path=CurrentThemeColors, Mode=OneWay}">
-                    <GridView.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <ItemsWrapGrid ItemWidth="120" MaximumRowsOrColumns="3" Orientation="Horizontal" />
-                        </ItemsPanelTemplate>
-                    </GridView.ItemsPanel>
-                    <GridView.ItemTemplate>
-                        <DataTemplate>
-                            <StackPanel>
-                                <TextBlock Text="{Binding Path=Title, Mode=OneWay}" />
-                                <controls:ColorPickerFlyoutUserControl HorizontalContentAlignment="Stretch" ColorOuter="{Binding Path=Swatch, Mode=TwoWay}" />
-                            </StackPanel>
-                        </DataTemplate>
-                    </GridView.ItemTemplate>
-                </GridView>
+                <Grid>
+                    <ProgressRing
+                        MinWidth="76"
+                        MinHeight="76"
+                        IsActive="{Binding Path=IsBusy}"
+                        Visibility="{Binding Path=IsBusy, Mode=OneWay, Converter={StaticResource ResourceKey=BooleanToVisibilityConverter}}" />
+                    <GridView
+                        ItemContainerStyle="{StaticResource ResourceKey=ThemeColorTileContainer}"
+                        ItemsSource="{Binding Path=CurrentThemeColors, Mode=OneWay}"
+                        Visibility="{Binding Path=NotIsBusy, Mode=OneWay, Converter={StaticResource ResourceKey=BooleanToVisibilityConverter}}">
+                        <GridView.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <ItemsWrapGrid ItemWidth="120" MaximumRowsOrColumns="3" Orientation="Horizontal" />
+                            </ItemsPanelTemplate>
+                        </GridView.ItemsPanel>
+                        <GridView.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel>
+                                    <TextBlock Text="{Binding Path=Title, Mode=OneWay}" />
+                                    <controls:ColorPickerFlyoutUserControl HorizontalContentAlignment="Stretch" ColorOuter="{Binding Path=Swatch, Mode=TwoWay}" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </GridView.ItemTemplate>
+                    </GridView>
+                </Grid>
             </PivotItem>
             <PivotItem Header="Image" x:Uid="ImagePivotItem" Margin="12">
-                <StackPanel>
-                    <Image Source="{Binding Path=CurrentMeTileImage}" Stretch="None" HorizontalAlignment="Left" />
-                    <Button x:Uid="BrowseButton" Content="Browse" Command="{Binding Path=BrowserForMeTileImageCommand}" Margin="0,7" />
-                    <ToggleSwitch
-                        x:Uid="BandVersionToggle"
-                        Header="Use original Band height (102px)"
-                        IsOn="{Binding Path=IsUseOriginalBandHeight, Mode=TwoWay}"
-                        Visibility="{Binding Path=CurrentBand.HardwareRevision, Converter={StaticResource ResourceKey=HardwareRevisionToVisibilityConverter}}"
-                        IsEnabled="{Binding Path=CurrentBand.HardwareRevision, Converter={StaticResource ResourceKey=HardwareRevisionToBooleanConverter}}" />
-                </StackPanel>
+                <Grid>
+                    <ProgressRing
+                        MinWidth="76"
+                        MinHeight="76"
+                        IsActive="{Binding Path=IsBusy}"
+                        Visibility="{Binding Path=IsBusy, Mode=OneWay, Converter={StaticResource ResourceKey=BooleanToVisibilityConverter}}" />
+                    <StackPanel Visibility="{Binding Path=NotIsBusy, Mode=OneWay, Converter={StaticResource ResourceKey=BooleanToVisibilityConverter}}">
+                        <Image Source="{Binding Path=CurrentMeTileImage}" Stretch="None" HorizontalAlignment="Left" />
+                        <Button x:Uid="BrowseButton" Content="Browse" Command="{Binding Path=BrowserForMeTileImageCommand}" Margin="0,7" />
+                        <ToggleSwitch
+                            x:Uid="BandVersionToggle"
+                            Header="Use original Band height (102px)"
+                            IsOn="{Binding Path=IsUseOriginalBandHeight, Mode=TwoWay}"
+                            Visibility="{Binding Path=CurrentBand.HardwareRevision, Converter={StaticResource ResourceKey=HardwareRevisionToVisibilityConverter}}"
+                            IsEnabled="{Binding Path=CurrentBand.HardwareRevision, Converter={StaticResource ResourceKey=HardwareRevisionToBooleanConverter}}" />
+                    </StackPanel>
+                </Grid>
             </PivotItem>
         </Pivot>
         <CommandBar Name="TheCommandBar">
@@ -56,8 +71,8 @@
                 </StackPanel>
             </CommandBar.Content>
             <CommandBar.PrimaryCommands>
-                <AppBarButton x:Uid="RefreshAppBarButton" Icon="Refresh" Label="Refresh" Command="{Binding Path=RefreshPersonalizationCommand}" CommandParameter="{Binding Path=SelectedIndex, ElementName=ThePivot}" IsEnabled="{Binding Path=IsNotBusy}" />
-                <AppBarButton x:Uid="ApplyAppBarButton" Icon="Save" Label="Apply" Command="{Binding Path=ApplyPersonalizationCommand}" CommandParameter="{Binding Path=SelectedIndex, ElementName=ThePivot}" IsEnabled="{Binding Path=IsNotBusy}" />
+                <AppBarButton x:Uid="RefreshAppBarButton" Icon="Refresh" Label="Refresh" Command="{Binding Path=RefreshPersonalizationCommand}" CommandParameter="{Binding Path=SelectedIndex, ElementName=ThePivot}" />
+                <AppBarButton x:Uid="ApplyAppBarButton" Icon="Save" Label="Apply" Command="{Binding Path=ApplyPersonalizationCommand}" CommandParameter="{Binding Path=SelectedIndex, ElementName=ThePivot}" />
             </CommandBar.PrimaryCommands>
         </CommandBar>
         <VisualStateManager.VisualStateGroups>

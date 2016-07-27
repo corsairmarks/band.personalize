@@ -71,8 +71,8 @@
                 MinWidth="76"
                 MinHeight="76"
                 IsActive="{Binding Path=IsBusy}"
-                Visibility="{Binding Path=IsBusy, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
-            <Grid Visibility="{Binding Path=NotIsBusy, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                Visibility="{Binding Path=IsBusy, Mode=OneWay, Converter={StaticResource ResourceKey=BooleanToVisibilityConverter}}" />
+            <Grid Visibility="{Binding Path=NotIsBusy, Mode=OneWay, Converter={StaticResource ResourceKey=BooleanToVisibilityConverter}}">
                 <GridView
                     x:Name="LargeGridView"
                     ItemTemplate="{StaticResource ResourceKey=BandTile}"
@@ -143,7 +143,7 @@
         </Grid>
         <CommandBar Name="TheCommandBar">
             <AppBarButton x:Uid="RefreshAppBarButton" Icon="Refresh" Label="Refresh" Command="{Binding Path=RefreshPairedBandsCommand}" />
-            <AppBarButton x:Uid="CancelAppBarButton" Icon="Cancel" Label="Cancel" Command="{Binding Path=CancelRefreshPairedBandsCommand}" IsEnabled="{Binding Path=IsBusy}" />
+            <AppBarButton x:Uid="CancelAppBarButton" Icon="Cancel" Label="Cancel" Command="{Binding Path=CancelRefreshPairedBandsCommand}" />
         </CommandBar>
         <VisualStateManager.VisualStateGroups>
             <VisualStateGroup x:Name="GridViewLayouts">

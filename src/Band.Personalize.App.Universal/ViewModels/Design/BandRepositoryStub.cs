@@ -95,7 +95,7 @@ namespace Band.Personalize.App.Universal.ViewModels.Design
             else
             {
                 return await Task
-                    .Delay(5000, token)
+                    .Delay(StubConstants.DefaultAsyncDelayMilliseconds, token)
                     .ContinueWith(t => DefaultBands, TaskContinuationOptions.OnlyOnRanToCompletion);
             }
         }

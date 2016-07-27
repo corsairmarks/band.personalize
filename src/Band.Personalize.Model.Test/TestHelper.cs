@@ -29,37 +29,6 @@ namespace Band.Personalize.Model.Test
     public static class TestHelper
     {
         /// <summary>
-        /// Execute the <paramref name="uiActionAsync"/> on the UI thread and wait for it to complete before returning.
-        /// This method will propagate an exception thrown by the <paramref name="uiActionAsync"/>.
-        /// </summary>
-        /// <param name="uiActionAsync">An action to perform on the UI thread.</param>
-        /// <returns>An asynchronous task that returns when the UI-based task is complete.</returns>
-        /// <exception cref="ArgumentNullException"><paramref name="uiActionAsync"/> is <c>null</c>.</exception>
-        public static async Task WaitForUiTask(Func<Task> uiActionAsync)
-        {
-            if (uiActionAsync == null)
-            {
-                throw new ArgumentNullException(nameof(uiActionAsync));
-            }
-
-            var taskSource = new TaskCompletionSource<object>();
-            await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
-            {
-                try
-                {
-                    await uiActionAsync();
-                    taskSource.SetResult(null);
-                }
-                catch (Exception e)
-                {
-                    taskSource.SetException(e);
-                }
-            });
-
-            await taskSource.Task;
-        }
-
-        /// <summary>
         /// Verify that two <see cref="WriteableBitmap"/> instances are equal by comparing each <see cref="WriteableBitmap.PixelBuffer"/>.
         /// </summary>
         /// <param name="expected">The expected value.</param>
