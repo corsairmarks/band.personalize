@@ -381,13 +381,13 @@ namespace Band.Personalize.App.Universal.ViewModels
         /// <param name="bitmap">The Me Tile image to display in the UI.</param>
         private void UpdateCurrentMeTileImage(WriteableBitmap bitmap)
         {
+            this.unresizedCurrentMeTileImage = bitmap;
+            this.CurrentMeTileImage = bitmap;
+
             var originalBandDimensions = HardwareRevision.Band.GetDefaultMeTileDimensions();
             this.IsUseOriginalBandHeight = this.CurrentBand.HardwareRevision != HardwareRevision.Band
                 ? bitmap.PixelHeight <= originalBandDimensions.Height
                 : true;
-
-            this.unresizedCurrentMeTileImage = bitmap;
-            this.CurrentMeTileImage = bitmap;
         }
 
         /// <summary>
@@ -421,12 +421,7 @@ namespace Band.Personalize.App.Universal.ViewModels
                     await this.WrapWithUiBlockWhileExecuting(b => this.IsThemeBusy = b, this.BeginInvokeApplyTheme);
                     break;
                 case 1:
-                    await this.WrapWithUiBlockWhileExecuting(b => this.IsMeTileImageBusy = b, () =>
-                    {
-                        return this
-                            .BeginInvokeApplyMeTileImage()
-                            .ContinueWith(t => this.unresizedCurrentMeTileImage = this.CurrentMeTileImage, TaskContinuationOptions.OnlyOnRanToCompletion);
-                    });
+                    await this.WrapWithUiBlockWhileExecuting(b => this.IsMeTileImageBusy = b, this.BeginInvokeApplyMeTileImage);
                     break;
                 default:
                     throw new ArgumentNullException($"Unhandled pivot index: {selectedPivotIndex}");
@@ -449,7 +444,7 @@ namespace Band.Personalize.App.Universal.ViewModels
                 SecondaryText = this.CurrentThemeColors[5].Swatch.ToRgbColor(),
             };
 
-            return this.bandPersonalizer.SetTheme(this.CurrentBand, newRgbColorTheme, CancellationToken.None);
+            return Task.Run(async () => await this.bandPersonalizer.SetTheme(this.CurrentBand, newRgbColorTheme, CancellationToken.None));
         }
 
         /// <summary>
@@ -458,7 +453,9 @@ namespace Band.Personalize.App.Universal.ViewModels
         /// <returns>An asynchronous task that returns when work is complete.</returns>
         private Task BeginInvokeApplyMeTileImage()
         {
-            return this.bandPersonalizer.SetMeTileImage(this.CurrentBand, this.CurrentMeTileImage, CancellationToken.None);
+            return Task
+                .Run(async () => await this.bandPersonalizer.SetMeTileImage(this.CurrentBand, this.CurrentMeTileImage, CancellationToken.None))
+                .ContinueWith(t => this.unresizedCurrentMeTileImage = this.CurrentMeTileImage, CancellationToken.None, TaskContinuationOptions.OnlyOnRanToCompletion, TaskScheduler.FromCurrentSynchronizationContext());
         }
 
         /// <summary>
