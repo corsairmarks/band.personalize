@@ -267,4 +267,10 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <Target Name="CodeWarningRemover" AfterTargets="MarkupCompilePass2">
+    <ItemGroup>
+      <GeneratedFiles Include="**\*.g.cs;**\*.g.i.cs" />
+    </ItemGroup>
+    <Exec Command="for %%f in (@(GeneratedFiles->'%22%(Identity)%22')) do echo #pragma warning disable CS1591 > %%f.pragmatemp &amp; type %%f >> %%f.pragmatemp &amp; echo #pragma warning restore CS1591 >> %%f.pragmatemp &amp; copy /y %%f.pragmatemp %%f &amp; del /F %%f.pragmatemp" />
+  </Target>
 </Project>
