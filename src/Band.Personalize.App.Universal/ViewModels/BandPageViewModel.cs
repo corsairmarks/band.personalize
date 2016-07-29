@@ -17,11 +17,11 @@ namespace Band.Personalize.App.Universal.ViewModels
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
+    using System.ComponentModel;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using System.Windows.Input;
-    using Microsoft.Band;
     using Model.Library.Band;
     using Model.Library.Color;
     using Model.Library.Repository;
@@ -78,6 +78,12 @@ namespace Band.Personalize.App.Universal.ViewModels
         private WriteableBitmap currentMeTileImage;
 
         /// <summary>
+        /// The unresized Me Tile image.  This field exists so that resize operations (and associated
+        /// quality loss) can be skipped if the new target size is equal to the unresize image's size.
+        /// </summary>
+        private WriteableBitmap unresizedCurrentMeTileImage;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="BandPageViewModel"/> class.
         /// </summary>
         /// <param name="navigationService">The navigation service.</param>
@@ -122,18 +128,25 @@ namespace Band.Personalize.App.Universal.ViewModels
                 var chosenFile = await picker.PickSingleFileAsync();
                 if (chosenFile != null)
                 {
+                    WriteableBitmap bitmap;
+                    using (var stream = await chosenFile.OpenReadAsync())
+                    {
+                        bitmap = await WriteableBitmapExtensions.FromStream(null, stream);
+                    }
+
+                    this.unresizedCurrentMeTileImage = bitmap;
+
                     var dimensions = this.IsUseOriginalBandHeight
                         ? HardwareRevision.Band.GetDefaultMeTileDimensions()
                         : this.CurrentBand.HardwareRevision.GetDefaultMeTileDimensions();
-                    var bitmap = new WriteableBitmap(dimensions.Width, dimensions.Height);
-                    using (var stream = await chosenFile.OpenReadAsync())
-                    {
-                        await bitmap.SetSourceAsync(stream);
-                    }
 
-                    this.CurrentMeTileImage = bitmap;
+                    this.CurrentMeTileImage = dimensions.Width == bitmap.PixelWidth && dimensions.Height == bitmap.PixelHeight
+                        ? bitmap
+                        : bitmap.Resize(dimensions.Width, dimensions.Height, WriteableBitmapExtensions.Interpolation.Bilinear);
                 }
             });
+
+            this.PropertyChanged += this.OnIsUseOriginalBandHeightChanged;
         }
 
         /// <summary>
@@ -228,12 +241,12 @@ namespace Band.Personalize.App.Universal.ViewModels
         public ReadOnlyObservableCollection<ThemeColorViewModel> CurrentThemeColors { get; }
 
         /// <summary>
-        /// Gets or sets the currently-selected Me Tile image.
+        /// Gets the currently-selected Me Tile image.
         /// </summary>
         public WriteableBitmap CurrentMeTileImage
         {
             get { return this.currentMeTileImage; }
-            set { this.SetProperty(ref this.currentMeTileImage, value); }
+            private set { this.SetProperty(ref this.currentMeTileImage, value); }
         }
 
         /// <summary>
@@ -264,7 +277,7 @@ namespace Band.Personalize.App.Universal.ViewModels
                 await Task.WhenAll(this.BeginInvokeRefreshTheme(), this.BeginInvokeRefreshMeTileImage());
                 this.IsThemeBusy = this.IsMeTileImageBusy = false;
             }
-            catch (BandException)
+            catch (Exception)
             {
                 if (this.NavigationService.CanGoBack())
                 {
@@ -278,6 +291,28 @@ namespace Band.Personalize.App.Universal.ViewModels
                 this.NavigationService.RemoveLastPage(PageNavigationTokens.BandPage, e.Parameter);
 
                 throw;
+            }
+        }
+
+        /// <summary>
+        /// Represents the method that will handle the <see cref="INotifyPropertyChanged.PropertyChanged"/> event raised when the <see cref="IsUseOriginalBandHeight"/> property is changed on this component.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">A <see cref="PropertyChangedEventArgs"/> that contains the event data.</param>
+        private void OnIsUseOriginalBandHeightChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e != null && e.PropertyName == nameof(this.IsUseOriginalBandHeight))
+            {
+                var dimensions = (this.IsUseOriginalBandHeight
+                    ? HardwareRevision.Band
+                    : this.CurrentBand.HardwareRevision).GetDefaultMeTileDimensions();
+
+                if (dimensions.Width != this.CurrentMeTileImage.PixelWidth || dimensions.Height != this.CurrentMeTileImage.PixelHeight)
+                {
+                    this.CurrentMeTileImage = dimensions.Width == this.unresizedCurrentMeTileImage.PixelWidth && dimensions.Height == this.unresizedCurrentMeTileImage.PixelHeight
+                        ? this.unresizedCurrentMeTileImage
+                        : this.unresizedCurrentMeTileImage.Resize(dimensions.Width, dimensions.Height, WriteableBitmapExtensions.Interpolation.Bilinear);
+                }
             }
         }
 
@@ -309,14 +344,14 @@ namespace Band.Personalize.App.Universal.ViewModels
         {
             return Task
                 .Run(async () => await this.bandPersonalizer.GetTheme(this.CurrentBand, CancellationToken.None))
-                .ContinueWith(t => this.UpdateTheme(t.Result), CancellationToken.None, TaskContinuationOptions.OnlyOnRanToCompletion, TaskScheduler.FromCurrentSynchronizationContext());
+                .ContinueWith(t => this.UpdateThemeColors(t.Result), CancellationToken.None, TaskContinuationOptions.OnlyOnRanToCompletion, TaskScheduler.FromCurrentSynchronizationContext());
         }
 
         /// <summary>
         /// Update the UI to show the specified <paramref name="theme"/>.
         /// </summary>
         /// <param name="theme">The theme to display in the UI.</param>
-        private void UpdateTheme(RgbColorTheme theme)
+        private void UpdateThemeColors(RgbColorTheme theme)
         {
             var themeColors = this.RgbColorThemeToCollection(theme);
             this.currentThemeColors.Clear();
@@ -337,20 +372,22 @@ namespace Band.Personalize.App.Universal.ViewModels
         {
             return Task
                 .Run(async () => await this.bandPersonalizer.GetMeTileImage(this.CurrentBand, CancellationToken.None))
-                .ContinueWith(t => this.UpdateMeTileImage(t.Result), CancellationToken.None, TaskContinuationOptions.OnlyOnRanToCompletion, TaskScheduler.FromCurrentSynchronizationContext());
+                .ContinueWith(t => this.UpdateCurrentMeTileImage(t.Result), CancellationToken.None, TaskContinuationOptions.OnlyOnRanToCompletion, TaskScheduler.FromCurrentSynchronizationContext());
         }
 
         /// <summary>
         /// Update the UI to show the specified <paramref name="bitmap"/> as the Me Tile image.
         /// </summary>
         /// <param name="bitmap">The Me Tile image to display in the UI.</param>
-        private void UpdateMeTileImage(WriteableBitmap bitmap)
+        private void UpdateCurrentMeTileImage(WriteableBitmap bitmap)
         {
+            this.unresizedCurrentMeTileImage = bitmap;
+            this.CurrentMeTileImage = bitmap;
+
             var originalBandDimensions = HardwareRevision.Band.GetDefaultMeTileDimensions();
             this.IsUseOriginalBandHeight = this.CurrentBand.HardwareRevision != HardwareRevision.Band
                 ? bitmap.PixelHeight <= originalBandDimensions.Height
                 : true;
-            this.CurrentMeTileImage = bitmap;
         }
 
         /// <summary>
@@ -407,7 +444,7 @@ namespace Band.Personalize.App.Universal.ViewModels
                 SecondaryText = this.CurrentThemeColors[5].Swatch.ToRgbColor(),
             };
 
-            return this.bandPersonalizer.SetTheme(this.CurrentBand, newRgbColorTheme, CancellationToken.None);
+            return Task.Run(async () => await this.bandPersonalizer.SetTheme(this.CurrentBand, newRgbColorTheme, CancellationToken.None));
         }
 
         /// <summary>
@@ -416,7 +453,9 @@ namespace Band.Personalize.App.Universal.ViewModels
         /// <returns>An asynchronous task that returns when work is complete.</returns>
         private Task BeginInvokeApplyMeTileImage()
         {
-            return this.bandPersonalizer.SetMeTileImage(this.CurrentBand, this.CurrentMeTileImage, CancellationToken.None);
+            return Task
+                .Run(async () => await this.bandPersonalizer.SetMeTileImage(this.CurrentBand, this.CurrentMeTileImage, CancellationToken.None))
+                .ContinueWith(t => this.unresizedCurrentMeTileImage = this.CurrentMeTileImage, CancellationToken.None, TaskContinuationOptions.OnlyOnRanToCompletion, TaskScheduler.FromCurrentSynchronizationContext());
         }
 
         /// <summary>

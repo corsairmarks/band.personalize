@@ -51,14 +51,16 @@
                         IsActive="{Binding Path=IsMeTileImageBusy}"
                         Visibility="{Binding Path=IsMeTileImageBusy, Mode=OneWay, Converter={StaticResource ResourceKey=BooleanToVisibilityConverter}}" />
                     <StackPanel Visibility="{Binding Path=NotIsMeTileImageBusy, Mode=OneWay, Converter={StaticResource ResourceKey=BooleanToVisibilityConverter}}">
-                        <Image Source="{Binding Path=CurrentMeTileImage}" Stretch="None" HorizontalAlignment="Left" />
-                        <Button x:Uid="BrowseButton" Content="Browse" Command="{Binding Path=BrowserForMeTileImageCommand}" Margin="0,7" />
                         <ToggleSwitch
                             x:Uid="BandVersionToggle"
                             Header="Use original Band height (102px)"
                             IsOn="{Binding Path=IsUseOriginalBandHeight, Mode=TwoWay}"
                             Visibility="{Binding Path=CurrentBand.HardwareRevision, Converter={StaticResource ResourceKey=HardwareRevisionToVisibilityConverter}}"
                             IsEnabled="{Binding Path=CurrentBand.HardwareRevision, Converter={StaticResource ResourceKey=HardwareRevisionToBooleanConverter}}" />
+                        <Border BorderBrush="{StaticResource ResourceKey=SystemControlForegroundBaseMediumBrush}" BorderThickness="4" HorizontalAlignment="Left">
+                            <Image Source="{Binding Path=CurrentMeTileImage}" Stretch="None" />
+                        </Border>
+                        <Button x:Uid="BrowseButton" Content="Browse" Command="{Binding Path=BrowserForMeTileImageCommand}" Margin="0,7" />
                     </StackPanel>
                 </Grid>
             </PivotItem>
