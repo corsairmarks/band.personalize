@@ -150,6 +150,10 @@
   <data name="ConfirmButton.Content" xml:space="preserve">
     <value>Confirm</value>
   </data>
+  <data name="DefaultSaveFileNameFormat" xml:space="preserve">
+    <value>me-tile-{0}</value>
+    <comment>{0} is the Band name</comment>
+  </data>
   <data name="GreenChannel.Header" xml:space="preserve">
     <value>G</value>
   </data>
@@ -171,14 +175,25 @@
   <data name="LowlightTextBox.Text" xml:space="preserve">
     <value>Lowlight</value>
   </data>
+  <data name="MeTileImageSaveFailedMessage" xml:space="preserve">
+    <value>Unable to save the Me Tile image "{0}" ‒ please try again.</value>
+    <comment>{0} is the name of the file</comment>
+  </data>
   <data name="MutedTextBox.Text" xml:space="preserve">
     <value>Muted</value>
+  </data>
+  <data name="NoSuchEncoderExceptionMessage" xml:space="preserve">
+    <value>No matching encoder for MIME type "{0}" and extension "{1}"</value>
+    <comment>{0} is the MIME type, {1} is the file extension</comment>
   </data>
   <data name="RedChannel.Header" xml:space="preserve">
     <value>R</value>
   </data>
   <data name="RefreshAppBarButton.Label" xml:space="preserve">
     <value>Refresh</value>
+  </data>
+  <data name="SaveButton.Content" xml:space="preserve">
+    <value>Save</value>
   </data>
   <data name="SecondaryTextTextBox.Text" xml:space="preserve">
     <value>Secondary Text</value>

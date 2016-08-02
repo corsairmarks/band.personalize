@@ -18,7 +18,9 @@ namespace Band.Personalize.App.Universal.ViewModels
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.ComponentModel;
+    using System.IO;
     using System.Linq;
+    using System.Text.RegularExpressions;
     using System.Threading;
     using System.Threading.Tasks;
     using System.Windows.Input;
@@ -29,7 +31,11 @@ namespace Band.Personalize.App.Universal.ViewModels
     using Prism.Commands;
     using Prism.Windows.AppModel;
     using Prism.Windows.Navigation;
+    using Windows.Graphics.Imaging;
+    using Windows.Storage;
     using Windows.Storage.Pickers;
+    using Windows.Storage.Provider;
+    using Windows.Storage.Streams;
     using Windows.UI.Xaml.Media.Imaging;
 
     /// <summary>
@@ -84,6 +90,11 @@ namespace Band.Personalize.App.Universal.ViewModels
         private WriteableBitmap unresizedCurrentMeTileImage;
 
         /// <summary>
+        /// The status message of the most recent "Save" operation.
+        /// </summary>
+        private string saveStatusMessage;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="BandPageViewModel"/> class.
         /// </summary>
         /// <param name="navigationService">The navigation service.</param>
@@ -107,44 +118,37 @@ namespace Band.Personalize.App.Universal.ViewModels
             this.currentThemeColors = new ObservableCollection<ThemeColorViewModel>();
             this.CurrentThemeColors = new ReadOnlyObservableCollection<ThemeColorViewModel>(this.currentThemeColors);
 
-            this.RefreshPersonalizationCommand = DelegateCommand<int>
+            this.ClearValidationMessagesCommand = new DelegateCommand(() => this.SaveStatusMessage = null);
+
+            var refreshPersonalizationCommand = new CompositeCommand();
+            refreshPersonalizationCommand.RegisterCommand(this.ClearValidationMessagesCommand);
+            refreshPersonalizationCommand.RegisterCommand(DelegateCommand<int>
                 .FromAsyncHandler(this.RefreshPersonalizationAsync, this.NotIsPivotBusy)
                 .ObservesProperty(() => this.NotIsThemeBusy)
-                .ObservesProperty(() => this.NotIsMeTileImageBusy);
+                .ObservesProperty(() => this.NotIsMeTileImageBusy));
+            this.RefreshPersonalizationCommand = refreshPersonalizationCommand;
 
-            this.ApplyPersonalizationCommand = DelegateCommand<int>
+            var applyPersonalizationCommand = new CompositeCommand();
+            applyPersonalizationCommand.RegisterCommand(this.ClearValidationMessagesCommand);
+            applyPersonalizationCommand.RegisterCommand(DelegateCommand<int>
                 .FromAsyncHandler(this.ApplyPersonalizationAsync, this.NotIsPivotBusy)
                 .ObservesProperty(() => this.NotIsThemeBusy)
-                .ObservesProperty(() => this.NotIsMeTileImageBusy);
+                .ObservesProperty(() => this.NotIsMeTileImageBusy));
+            this.ApplyPersonalizationCommand = applyPersonalizationCommand;
 
-            this.BrowserForMeTileImageCommand = DelegateCommand.FromAsyncHandler(async () =>
-            {
-                var picker = new FileOpenPicker
-                {
-                    SuggestedStartLocation = PickerLocationId.PicturesLibrary,
-                    FileTypeFilter = { ".jpg", ".jpeg", ".png", },
-                };
+            var browserForMeTileImageCommand = new CompositeCommand();
+            browserForMeTileImageCommand.RegisterCommand(this.ClearValidationMessagesCommand);
+            browserForMeTileImageCommand.RegisterCommand(DelegateCommand
+                .FromAsyncHandler(this.ChooseMeTileImageAsync, () => this.NotIsMeTileImageBusy)
+                .ObservesProperty(() => this.NotIsMeTileImageBusy));
+            this.BrowserForMeTileImageCommand = browserForMeTileImageCommand;
 
-                var chosenFile = await picker.PickSingleFileAsync();
-                if (chosenFile != null)
-                {
-                    WriteableBitmap bitmap;
-                    using (var stream = await chosenFile.OpenReadAsync())
-                    {
-                        bitmap = await WriteableBitmapExtensions.FromStream(null, stream);
-                    }
-
-                    this.unresizedCurrentMeTileImage = bitmap;
-
-                    var dimensions = this.IsUseOriginalBandHeight
-                        ? HardwareRevision.Band.GetDefaultMeTileDimensions()
-                        : this.CurrentBand.HardwareRevision.GetDefaultMeTileDimensions();
-
-                    this.CurrentMeTileImage = dimensions.Width == bitmap.PixelWidth && dimensions.Height == bitmap.PixelHeight
-                        ? bitmap
-                        : bitmap.Resize(dimensions.Width, dimensions.Height, WriteableBitmapExtensions.Interpolation.Bilinear);
-                }
-            });
+            var saveMeTileImageCommand = new CompositeCommand();
+            saveMeTileImageCommand.RegisterCommand(this.ClearValidationMessagesCommand);
+            saveMeTileImageCommand.RegisterCommand(DelegateCommand
+                .FromAsyncHandler(this.SaveMeTileImageAsync, () => this.NotIsMeTileImageBusy)
+                .ObservesProperty(() => this.NotIsMeTileImageBusy));
+            this.SaveMeTileImageCommand = saveMeTileImageCommand;
 
             this.PropertyChanged += this.OnIsUseOriginalBandHeightChanged;
         }
@@ -163,6 +167,16 @@ namespace Band.Personalize.App.Universal.ViewModels
         /// Gets the "Browser" command for the Me Tile image.
         /// </summary>
         public ICommand BrowserForMeTileImageCommand { get; }
+
+        /// <summary>
+        /// Gets the "Save" command for the Me Tile image.
+        /// </summary>
+        public ICommand SaveMeTileImageCommand { get; }
+
+        /// <summary>
+        /// Gets the clear command for all Me Tile image validation messages.
+        /// </summary>
+        public ICommand ClearValidationMessagesCommand { get; }
 
         /// <summary>
         /// Gets the current Band.
@@ -241,6 +255,15 @@ namespace Band.Personalize.App.Universal.ViewModels
         public ReadOnlyObservableCollection<ThemeColorViewModel> CurrentThemeColors { get; }
 
         /// <summary>
+        /// Gets the status message of the most recent "Save" operation.
+        /// </summary>
+        public string SaveStatusMessage
+        {
+            get { return this.saveStatusMessage; }
+            private set { this.SetProperty(ref this.saveStatusMessage, value); }
+        }
+
+        /// <summary>
         /// Gets the currently-selected Me Tile image.
         /// </summary>
         public WriteableBitmap CurrentMeTileImage
@@ -292,6 +315,30 @@ namespace Band.Personalize.App.Universal.ViewModels
 
                 throw;
             }
+        }
+
+        /// <summary>
+        /// Strip invalid filename characters from a string.
+        /// </summary>
+        /// <param name="input">The <see cref="string"/> from which to remove the invalid filename characters.</param>
+        /// <returns>A string that does not contain any characters identified by <see cref="Path.GetInvalidFileNameChars()"/>.</returns>
+        private static string StripInvalidFileNameCharacters(string input)
+        {
+            if (input == null)
+            {
+                return null;
+            }
+
+            return Regex.Replace(input, $"[{string.Join(string.Empty, Path.GetInvalidFileNameChars())}]", string.Empty);
+        }
+
+        /// <summary>
+        /// Gets the default filename for saving a Me Tile image, based on the name of the <see cref="CurrentBand"/>.
+        /// </summary>
+        /// <returns>The default save filename for a Me Tile image.</returns>
+        private string GetDefaultSaveFileName()
+        {
+            return string.Format(this.resourceLoader.GetString("DefaultSaveFileNameFormat"), Regex.Replace(StripInvalidFileNameCharacters(this.CurrentBand.Name), "\\s+", "-"));
         }
 
         /// <summary>
@@ -456,6 +503,107 @@ namespace Band.Personalize.App.Universal.ViewModels
             return Task
                 .Run(async () => await this.bandPersonalizer.SetMeTileImage(this.CurrentBand, this.CurrentMeTileImage, CancellationToken.None))
                 .ContinueWith(t => this.unresizedCurrentMeTileImage = this.CurrentMeTileImage, CancellationToken.None, TaskContinuationOptions.OnlyOnRanToCompletion, TaskScheduler.FromCurrentSynchronizationContext());
+        }
+
+        /// <summary>
+        /// Choose a Me Tile image using a <see cref="FileOpenPicker"/> and all file types allowed by the
+        /// installed bitmap decoders as described by <see cref="BitmapDecoder.GetDecoderInformationEnumerator()"/>.
+        /// </summary>
+        /// <returns>An asynchronous task that returns when work is complete.</returns>
+        private async Task ChooseMeTileImageAsync()
+        {
+            var picker = new FileOpenPicker
+            {
+                SuggestedStartLocation = PickerLocationId.PicturesLibrary,
+                ViewMode = PickerViewMode.Thumbnail,
+            };
+
+            var extensions = BitmapDecoder
+                .GetDecoderInformationEnumerator()
+                .SelectMany(e => e.FileExtensions)
+                .Distinct()
+                .ToList();
+            foreach (var extension in extensions)
+            {
+                picker.FileTypeFilter.Add(extension);
+            }
+
+            var chosenFile = await picker.PickSingleFileAsync();
+            if (chosenFile != null)
+            {
+                WriteableBitmap bitmap;
+                using (var stream = await chosenFile.OpenReadAsync())
+                {
+                    bitmap = await WriteableBitmapExtensions.FromStream(null, stream);
+                }
+
+                this.unresizedCurrentMeTileImage = bitmap;
+
+                var dimensions = this.IsUseOriginalBandHeight
+                    ? HardwareRevision.Band.GetDefaultMeTileDimensions()
+                    : this.CurrentBand.HardwareRevision.GetDefaultMeTileDimensions();
+
+                this.CurrentMeTileImage = dimensions.Width == bitmap.PixelWidth && dimensions.Height == bitmap.PixelHeight
+                    ? bitmap
+                    : bitmap.Resize(dimensions.Width, dimensions.Height, WriteableBitmapExtensions.Interpolation.Bilinear);
+            }
+        }
+
+        /// <summary>
+        /// Save a Me Tile image using a <see cref="FileSavePicker"/> and allowing all file types allowed by the
+        /// installed bitmap encoders as described by <see cref="BitmapEncoder.GetEncoderInformationEnumerator()"/>.
+        /// </summary>
+        /// <returns>An asynchronous task that returns when work is complete.</returns>
+        private async Task SaveMeTileImageAsync()
+        {
+            var picker = new FileSavePicker
+            {
+                SuggestedFileName = this.GetDefaultSaveFileName(),
+                SuggestedStartLocation = PickerLocationId.PicturesLibrary,
+            };
+
+            var encoders = BitmapEncoder.GetEncoderInformationEnumerator();
+            foreach (var encoder in encoders)
+            {
+                picker.FileTypeChoices.Add(encoder.FriendlyName, encoder.FileExtensions.ToList());
+            }
+
+            var extensions = encoders
+                .SelectMany(e => e.FileExtensions)
+                .Distinct()
+                .ToList();
+            if (extensions.Any())
+            {
+                picker.DefaultFileExtension = extensions.FirstOrDefault(ext => string.Equals(ext, ".png")) ?? extensions.First();
+            }
+
+            var chosenFile = await picker.PickSaveFileAsync();
+            if (chosenFile != null)
+            {
+                var chosenEncoder = encoders.FirstOrDefault(e => e.MimeTypes.Contains(chosenFile.ContentType, StringComparer.OrdinalIgnoreCase) && e.FileExtensions.Contains(chosenFile.FileType, StringComparer.OrdinalIgnoreCase));
+                if (chosenEncoder == null)
+                {
+                    throw new Exception(string.Format(this.resourceLoader.GetString("NoSuchEncoderExceptionMessage"), chosenFile.ContentType, chosenFile.FileType));
+                }
+
+                CachedFileManager.DeferUpdates(chosenFile);
+                using (var stream = await chosenFile.OpenAsync(FileAccessMode.ReadWrite))
+                {
+                    await this.CurrentMeTileImage.ToStream(stream, chosenEncoder.CodecId);
+                    await stream.FlushAsync();
+                }
+
+                var status = await CachedFileManager.CompleteUpdatesAsync(chosenFile);
+                switch (status)
+                {
+                    case FileUpdateStatus.Complete:
+                    case FileUpdateStatus.CompleteAndRenamed:
+                        break;
+                    default:
+                        this.SaveStatusMessage = string.Format(this.resourceLoader.GetString("MeTileImageSaveFailedMessage"), chosenFile.DisplayName);
+                        break;
+                }
+            }
         }
 
         /// <summary>

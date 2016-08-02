@@ -6,6 +6,9 @@
     xmlns:designViewModels="using:Band.Personalize.App.Universal.ViewModels.Design"
     xmlns:prismMvvm="using:Prism.Windows.Mvvm"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:i="using:Microsoft.Xaml.Interactivity"
+    xmlns:core="using:Microsoft.Xaml.Interactions.Core"
+    xmlns:media="using:Microsoft.Xaml.Interactions.Media"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     d:DataContext="{d:DesignInstance Type=designViewModels:DesignBandPageViewModel, IsDesignTimeCreatable=True}"
     prismMvvm:ViewModelLocator.AutoWireViewModel="True"
@@ -16,6 +19,11 @@
             <RowDefinition x:Name="BottomGridRow" />
         </Grid.RowDefinitions>
         <Pivot Name="ThePivot">
+            <i:Interaction.Behaviors>
+                <core:EventTriggerBehavior EventName="SelectionChanged">
+                    <core:InvokeCommandAction Command="{Binding Path=ClearValidationMessagesCommand}" />
+                </core:EventTriggerBehavior>
+            </i:Interaction.Behaviors>
             <PivotItem Header="Theme" x:Uid="ThemePivotItem" Margin="12">
                 <Grid>
                     <ProgressRing
@@ -60,7 +68,28 @@
                         <Border BorderBrush="{StaticResource ResourceKey=SystemControlForegroundBaseMediumBrush}" BorderThickness="4" HorizontalAlignment="Left">
                             <Image Source="{Binding Path=CurrentMeTileImage}" Stretch="None" />
                         </Border>
-                        <Button x:Uid="BrowseButton" Content="Browse" Command="{Binding Path=BrowserForMeTileImageCommand}" Margin="0,7" />
+                        <StackPanel Orientation="Horizontal" Margin="0,4">
+                            <Button x:Uid="BrowseButton" Content="Browse" Command="{Binding Path=BrowserForMeTileImageCommand}" Margin="0,0,4,0" />
+                            <Button x:Uid="SaveButton" Content="Save" Command="{Binding Path=SaveMeTileImageCommand}" Margin="4,0,0,0" />
+                        </StackPanel>
+                        <TextBlock x:Name="SaveStatusTextBlock" Foreground="DarkRed" FontWeight="Bold" Text="{Binding Path=SaveStatusMessage}">
+                            <TextBlock.Resources>
+                                <Storyboard x:Name="SaveStatusTextBlockFadeOut">
+                                    <FadeOutThemeAnimation TargetName="SaveStatusTextBlock" />
+                                </Storyboard>
+                                <Storyboard x:Name="SaveStatusTextBlockFadeIn">
+                                    <FadeInThemeAnimation TargetName="SaveStatusTextBlock" />
+                                </Storyboard>
+                            </TextBlock.Resources>
+                            <i:Interaction.Behaviors>
+                                <core:DataTriggerBehavior Binding="{Binding Path=SaveStatusMessage}" ComparisonCondition="Equal" Value="{x:Null}">
+                                    <media:ControlStoryboardAction ControlStoryboardOption="Play" Storyboard="{StaticResource ResourceKey=SaveStatusTextBlockFadeOut}" />
+                                </core:DataTriggerBehavior>
+                                <core:DataTriggerBehavior Binding="{Binding Path=SaveStatusMessage}" ComparisonCondition="NotEqual" Value="{x:Null}">
+                                    <media:ControlStoryboardAction ControlStoryboardOption="Play" Storyboard="{StaticResource ResourceKey=SaveStatusTextBlockFadeIn}" />
+                                </core:DataTriggerBehavior>
+                            </i:Interaction.Behaviors>
+                        </TextBlock>
                     </StackPanel>
                 </Grid>
             </PivotItem>
