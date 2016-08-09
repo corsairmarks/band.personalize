@@ -29,12 +29,13 @@ namespace Band.Personalize.Model.Library.Theme
             /// <summary>
             /// Gets the Essentials blue theme.
             /// </summary>
-            public static RgbColorTheme Blue
+            public static TitledRgbColorTheme Blue
             {
                 get
                 {
-                    return new RgbColorTheme
+                    return new TitledRgbColorTheme
                     {
+                        Title = "Essentials: Blue",
                         HighContrast = new RgbColor(0x3A, 0x78, 0xDD),
                         Base = new RgbColor(0x33, 0x66, 0xCC),
                         Lowlight = new RgbColor(0x31, 0x65, 0xBA),
@@ -48,12 +49,13 @@ namespace Band.Personalize.Model.Library.Theme
             /// <summary>
             /// Gets the Essentials purple theme.
             /// </summary>
-            public static RgbColorTheme Purple
+            public static TitledRgbColorTheme Purple
             {
                 get
                 {
-                    return new RgbColorTheme
+                    return new TitledRgbColorTheme
                     {
+                        Title = "Essentials: Purple",
                         HighContrast = new RgbColor(0x88, 0x5A, 0xF9),
                         Base = new RgbColor(0x78, 0x42, 0xCF),
                         Lowlight = new RgbColor(0x69, 0x3F, 0xBC),
@@ -67,12 +69,13 @@ namespace Band.Personalize.Model.Library.Theme
             /// <summary>
             /// Gets the Essentials pink theme.
             /// </summary>
-            public static RgbColorTheme Pink
+            public static TitledRgbColorTheme Pink
             {
                 get
                 {
-                    return new RgbColorTheme
+                    return new TitledRgbColorTheme
                     {
+                        Title = "Essentials: Pink",
                         HighContrast = new RgbColor(0xBF, 0x45, 0x5F),
                         Base = new RgbColor(0xD9, 0x4C, 0x66),
                         Lowlight = new RgbColor(0xC6, 0x47, 0x63),
@@ -86,12 +89,13 @@ namespace Band.Personalize.Model.Library.Theme
             /// <summary>
             /// Gets the Essentials green theme.
             /// </summary>
-            public static RgbColorTheme Green
+            public static TitledRgbColorTheme Green
             {
                 get
                 {
-                    return new RgbColorTheme
+                    return new TitledRgbColorTheme
                     {
+                        Title = "Essentials: Green",
                         HighContrast = new RgbColor(0x33, 0xA3, 0x61),
                         Base = new RgbColor(0x39, 0xBF, 0x6F),
                         Lowlight = new RgbColor(0x35, 0xAA, 0x65),
@@ -105,12 +109,13 @@ namespace Band.Personalize.Model.Library.Theme
             /// <summary>
             /// Gets the Essentials yellow theme.
             /// </summary>
-            public static RgbColorTheme Yellow
+            public static TitledRgbColorTheme Yellow
             {
                 get
                 {
-                    return new RgbColorTheme
+                    return new TitledRgbColorTheme
                     {
+                        Title = "Essentials: Yellow",
                         HighContrast = new RgbColor(0xFF, 0xA5, 0x00),
                         Base = new RgbColor(0xFF, 0xAF, 0x00),
                         Lowlight = new RgbColor(0xF9, 0x9A, 0x03),
@@ -124,12 +129,13 @@ namespace Band.Personalize.Model.Library.Theme
             /// <summary>
             /// Gets the Essentials light purple theme.
             /// </summary>
-            public static RgbColorTheme LightPurple
+            public static TitledRgbColorTheme LightPurple
             {
                 get
                 {
-                    return new RgbColorTheme
+                    return new TitledRgbColorTheme
                     {
+                        Title = "Essentials: Light Purple",
                         HighContrast = new RgbColor(0xB7, 0xA5, 0xD3),
                         Base = new RgbColor(0x97, 0x87, 0xAF),
                         Lowlight = new RgbColor(0x7E, 0x76, 0x8E),
@@ -143,12 +149,13 @@ namespace Band.Personalize.Model.Library.Theme
             /// <summary>
             /// Gets the Active blue theme.
             /// </summary>
-            public static RgbColorTheme ActiveBlue
+            public static TitledRgbColorTheme ActiveBlue
             {
                 get
                 {
-                    return new RgbColorTheme
+                    return new TitledRgbColorTheme
                     {
+                        Title = "Active: Blue",
                         HighContrast = new RgbColor(0x0D, 0xD1, 0xFF),
                         Base = new RgbColor(0x00, 0xB9, 0xF2),
                         Lowlight = new RgbColor(0x00, 0xB2, 0xDB),
@@ -162,12 +169,13 @@ namespace Band.Personalize.Model.Library.Theme
             /// <summary>
             /// Gets the Active orange theme.
             /// </summary>
-            public static RgbColorTheme ActiveOrange
+            public static TitledRgbColorTheme ActiveOrange
             {
                 get
                 {
-                    return new RgbColorTheme
+                    return new TitledRgbColorTheme
                     {
+                        Title = "Active: Orange",
                         HighContrast = new RgbColor(0xFF, 0x6F, 0x48),
                         Base = new RgbColor(0xF0, 0x53, 0x0E),
                         Lowlight = new RgbColor(0xDD, 0x44, 0x0E),
@@ -181,12 +189,13 @@ namespace Band.Personalize.Model.Library.Theme
             /// <summary>
             /// Gets the Active fuschia theme.
             /// </summary>
-            public static RgbColorTheme ActiveFuschia
+            public static TitledRgbColorTheme ActiveFuschia
             {
                 get
                 {
-                    return new RgbColorTheme
+                    return new TitledRgbColorTheme
                     {
+                        Title = "Active: Fuschia",
                         HighContrast = new RgbColor(0xF0, 0x4B, 0xF9),
                         Base = new RgbColor(0xD9, 0x36, 0xD9),
                         Lowlight = new RgbColor(0xC2, 0x34, 0xC6),
@@ -200,12 +209,13 @@ namespace Band.Personalize.Model.Library.Theme
             /// <summary>
             /// Gets the Active lime theme.
             /// </summary>
-            public static RgbColorTheme ActiveLime
+            public static TitledRgbColorTheme ActiveLime
             {
                 get
                 {
-                    return new RgbColorTheme
+                    return new TitledRgbColorTheme
                     {
+                        Title = "Active: Lime",
                         HighContrast = new RgbColor(0x97, 0xDB, 0x40),
                         Base = new RgbColor(0x99, 0xC8, 0x14),
                         Lowlight = new RgbColor(0x79, 0xA8, 0x2F),
@@ -219,12 +229,13 @@ namespace Band.Personalize.Model.Library.Theme
             /// <summary>
             /// Gets the Discreet blue theme.
             /// </summary>
-            public static RgbColorTheme DiscreetBlue
+            public static TitledRgbColorTheme DiscreetBlue
             {
                 get
                 {
-                    return new RgbColorTheme
+                    return new TitledRgbColorTheme
                     {
+                        Title = "Discreet: Blue",
                         HighContrast = new RgbColor(0x30, 0x30, 0x30),
                         Base = new RgbColor(0x15, 0x15, 0x15),
                         Lowlight = new RgbColor(0x11, 0x11, 0x11),
@@ -238,12 +249,13 @@ namespace Band.Personalize.Model.Library.Theme
             /// <summary>
             /// Gets the Discreet grey theme.
             /// </summary>
-            public static RgbColorTheme DiscreetGrey
+            public static TitledRgbColorTheme DiscreetGrey
             {
                 get
                 {
-                    return new RgbColorTheme
+                    return new TitledRgbColorTheme
                     {
+                        Title = "Discreet: Grey",
                         HighContrast = new RgbColor(0x30, 0x30, 0x30),
                         Base = new RgbColor(0x15, 0x15, 0x15),
                         Lowlight = new RgbColor(0x11, 0x11, 0x11),
@@ -257,12 +269,13 @@ namespace Band.Personalize.Model.Library.Theme
             /// <summary>
             /// Gets the Discreet yellow theme.
             /// </summary>
-            public static RgbColorTheme DiscreetYellow
+            public static TitledRgbColorTheme DiscreetYellow
             {
                 get
                 {
-                    return new RgbColorTheme
+                    return new TitledRgbColorTheme
                     {
+                        Title = "Discreet: Yellow",
                         HighContrast = new RgbColor(0x30, 0x30, 0x30),
                         Base = new RgbColor(0x15, 0x15, 0x15),
                         Lowlight = new RgbColor(0x11, 0x11, 0x11),
@@ -282,12 +295,13 @@ namespace Band.Personalize.Model.Library.Theme
             /// <summary>
             /// Gets the Essentials "Electric" theme.
             /// </summary>
-            public static RgbColorTheme Electric
+            public static TitledRgbColorTheme Electric
             {
                 get
                 {
-                    return new RgbColorTheme
+                    return new TitledRgbColorTheme
                     {
+                        Title = "Essentials: Electric",
                         HighContrast = new RgbColor(0x0D, 0xD1, 0xFF),
                         Base = new RgbColor(0x00, 0xB9, 0xF2),
                         Lowlight = new RgbColor(0x00, 0x9D, 0xCE),
@@ -301,12 +315,13 @@ namespace Band.Personalize.Model.Library.Theme
             /// <summary>
             /// Gets the Essentials "Skyline" theme.
             /// </summary>
-            public static RgbColorTheme Skyline
+            public static TitledRgbColorTheme Skyline
             {
                 get
                 {
-                    return new RgbColorTheme
+                    return new TitledRgbColorTheme
                     {
+                        Title = "Essentials: Skyline",
                         HighContrast = new RgbColor(0x1A, 0x68, 0x84),
                         Base = new RgbColor(0x00, 0x57, 0x76),
                         Lowlight = new RgbColor(0x00, 0x4A, 0x64),
@@ -320,12 +335,13 @@ namespace Band.Personalize.Model.Library.Theme
             /// <summary>
             /// Gets the Essentials "Kale" theme.
             /// </summary>
-            public static RgbColorTheme Kale
+            public static TitledRgbColorTheme Kale
             {
                 get
                 {
-                    return new RgbColorTheme
+                    return new TitledRgbColorTheme
                     {
+                        Title = "Essentials: Kale",
                         HighContrast = new RgbColor(0x1D, 0x89, 0x89),
                         Base = new RgbColor(0x03, 0x7C, 0x7C),
                         Lowlight = new RgbColor(0x05, 0x70, 0x70),
@@ -339,12 +355,13 @@ namespace Band.Personalize.Model.Library.Theme
             /// <summary>
             /// Gets the Essentials "Cyber" theme.
             /// </summary>
-            public static RgbColorTheme Cyber
+            public static TitledRgbColorTheme Cyber
             {
                 get
                 {
-                    return new RgbColorTheme
+                    return new TitledRgbColorTheme
                     {
+                        Title = "Essentials: Cyber",
                         HighContrast = new RgbColor(0x37, 0xE2, 0x7C),
                         Base = new RgbColor(0x39, 0xBF, 0x6F),
                         Lowlight = new RgbColor(0x31, 0xA3, 0x5E),
@@ -358,12 +375,13 @@ namespace Band.Personalize.Model.Library.Theme
             /// <summary>
             /// Gets the Essentials "Lime" theme.
             /// </summary>
-            public static RgbColorTheme Lime
+            public static TitledRgbColorTheme Lime
             {
                 get
                 {
-                    return new RgbColorTheme
+                    return new TitledRgbColorTheme
                     {
+                        Title = "Essentials: Lime",
                         HighContrast = new RgbColor(0xBF, 0xE5, 0x1F),
                         Base = new RgbColor(0xA3, 0xCE, 0x19),
                         Lowlight = new RgbColor(0x99, 0xB7, 0x1C),
@@ -377,12 +395,13 @@ namespace Band.Personalize.Model.Library.Theme
             /// <summary>
             /// Gets the Essentials "Tangerine" theme.
             /// </summary>
-            public static RgbColorTheme Tangerine
+            public static TitledRgbColorTheme Tangerine
             {
                 get
                 {
-                    return new RgbColorTheme
+                    return new TitledRgbColorTheme
                     {
+                        Title = "Essentials: Tangerine",
                         HighContrast = new RgbColor(0xF8, 0xA5, 0x2E),
                         Base = new RgbColor(0xF7, 0x9B, 0x16),
                         Lowlight = new RgbColor(0xED, 0x8E, 0x1D),
@@ -396,12 +415,13 @@ namespace Band.Personalize.Model.Library.Theme
             /// <summary>
             /// Gets the Essentials "Tang" theme.
             /// </summary>
-            public static RgbColorTheme Tang
+            public static TitledRgbColorTheme Tang
             {
                 get
                 {
-                    return new RgbColorTheme
+                    return new TitledRgbColorTheme
                     {
+                        Title = "Essentials: Tang",
                         HighContrast = new RgbColor(0xED, 0x76, 0x3B),
                         Base = new RgbColor(0xF1, 0x64, 0x22),
                         Lowlight = new RgbColor(0xD6, 0x54, 0x21),
@@ -415,12 +435,13 @@ namespace Band.Personalize.Model.Library.Theme
             /// <summary>
             /// Gets the Essentials "Coral" theme.
             /// </summary>
-            public static RgbColorTheme Coral
+            public static TitledRgbColorTheme Coral
             {
                 get
                 {
-                    return new RgbColorTheme
+                    return new TitledRgbColorTheme
                     {
+                        Title = "Essentials: Coral",
                         HighContrast = new RgbColor(0xFF, 0x52, 0x67),
                         Base = new RgbColor(0xE7, 0x48, 0x56),
                         Lowlight = new RgbColor(0xC5, 0x3D, 0x49),
@@ -434,12 +455,13 @@ namespace Band.Personalize.Model.Library.Theme
             /// <summary>
             /// Gets the Essentials "Kool-Aid" theme.
             /// </summary>
-            public static RgbColorTheme KoolAid
+            public static TitledRgbColorTheme KoolAid
             {
                 get
                 {
-                    return new RgbColorTheme
+                    return new TitledRgbColorTheme
                     {
+                        Title = "Essentials: Kool-Aid",
                         HighContrast = new RgbColor(0xD8, 0x31, 0x90),
                         Base = new RgbColor(0xD1, 0x0D, 0x7D),
                         Lowlight = new RgbColor(0xB2, 0x0B, 0x64),
@@ -453,12 +475,13 @@ namespace Band.Personalize.Model.Library.Theme
             /// <summary>
             /// Gets the Essentials "Berry" theme.
             /// </summary>
-            public static RgbColorTheme Berry
+            public static TitledRgbColorTheme Berry
             {
                 get
                 {
-                    return new RgbColorTheme
+                    return new TitledRgbColorTheme
                     {
+                        Title = "Essentials: Berry",
                         HighContrast = new RgbColor(0x8B, 0x25, 0x93),
                         Base = new RgbColor(0x77, 0x1E, 0x7C),
                         Lowlight = new RgbColor(0x5B, 0x18, 0x60),
@@ -472,12 +495,13 @@ namespace Band.Personalize.Model.Library.Theme
             /// <summary>
             /// Gets the Essentials "Cargo" theme.
             /// </summary>
-            public static RgbColorTheme Cargo
+            public static TitledRgbColorTheme Cargo
             {
                 get
                 {
-                    return new RgbColorTheme
+                    return new TitledRgbColorTheme
                     {
+                        Title = "Essentials: Cargo",
                         HighContrast = new RgbColor(0x8A, 0x5F, 0xCE),
                         Base = new RgbColor(0x78, 0x42, 0xCF),
                         Lowlight = new RgbColor(0x66, 0x38, 0xB0),
@@ -491,12 +515,13 @@ namespace Band.Personalize.Model.Library.Theme
             /// <summary>
             /// Gets the Discreet "Tuxedo" theme.
             /// </summary>
-            public static RgbColorTheme Tuxedo
+            public static TitledRgbColorTheme Tuxedo
             {
                 get
                 {
-                    return new RgbColorTheme
+                    return new TitledRgbColorTheme
                     {
+                        Title = "Discreet: Tuxedo",
                         HighContrast = new RgbColor(0x25, 0x25, 0x25),
                         Base = new RgbColor(0x15, 0x15, 0x15),
                         Lowlight = new RgbColor(0x11, 0x11, 0x11),
@@ -510,12 +535,13 @@ namespace Band.Personalize.Model.Library.Theme
             /// <summary>
             /// Gets the Discreet "Storm" theme.
             /// </summary>
-            public static RgbColorTheme Storm
+            public static TitledRgbColorTheme Storm
             {
                 get
                 {
-                    return new RgbColorTheme
+                    return new TitledRgbColorTheme
                     {
+                        Title = "Discreet: Storm",
                         HighContrast = new RgbColor(0x25, 0x25, 0x25),
                         Base = new RgbColor(0x15, 0x15, 0x15),
                         Lowlight = new RgbColor(0x11, 0x11, 0x11),
@@ -529,12 +555,13 @@ namespace Band.Personalize.Model.Library.Theme
             /// <summary>
             /// Gets the Discreet "DJ" theme.
             /// </summary>
-            public static RgbColorTheme Dj
+            public static TitledRgbColorTheme Dj
             {
                 get
                 {
-                    return new RgbColorTheme
+                    return new TitledRgbColorTheme
                     {
+                        Title = "Discreet: Dj",
                         HighContrast = new RgbColor(0x25, 0x25, 0x25),
                         Base = new RgbColor(0x15, 0x15, 0x15),
                         Lowlight = new RgbColor(0x11, 0x11, 0x11),
@@ -548,12 +575,13 @@ namespace Band.Personalize.Model.Library.Theme
             /// <summary>
             /// Gets the Discreet "California" theme.
             /// </summary>
-            public static RgbColorTheme California
+            public static TitledRgbColorTheme California
             {
                 get
                 {
-                    return new RgbColorTheme
+                    return new TitledRgbColorTheme
                     {
+                        Title = "Discreet: California",
                         HighContrast = new RgbColor(0x25, 0x25, 0x25),
                         Base = new RgbColor(0x15, 0x15, 0x15),
                         Lowlight = new RgbColor(0x11, 0x11, 0x11),
@@ -567,12 +595,13 @@ namespace Band.Personalize.Model.Library.Theme
             /// <summary>
             /// Gets the Discreet "Killa Bee" theme.
             /// </summary>
-            public static RgbColorTheme KillaBee
+            public static TitledRgbColorTheme KillaBee
             {
                 get
                 {
-                    return new RgbColorTheme
+                    return new TitledRgbColorTheme
                     {
+                        Title = "Discreet: Killa Bee",
                         HighContrast = new RgbColor(0x25, 0x25, 0x25),
                         Base = new RgbColor(0x15, 0x15, 0x15),
                         Lowlight = new RgbColor(0x11, 0x11, 0x11),
@@ -586,12 +615,13 @@ namespace Band.Personalize.Model.Library.Theme
             /// <summary>
             /// Gets the Discreet "Pizza" theme.
             /// </summary>
-            public static RgbColorTheme Pizza
+            public static TitledRgbColorTheme Pizza
             {
                 get
                 {
-                    return new RgbColorTheme
+                    return new TitledRgbColorTheme
                     {
+                        Title = "Discreet: Pizza",
                         HighContrast = new RgbColor(0x25, 0x25, 0x25),
                         Base = new RgbColor(0x15, 0x15, 0x15),
                         Lowlight = new RgbColor(0x11, 0x11, 0x11),
@@ -605,12 +635,13 @@ namespace Band.Personalize.Model.Library.Theme
             /// <summary>
             /// Gets the Discreet "Lasertag" theme.
             /// </summary>
-            public static RgbColorTheme Lasertag
+            public static TitledRgbColorTheme Lasertag
             {
                 get
                 {
-                    return new RgbColorTheme
+                    return new TitledRgbColorTheme
                     {
+                        Title = "Discreet: Lasertag",
                         HighContrast = new RgbColor(0x25, 0x25, 0x25),
                         Base = new RgbColor(0x15, 0x15, 0x15),
                         Lowlight = new RgbColor(0x11, 0x11, 0x11),

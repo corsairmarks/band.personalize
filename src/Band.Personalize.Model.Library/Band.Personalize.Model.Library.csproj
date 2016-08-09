@@ -115,6 +115,7 @@
     <Compile Include="Repository\IBandRepository.cs" />
     <Compile Include="Theme\DefaultThemes.cs" />
     <Compile Include="Theme\RgbColorTheme.cs" />
+    <Compile Include="Theme\TitledRgbColorTheme.cs" />
     <Compile Include="Threading\CoreDispatcherExtensions.cs" />
     <EmbeddedResource Include="Properties\Band.Personalize.Model.Library.rd.xml" />
   </ItemGroup>
