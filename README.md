@@ -35,7 +35,7 @@ When reporting a bug, please include the edition, version, and build number of y
  
 You can find this information under "Settings" > "System" > "About."  Please also include the version of Band.Personalize (e.g. 1.0.0) that is experiencing the bug, a description of the problem, and a series of steps to reproduce the issue.
 
-## How to Develop
+## How to Build Your Own Copy
 
 1. Clone the repository
 2. You must use Windows 10 for development
@@ -50,6 +50,10 @@ You can find this information under "Settings" > "System" > "About."  Please als
 6. Select x86 or x64 as the build configuration unless you have a Windows 10 Mobile device to use with the ARM configuration
 7. The "Debug (Stub)" configuration enables fake Band data for testing the application without hardware
 8. The "Release (Tests)" configuration builds in release mode but still applies the required `InternalsVisibleToAttribute` for executing tests
+
+## Contributing
+
+Band.Personalize is not accepting contributions at this time.  In the future, contributions will be welcome after a contributor agreement has been established.
 
 ---
 
