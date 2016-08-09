@@ -23,6 +23,18 @@ A personalization tool for the Microsoft Band and Microsoft Band 2, built on the
 7. (Optional) Re-pair your Band or Band 2 with your phone or other device
    1. You may have to delete the previous Band pairing from your phone or other device before re-pairing your Band - this appears to be a limitation of the Band
 
+## Report a Bug or Request a Feature
+
+Please submit an issue to the [Github repository](https://github.com/corsairmarks/band.personalize/issues).  Your help makes the application better!
+
+When reporting a bug, please include the edition, version, and build number of your version of Windows 10, such as:
+
+* Edition: Windows 10 Pro
+* Version: 1607
+* Build: 14393.10
+ 
+You can find this information under "Settings" > "System" > "About."  Please also include the version of Band.Personalize (e.g. 1.0.0) that is experiencing the bug, a description of the problem, and a series of steps to reproduce the issue.
+
 ## How to Develop
 
 1. Clone the repository
