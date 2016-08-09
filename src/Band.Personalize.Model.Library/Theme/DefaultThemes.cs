@@ -291,9 +291,332 @@ namespace Band.Personalize.Model.Library.Theme
                         HighContrast = new RgbColor(0x0D, 0xD1, 0xFF),
                         Base = new RgbColor(0x00, 0xB9, 0xF2),
                         Lowlight = new RgbColor(0x00, 0x9D, 0xCE),
-                        SecondaryText = new RgbColor(0x96, 0x96, 0x96),
                         Highlight = new RgbColor(0x5A, 0xE0, 0xFF),
+                        SecondaryText = new RgbColor(0x00, 0x9D, 0xCE),
                         Muted = new RgbColor(0x00, 0x4A, 0x64),
+                    };
+                }
+            }
+
+            /// <summary>
+            /// Gets the Essentials "Skyline" theme.
+            /// </summary>
+            public static RgbColorTheme Skyline
+            {
+                get
+                {
+                    return new RgbColorTheme
+                    {
+                        HighContrast = new RgbColor(0x1A, 0x68, 0x84),
+                        Base = new RgbColor(0x00, 0x57, 0x76),
+                        Lowlight = new RgbColor(0x00, 0x4A, 0x64),
+                        Highlight = new RgbColor(0x09, 0xB9, 0xD6),
+                        SecondaryText = new RgbColor(0x04, 0x98, 0xB4),
+                        Muted = new RgbColor(0x00, 0x57, 0x76),
+                    };
+                }
+            }
+
+            /// <summary>
+            /// Gets the Essentials "Kale" theme.
+            /// </summary>
+            public static RgbColorTheme Kale
+            {
+                get
+                {
+                    return new RgbColorTheme
+                    {
+                        HighContrast = new RgbColor(0x1D, 0x89, 0x89),
+                        Base = new RgbColor(0x03, 0x7C, 0x7C),
+                        Lowlight = new RgbColor(0x05, 0x70, 0x70),
+                        Highlight = new RgbColor(0x48, 0xFF, 0xDC),
+                        SecondaryText = new RgbColor(0x0D, 0xBA, 0xB1),
+                        Muted = new RgbColor(0x03, 0x68, 0x61),
+                    };
+                }
+            }
+
+            /// <summary>
+            /// Gets the Essentials "Cyber" theme.
+            /// </summary>
+            public static RgbColorTheme Cyber
+            {
+                get
+                {
+                    return new RgbColorTheme
+                    {
+                        HighContrast = new RgbColor(0x37, 0xE2, 0x7C),
+                        Base = new RgbColor(0x39, 0xBF, 0x6F),
+                        Lowlight = new RgbColor(0x31, 0xA3, 0x5E),
+                        Highlight = new RgbColor(0x1C, 0xF7, 0x7F),
+                        SecondaryText = new RgbColor(0x19, 0xCE, 0x78),
+                        Muted = new RgbColor(0x18, 0x66, 0x37),
+                    };
+                }
+            }
+
+            /// <summary>
+            /// Gets the Essentials "Lime" theme.
+            /// </summary>
+            public static RgbColorTheme Lime
+            {
+                get
+                {
+                    return new RgbColorTheme
+                    {
+                        HighContrast = new RgbColor(0xBF, 0xE5, 0x1F),
+                        Base = new RgbColor(0xA3, 0xCE, 0x19),
+                        Lowlight = new RgbColor(0x99, 0xB7, 0x1C),
+                        Highlight = new RgbColor(0xB8, 0xFF, 0x1D),
+                        SecondaryText = new RgbColor(0x8A, 0xAC, 0x0D),
+                        Muted = new RgbColor(0x54, 0x68, 0x0A),
+                    };
+                }
+            }
+
+            /// <summary>
+            /// Gets the Essentials "Tangerine" theme.
+            /// </summary>
+            public static RgbColorTheme Tangerine
+            {
+                get
+                {
+                    return new RgbColorTheme
+                    {
+                        HighContrast = new RgbColor(0xF8, 0xA5, 0x2E),
+                        Base = new RgbColor(0xF7, 0x9B, 0x16),
+                        Lowlight = new RgbColor(0xED, 0x8E, 0x1D),
+                        Highlight = new RgbColor(0xFF, 0xBC, 0x00),
+                        SecondaryText = new RgbColor(0xEA, 0x98, 0x23),
+                        Muted = new RgbColor(0xAD, 0x69, 0x1F),
+                    };
+                }
+            }
+
+            /// <summary>
+            /// Gets the Essentials "Tang" theme.
+            /// </summary>
+            public static RgbColorTheme Tang
+            {
+                get
+                {
+                    return new RgbColorTheme
+                    {
+                        HighContrast = new RgbColor(0xED, 0x76, 0x3B),
+                        Base = new RgbColor(0xF1, 0x64, 0x22),
+                        Lowlight = new RgbColor(0xD6, 0x54, 0x21),
+                        Highlight = new RgbColor(0xFF, 0x6C, 0x45),
+                        SecondaryText = new RgbColor(0xCC, 0x4B, 0x19),
+                        Muted = new RgbColor(0x87, 0x33, 0x12),
+                    };
+                }
+            }
+
+            /// <summary>
+            /// Gets the Essentials "Coral" theme.
+            /// </summary>
+            public static RgbColorTheme Coral
+            {
+                get
+                {
+                    return new RgbColorTheme
+                    {
+                        HighContrast = new RgbColor(0xFF, 0x52, 0x67),
+                        Base = new RgbColor(0xE7, 0x48, 0x56),
+                        Lowlight = new RgbColor(0xC5, 0x3D, 0x49),
+                        Highlight = new RgbColor(0xFF, 0x52, 0x52),
+                        SecondaryText = new RgbColor(0xE7, 0x48, 0x56),
+                        Muted = new RgbColor(0x99, 0x33, 0x44),
+                    };
+                }
+            }
+
+            /// <summary>
+            /// Gets the Essentials "Kool-Aid" theme.
+            /// </summary>
+            public static RgbColorTheme KoolAid
+            {
+                get
+                {
+                    return new RgbColorTheme
+                    {
+                        HighContrast = new RgbColor(0xD8, 0x31, 0x90),
+                        Base = new RgbColor(0xD1, 0x0D, 0x7D),
+                        Lowlight = new RgbColor(0xB2, 0x0B, 0x64),
+                        Highlight = new RgbColor(0xFF, 0x43, 0xB6),
+                        SecondaryText = new RgbColor(0xD6, 0x1D, 0x91),
+                        Muted = new RgbColor(0x89, 0x10, 0x54),
+                    };
+                }
+            }
+
+            /// <summary>
+            /// Gets the Essentials "Berry" theme.
+            /// </summary>
+            public static RgbColorTheme Berry
+            {
+                get
+                {
+                    return new RgbColorTheme
+                    {
+                        HighContrast = new RgbColor(0x8B, 0x25, 0x93),
+                        Base = new RgbColor(0x77, 0x1E, 0x7C),
+                        Lowlight = new RgbColor(0x5B, 0x18, 0x60),
+                        Highlight = new RgbColor(0xE8, 0x45, 0xFF),
+                        SecondaryText = new RgbColor(0xAE, 0x3C, 0xC6),
+                        Muted = new RgbColor(0x43, 0x24, 0x74),
+                    };
+                }
+            }
+
+            /// <summary>
+            /// Gets the Essentials "Cargo" theme.
+            /// </summary>
+            public static RgbColorTheme Cargo
+            {
+                get
+                {
+                    return new RgbColorTheme
+                    {
+                        HighContrast = new RgbColor(0x8A, 0x5F, 0xCE),
+                        Base = new RgbColor(0x78, 0x42, 0xCF),
+                        Lowlight = new RgbColor(0x66, 0x38, 0xB0),
+                        Highlight = new RgbColor(0xA8, 0x69, 0xF9),
+                        SecondaryText = new RgbColor(0x90, 0x4B, 0xF2),
+                        Muted = new RgbColor(0x43, 0x24, 0x74),
+                    };
+                }
+            }
+
+            /// <summary>
+            /// Gets the Discreet "Tuxedo" theme.
+            /// </summary>
+            public static RgbColorTheme Tuxedo
+            {
+                get
+                {
+                    return new RgbColorTheme
+                    {
+                        HighContrast = new RgbColor(0x25, 0x25, 0x25),
+                        Base = new RgbColor(0x15, 0x15, 0x15),
+                        Lowlight = new RgbColor(0x11, 0x11, 0x11),
+                        Highlight = new RgbColor(0xF2, 0xF2, 0xF2),
+                        SecondaryText = new RgbColor(0x7C, 0x7C, 0x7C),
+                        Muted = new RgbColor(0x33, 0x33, 0x33),
+                    };
+                }
+            }
+
+            /// <summary>
+            /// Gets the Discreet "Storm" theme.
+            /// </summary>
+            public static RgbColorTheme Storm
+            {
+                get
+                {
+                    return new RgbColorTheme
+                    {
+                        HighContrast = new RgbColor(0x25, 0x25, 0x25),
+                        Base = new RgbColor(0x15, 0x15, 0x15),
+                        Lowlight = new RgbColor(0x11, 0x11, 0x11),
+                        Highlight = new RgbColor(0x5A, 0xE0, 0xFF),
+                        SecondaryText = new RgbColor(0x00, 0x9D, 0xCE),
+                        Muted = new RgbColor(0x00, 0x4A, 0x64),
+                    };
+                }
+            }
+
+            /// <summary>
+            /// Gets the Discreet "DJ" theme.
+            /// </summary>
+            public static RgbColorTheme Dj
+            {
+                get
+                {
+                    return new RgbColorTheme
+                    {
+                        HighContrast = new RgbColor(0x25, 0x25, 0x25),
+                        Base = new RgbColor(0x15, 0x15, 0x15),
+                        Lowlight = new RgbColor(0x11, 0x11, 0x11),
+                        Highlight = new RgbColor(0x1C, 0xF7, 0x7F),
+                        SecondaryText = new RgbColor(0x19, 0xCE, 0x78),
+                        Muted = new RgbColor(0x18, 0x66, 0x37),
+                    };
+                }
+            }
+
+            /// <summary>
+            /// Gets the Discreet "California" theme.
+            /// </summary>
+            public static RgbColorTheme California
+            {
+                get
+                {
+                    return new RgbColorTheme
+                    {
+                        HighContrast = new RgbColor(0x25, 0x25, 0x25),
+                        Base = new RgbColor(0x15, 0x15, 0x15),
+                        Lowlight = new RgbColor(0x11, 0x11, 0x11),
+                        Highlight = new RgbColor(0xB8, 0xFF, 0x1D),
+                        SecondaryText = new RgbColor(0x8A, 0xAC, 0x0D),
+                        Muted = new RgbColor(0x54, 0x68, 0x0A),
+                    };
+                }
+            }
+
+            /// <summary>
+            /// Gets the Discreet "Killa Bee" theme.
+            /// </summary>
+            public static RgbColorTheme KillaBee
+            {
+                get
+                {
+                    return new RgbColorTheme
+                    {
+                        HighContrast = new RgbColor(0x25, 0x25, 0x25),
+                        Base = new RgbColor(0x15, 0x15, 0x15),
+                        Lowlight = new RgbColor(0x11, 0x11, 0x11),
+                        Highlight = new RgbColor(0xFF, 0xBC, 0x00),
+                        SecondaryText = new RgbColor(0xEA, 0x98, 0x23),
+                        Muted = new RgbColor(0xAD, 0x69, 0x1F),
+                    };
+                }
+            }
+
+            /// <summary>
+            /// Gets the Discreet "Pizza" theme.
+            /// </summary>
+            public static RgbColorTheme Pizza
+            {
+                get
+                {
+                    return new RgbColorTheme
+                    {
+                        HighContrast = new RgbColor(0x25, 0x25, 0x25),
+                        Base = new RgbColor(0x15, 0x15, 0x15),
+                        Lowlight = new RgbColor(0x11, 0x11, 0x11),
+                        Highlight = new RgbColor(0xFF, 0x52, 0x52),
+                        SecondaryText = new RgbColor(0xE7, 0x48, 0x56),
+                        Muted = new RgbColor(0x00, 0x33, 0x44),
+                    };
+                }
+            }
+
+            /// <summary>
+            /// Gets the Discreet "Lasertag" theme.
+            /// </summary>
+            public static RgbColorTheme Lasertag
+            {
+                get
+                {
+                    return new RgbColorTheme
+                    {
+                        HighContrast = new RgbColor(0x25, 0x25, 0x25),
+                        Base = new RgbColor(0x15, 0x15, 0x15),
+                        Lowlight = new RgbColor(0x11, 0x11, 0x11),
+                        Highlight = new RgbColor(0xFF, 0x43, 0xB6),
+                        SecondaryText = new RgbColor(0xD6, 0x1D, 0x91),
+                        Muted = new RgbColor(0x89, 0x10, 0x54),
                     };
                 }
             }
