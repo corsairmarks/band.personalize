@@ -125,6 +125,7 @@
     <Compile Include="Converters\ConnectionTypeToSymbolConverter.cs" />
     <Compile Include="Converters\HardwareRevisionToVisibilityConverter.cs" />
     <Compile Include="Converters\BooleanToVisibilityConverter.cs" />
+    <Compile Include="Converters\RgbColorToColorConverter.cs" />
     <Compile Include="Triggers\OrientationMatchTrigger.cs" />
     <Compile Include="Triggers\PropertyMatchTrigger.cs" />
     <Compile Include="Triggers\ApplicationViewOrientationTrigger.cs" />

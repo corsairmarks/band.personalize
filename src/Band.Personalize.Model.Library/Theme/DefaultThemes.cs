@@ -14,6 +14,8 @@
 
 namespace Band.Personalize.Model.Library.Theme
 {
+    using System.Collections.Generic;
+    using System.Collections.ObjectModel;
     using Color;
 
     /// <summary>
@@ -26,6 +28,32 @@ namespace Band.Personalize.Model.Library.Theme
         /// </summary>
         public static class Band
         {
+            /// <summary>
+            /// Gets a read-only collection of the default themes for the Microsoft Band.
+            /// </summary>
+            public static IReadOnlyList<TitledRgbColorTheme> DefaultThemes
+            {
+                get
+                {
+                    return new ReadOnlyCollection<TitledRgbColorTheme>(new[]
+                    {
+                        Blue,
+                        Purple,
+                        Pink,
+                        Green,
+                        Yellow,
+                        LightPurple,
+                        ActiveBlue,
+                        ActiveOrange,
+                        ActiveFuschia,
+                        ActiveLime,
+                        DiscreetBlue,
+                        DiscreetGrey,
+                        DiscreetYellow,
+                    });
+                }
+            }
+
             /// <summary>
             /// Gets the Essentials blue theme.
             /// </summary>
@@ -292,6 +320,37 @@ namespace Band.Personalize.Model.Library.Theme
         /// </summary>
         public static class Band2
         {
+            /// <summary>
+            /// Gets a read-only collection of the default themes for the Microsoft Band 2.
+            /// </summary>
+            public static IReadOnlyList<TitledRgbColorTheme> DefaultThemes
+            {
+                get
+                {
+                    return new ReadOnlyCollection<TitledRgbColorTheme>(new[]
+                    {
+                        Electric,
+                        Skyline,
+                        Kale,
+                        Cyber,
+                        Lime,
+                        Tangerine,
+                        Tang,
+                        Coral,
+                        KoolAid,
+                        Berry,
+                        Cargo,
+                        Tuxedo,
+                        Storm,
+                        Dj,
+                        California,
+                        KillaBee,
+                        Pizza,
+                        Lasertag,
+                    });
+                }
+            }
+
             /// <summary>
             /// Gets the Essentials "Electric" theme.
             /// </summary>

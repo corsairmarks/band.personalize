@@ -15,6 +15,7 @@
             <converters:ConnectionTypeToSymbolConverter x:Key="ConnectionTypeToSymbolConverter" />
             <converters:HardwareRevisionToBooleanConverter x:Key="HardwareRevisionToBooleanConverter" />
             <converters:HardwareRevisionToVisibilityConverter x:Key="HardwareRevisionToVisibilityConverter" />
+            <converters:RgbColorToColorConverter x:Key="RgbColorToColorConverter" />
         </ResourceDictionary>
     </Application.Resources>
 </prismUnity:PrismUnityApplication>

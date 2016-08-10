@@ -26,6 +26,7 @@ namespace Band.Personalize.App.Universal.ViewModels
     using System.Windows.Input;
     using Model.Library.Band;
     using Model.Library.Color;
+    using Model.Library.Linq;
     using Model.Library.Repository;
     using Model.Library.Theme;
     using Prism.Commands;
@@ -115,6 +116,14 @@ namespace Band.Personalize.App.Universal.ViewModels
 
             this.resourceLoader = resourceLoader;
             this.bandPersonalizer = bandPersonalizer;
+
+            // TODO: localize
+            var availableThemes = new ObservableCollection<IGrouping<string, TitledRgbColorTheme>>(new[]
+            {
+                new ReadOnlyGrouping<string, TitledRgbColorTheme>("Band", DefaultThemes.Band.DefaultThemes.ToList()),
+                new ReadOnlyGrouping<string, TitledRgbColorTheme>("Band 2", DefaultThemes.Band2.DefaultThemes.ToList()),
+            });
+            this.AvailableThemes = new ReadOnlyObservableCollection<IGrouping<string, TitledRgbColorTheme>>(availableThemes);
             this.currentThemeColors = new ObservableCollection<ThemeColorViewModel>();
             this.CurrentThemeColors = new ReadOnlyObservableCollection<ThemeColorViewModel>(this.currentThemeColors);
 
@@ -248,6 +257,11 @@ namespace Band.Personalize.App.Universal.ViewModels
         {
             get { return !this.IsMeTileImageBusy; }
         }
+
+        /// <summary>
+        /// Gets all currently available themes.
+        /// </summary>
+        public ReadOnlyObservableCollection<IGrouping<string, TitledRgbColorTheme>> AvailableThemes { get; }
 
         /// <summary>
         /// Gets the theme colors.
@@ -483,12 +497,12 @@ namespace Band.Personalize.App.Universal.ViewModels
         {
             var newRgbColorTheme = new RgbColorTheme
             {
-                Base = this.CurrentThemeColors[0].Swatch.ToRgbColor(),
-                HighContrast = this.CurrentThemeColors[1].Swatch.ToRgbColor(),
-                Lowlight = this.CurrentThemeColors[2].Swatch.ToRgbColor(),
-                Highlight = this.CurrentThemeColors[3].Swatch.ToRgbColor(),
-                Muted = this.CurrentThemeColors[4].Swatch.ToRgbColor(),
-                SecondaryText = this.CurrentThemeColors[5].Swatch.ToRgbColor(),
+                Base = this.CurrentThemeColors[0].Swatch,
+                HighContrast = this.CurrentThemeColors[1].Swatch,
+                Lowlight = this.CurrentThemeColors[2].Swatch,
+                Highlight = this.CurrentThemeColors[3].Swatch,
+                Muted = this.CurrentThemeColors[4].Swatch,
+                SecondaryText = this.CurrentThemeColors[5].Swatch,
             };
 
             return Task.Run(async () => await this.bandPersonalizer.SetTheme(this.CurrentBand, newRgbColorTheme, CancellationToken.None));
@@ -636,32 +650,32 @@ namespace Band.Personalize.App.Universal.ViewModels
                 new ThemeColorViewModel
                 {
                     Title = this.resourceLoader.GetString($"{nameof(theme.Base)}TextBox/Text"),
-                    Swatch = theme.Base.ToColor(),
+                    Swatch = theme.Base,
                 },
                 new ThemeColorViewModel
                 {
                     Title = this.resourceLoader.GetString($"{nameof(theme.HighContrast)}TextBox/Text"),
-                    Swatch = theme.HighContrast.ToColor(),
+                    Swatch = theme.HighContrast,
                 },
                 new ThemeColorViewModel
                 {
                     Title = this.resourceLoader.GetString($"{nameof(theme.Lowlight)}TextBox/Text"),
-                    Swatch = theme.Lowlight.ToColor(),
+                    Swatch = theme.Lowlight,
                 },
                 new ThemeColorViewModel
                 {
                     Title = this.resourceLoader.GetString($"{nameof(theme.Highlight)}TextBox/Text"),
-                    Swatch = theme.Highlight.ToColor(),
+                    Swatch = theme.Highlight,
                 },
                 new ThemeColorViewModel
                 {
                     Title = this.resourceLoader.GetString($"{nameof(theme.Muted)}TextBox/Text"),
-                    Swatch = theme.Muted.ToColor(),
+                    Swatch = theme.Muted,
                 },
                 new ThemeColorViewModel
                 {
                     Title = this.resourceLoader.GetString($"{nameof(theme.SecondaryText)}TextBox/Text"),
-                    Swatch = theme.SecondaryText.ToColor(),
+                    Swatch = theme.SecondaryText,
                 },
             });
         }
