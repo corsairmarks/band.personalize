@@ -80,7 +80,7 @@ namespace Band.Personalize.Model.Library.Theme
                         Base = new RgbColor(0xD9, 0x4C, 0x66),
                         Lowlight = new RgbColor(0xC6, 0x47, 0x63),
                         SecondaryText = new RgbColor(0xA3, 0x91, 0x9C),
-                        Highlight = new RgbColor(0x41, 0xCE, 0x7A),
+                        Highlight = new RgbColor(0xEA, 0x54, 0x75),
                         Muted = new RgbColor(0x99, 0x33, 0x44),
                     };
                 }
@@ -627,7 +627,7 @@ namespace Band.Personalize.Model.Library.Theme
                         Lowlight = new RgbColor(0x11, 0x11, 0x11),
                         Highlight = new RgbColor(0xFF, 0x52, 0x52),
                         SecondaryText = new RgbColor(0xE7, 0x48, 0x56),
-                        Muted = new RgbColor(0x00, 0x33, 0x44),
+                        Muted = new RgbColor(0x99, 0x33, 0x44),
                     };
                 }
             }
