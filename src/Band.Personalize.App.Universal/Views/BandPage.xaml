@@ -2,7 +2,9 @@
     x:Class="Band.Personalize.App.Universal.Views.BandPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:behaviors="using:Band.Personalize.App.Universal.Behaviors"
     xmlns:controls="using:Band.Personalize.App.Universal.Controls"
+    xmlns:triggers="using:Band.Personalize.App.Universal.Triggers"
     xmlns:vm="using:Band.Personalize.App.Universal.ViewModels"
     xmlns:dvm="using:Band.Personalize.App.Universal.ViewModels.Design"
     xmlns:prismMvvm="using:Prism.Windows.Mvvm"
@@ -15,10 +17,50 @@
     d:DataContext="{d:DesignInstance Type=dvm:DesignBandPageViewModel, IsDesignTimeCreatable=True}"
     prismMvvm:ViewModelLocator.AutoWireViewModel="True"
     mc:Ignorable="d">
+    <Page.Resources>
+        <DataTemplate x:Key="GroupKeyHeader">
+            <TextBlock Text="{Binding Path=Key}" Style="{ThemeResource TitleTextBlockStyle}"/>
+        </DataTemplate>
+        <DataTemplate x:Key="ThemeOption" x:DataType="theme:TitledRgbColorTheme">
+            <StackPanel Orientation="Horizontal">
+                <VariableSizedWrapGrid Orientation="Horizontal" MaximumRowsOrColumns="4" ItemHeight="20" ItemWidth="20" Margin="0,4,4,4">
+                    <Rectangle VariableSizedWrapGrid.ColumnSpan="2" VariableSizedWrapGrid.RowSpan="2">
+                        <Rectangle.Fill>
+                            <SolidColorBrush Color="{x:Bind Path=Base, Converter={StaticResource ResourceKey=RgbColorToColorConverter}}" />
+                        </Rectangle.Fill>
+                    </Rectangle>
+                    <Rectangle VariableSizedWrapGrid.ColumnSpan="2" VariableSizedWrapGrid.RowSpan="2">
+                        <Rectangle.Fill>
+                            <SolidColorBrush Color="{x:Bind Path=Highlight, Converter={StaticResource ResourceKey=RgbColorToColorConverter}}" />
+                        </Rectangle.Fill>
+                    </Rectangle>
+                    <Rectangle>
+                        <Rectangle.Fill>
+                            <SolidColorBrush Color="{x:Bind Path=HighContrast, Converter={StaticResource ResourceKey=RgbColorToColorConverter}}" />
+                        </Rectangle.Fill>
+                    </Rectangle>
+                    <Rectangle>
+                        <Rectangle.Fill>
+                            <SolidColorBrush Color="{x:Bind Path=Lowlight, Converter={StaticResource ResourceKey=RgbColorToColorConverter}}" />
+                        </Rectangle.Fill>
+                    </Rectangle>
+                    <Rectangle>
+                        <Rectangle.Fill>
+                            <SolidColorBrush Color="{x:Bind Path=Muted, Converter={StaticResource ResourceKey=RgbColorToColorConverter}}" />
+                        </Rectangle.Fill>
+                    </Rectangle>
+                    <Rectangle>
+                        <Rectangle.Fill>
+                            <SolidColorBrush Color="{x:Bind Path=SecondaryText, Converter={StaticResource ResourceKey=RgbColorToColorConverter}}" />
+                        </Rectangle.Fill>
+                    </Rectangle>
+                </VariableSizedWrapGrid>
+                <TextBlock Text="{x:Bind Path=Title}" FontSize="20" />
+            </StackPanel>
+        </DataTemplate>
+        <CollectionViewSource x:Name="AvailableThemeCollectionViewSource" Source="{Binding AvailableThemes}" IsSourceGrouped="True" />
+    </Page.Resources>
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <Grid.Resources>
-            <CollectionViewSource x:Name="AvailableThemeCollectionViewSource" Source="{Binding Path=AvailableThemes}" IsSourceGrouped="True" />
-        </Grid.Resources>
         <Grid.RowDefinitions>
             <RowDefinition x:Name="TopGridRow" />
             <RowDefinition x:Name="BottomGridRow" />
@@ -54,64 +96,25 @@
                                 </DataTemplate>
                             </GridView.ItemTemplate>
                         </GridView>
-                        <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+                        <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
                             <Button x:Uid="ChooseThemeButton" Content="Choose…" Margin="4,0,4,0">
                                 <Button.Flyout>
                                     <Flyout Placement="Full">
-                                        <ListView ItemsSource="{x:Bind Path=AvailableThemeCollectionViewSource.View, Mode=OneWay}">
-                                            <ListView.ItemContainerStyle>
-                                                <Style TargetType="ListViewItem">
-                                                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-                                                </Style>
-                                            </ListView.ItemContainerStyle>
+                                        <ListView
+                                            x:Name="ThemeListView"
+                                            ItemsSource="{Binding Source={StaticResource ResourceKey=AvailableThemeCollectionViewSource}}"
+                                            SelectionMode="None"
+                                            IsItemClickEnabled="True"
+                                            ItemTemplate="{StaticResource ResourceKey=ThemeOption}">
                                             <ListView.GroupStyle>
-                                                <GroupStyle HidesIfEmpty="True">
-                                                    <GroupStyle.HeaderTemplate>
-                                                        <DataTemplate>
-                                                            <TextBlock Text="{Binding Path=Key}" Style="{ThemeResource TitleTextBlockStyle}"/>
-                                                        </DataTemplate>
-                                                    </GroupStyle.HeaderTemplate>
-                                                </GroupStyle>
+                                                <GroupStyle HidesIfEmpty="True" HeaderTemplate="{StaticResource ResourceKey=GroupKeyHeader}" />
                                             </ListView.GroupStyle>
-                                            <ListView.ItemTemplate>
-                                                <DataTemplate x:DataType="theme:TitledRgbColorTheme">
-                                                    <StackPanel Orientation="Horizontal">
-                                                        <VariableSizedWrapGrid Orientation="Horizontal" MaximumRowsOrColumns="4" ItemHeight="20" ItemWidth="20" Margin="0,4,4,4">
-                                                            <Rectangle VariableSizedWrapGrid.ColumnSpan="2" VariableSizedWrapGrid.RowSpan="2">
-                                                                <Rectangle.Fill>
-                                                                    <SolidColorBrush Color="{x:Bind Path=Base, Converter={StaticResource ResourceKey=RgbColorToColorConverter}}" />
-                                                                </Rectangle.Fill>
-                                                            </Rectangle>
-                                                            <Rectangle VariableSizedWrapGrid.ColumnSpan="2" VariableSizedWrapGrid.RowSpan="2">
-                                                                <Rectangle.Fill>
-                                                                    <SolidColorBrush Color="{x:Bind Path=Highlight, Converter={StaticResource ResourceKey=RgbColorToColorConverter}}" />
-                                                                </Rectangle.Fill>
-                                                            </Rectangle>
-                                                            <Rectangle>
-                                                                <Rectangle.Fill>
-                                                                    <SolidColorBrush Color="{x:Bind Path=HighContrast, Converter={StaticResource ResourceKey=RgbColorToColorConverter}}" />
-                                                                </Rectangle.Fill>
-                                                            </Rectangle>
-                                                            <Rectangle>
-                                                                <Rectangle.Fill>
-                                                                    <SolidColorBrush Color="{x:Bind Path=Lowlight, Converter={StaticResource ResourceKey=RgbColorToColorConverter}}" />
-                                                                </Rectangle.Fill>
-                                                            </Rectangle>
-                                                            <Rectangle>
-                                                                <Rectangle.Fill>
-                                                                    <SolidColorBrush Color="{x:Bind Path=Muted, Converter={StaticResource ResourceKey=RgbColorToColorConverter}}" />
-                                                                </Rectangle.Fill>
-                                                            </Rectangle>
-                                                            <Rectangle>
-                                                                <Rectangle.Fill>
-                                                                    <SolidColorBrush Color="{x:Bind Path=SecondaryText, Converter={StaticResource ResourceKey=RgbColorToColorConverter}}" />
-                                                                </Rectangle.Fill>
-                                                            </Rectangle>
-                                                        </VariableSizedWrapGrid>
-                                                        <TextBlock Text="{x:Bind Path=Title}" VerticalAlignment="Center" FontSize="20" Margin="4,0,0,0" />
-                                                    </StackPanel>
-                                                </DataTemplate>
-                                            </ListView.ItemTemplate>
+                                            <i:Interaction.Behaviors>
+                                                <core:EventTriggerBehavior EventName="ItemClick">
+                                                    <core:InvokeCommandAction Command="{Binding Path=ChooseThemeCommand}" InputConverter="{StaticResource ResourceKey=ItemClickInputConverter}" />
+                                                    <behaviors:CloseFlyoutAction />
+                                                </core:EventTriggerBehavior>
+                                            </i:Interaction.Behaviors>
                                         </ListView>
                                     </Flyout>
                                 </Button.Flyout>

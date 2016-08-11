@@ -25,7 +25,6 @@ namespace Band.Personalize.App.Universal.ViewModels
     using System.Threading.Tasks;
     using System.Windows.Input;
     using Model.Library.Band;
-    using Model.Library.Color;
     using Model.Library.Linq;
     using Model.Library.Repository;
     using Model.Library.Theme;
@@ -36,7 +35,6 @@ namespace Band.Personalize.App.Universal.ViewModels
     using Windows.Storage;
     using Windows.Storage.Pickers;
     using Windows.Storage.Provider;
-    using Windows.Storage.Streams;
     using Windows.UI.Xaml.Media.Imaging;
 
     /// <summary>
@@ -127,6 +125,9 @@ namespace Band.Personalize.App.Universal.ViewModels
             this.currentThemeColors = new ObservableCollection<ThemeColorViewModel>();
             this.CurrentThemeColors = new ReadOnlyObservableCollection<ThemeColorViewModel>(this.currentThemeColors);
 
+            this.ChooseThemeCommand = new DelegateCommand<TitledRgbColorTheme>(this.UpdateThemeColors, t => this.NotIsThemeBusy)
+                .ObservesProperty(() => this.NotIsThemeBusy);
+
             this.ClearValidationMessagesCommand = new DelegateCommand(() => this.SaveStatusMessage = null);
 
             var refreshPersonalizationCommand = new CompositeCommand();
@@ -186,6 +187,11 @@ namespace Band.Personalize.App.Universal.ViewModels
         /// Gets the clear command for all Me Tile image validation messages.
         /// </summary>
         public ICommand ClearValidationMessagesCommand { get; }
+
+        /// <summary>
+        /// Gets the command to select a theme.
+        /// </summary>
+        public ICommand ChooseThemeCommand { get; }
 
         /// <summary>
         /// Gets the current Band.
