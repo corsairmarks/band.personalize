@@ -14,8 +14,8 @@
 
 namespace Band.Personalize.App.Universal.ViewModels
 {
+    using Model.Library.Color;
     using Prism.Mvvm;
-    using Windows.UI;
 
     /// <summary>
     /// A titled color swatch for editing.
@@ -30,7 +30,7 @@ namespace Band.Personalize.App.Universal.ViewModels
         /// <summary>
         /// The editable color swatch.
         /// </summary>
-        private Color swatch;
+        private RgbColor swatch;
 
         /// <summary>
         /// Gets or sets the title of the color swatch.
@@ -44,7 +44,7 @@ namespace Band.Personalize.App.Universal.ViewModels
         /// <summary>
         /// Gets or sets the editable color swatch.
         /// </summary>
-        public Color Swatch
+        public RgbColor Swatch
         {
             get { return this.swatch; }
             set { this.SetProperty(ref this.swatch, value); }

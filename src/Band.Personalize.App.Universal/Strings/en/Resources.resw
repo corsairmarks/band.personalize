@@ -147,6 +147,9 @@
   <data name="ChooseColorTextBlock.Text" xml:space="preserve">
     <value>Choose…</value>
   </data>
+  <data name="ChooseThemeButton.Content" xml:space="preserve">
+    <value>Choose…</value>
+  </data>
   <data name="ConfirmButton.Content" xml:space="preserve">
     <value>Confirm</value>
   </data>

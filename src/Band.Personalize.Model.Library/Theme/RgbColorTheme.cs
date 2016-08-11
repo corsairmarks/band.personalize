@@ -37,17 +37,19 @@ namespace Band.Personalize.Model.Library.Theme
         public RgbColor Lowlight { get; set; }
 
         /// <summary>
-        /// Gets or sets the in-tile header color.
+        /// Gets or sets the in-tile/in-app header color.
         /// </summary>
         public RgbColor Highlight { get; set; }
 
         /// <summary>
-        /// Gets or sets the in-tile muted color, used for the achievement marker background.
+        /// Gets or sets the in-tile/in-app muted color, used for the achievement marker background.
         /// </summary>
         public RgbColor Muted { get; set; }
 
         /// <summary>
-        /// Gets or sets the system-wide secondary text color.
+        /// Gets or sets a color that is either the in-tile/in-app secondary header text color (original Band) or the
+        /// toggle button "On" state (Band 2).  The Band 2 refers to this color as "Medium" instead of "Secondary Text,"
+        /// which itself is a static, predefined color.
         /// </summary>
         public RgbColor SecondaryText { get; set; }
     }
