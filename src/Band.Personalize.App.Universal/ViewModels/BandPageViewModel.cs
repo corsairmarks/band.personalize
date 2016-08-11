@@ -118,8 +118,8 @@ namespace Band.Personalize.App.Universal.ViewModels
             // TODO: localize
             var availableThemes = new ObservableCollection<IGrouping<string, TitledRgbColorTheme>>(new[]
             {
-                new ReadOnlyGrouping<string, TitledRgbColorTheme>("Band", DefaultThemes.Band.DefaultThemes.ToList()),
-                new ReadOnlyGrouping<string, TitledRgbColorTheme>("Band 2", DefaultThemes.Band2.DefaultThemes.ToList()),
+                new ReadOnlyGrouping<string, TitledRgbColorTheme>(resourceLoader.GetString("HardwareRevision/Band"), DefaultThemes.Band.DefaultThemes.ToList()),
+                new ReadOnlyGrouping<string, TitledRgbColorTheme>(resourceLoader.GetString("HardwareRevision/Band2"), DefaultThemes.Band2.DefaultThemes.ToList()),
             });
             this.AvailableThemes = new ReadOnlyObservableCollection<IGrouping<string, TitledRgbColorTheme>>(availableThemes);
             this.currentThemeColors = new ObservableCollection<ThemeColorViewModel>();
