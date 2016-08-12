@@ -25,6 +25,7 @@ namespace Band.Personalize.App.Universal.ViewModels
     using System.Threading.Tasks;
     using System.Windows.Input;
     using Model.Library.Band;
+    using Model.Library.IO;
     using Model.Library.Linq;
     using Model.Library.Repository;
     using Model.Library.Theme;
@@ -338,27 +339,12 @@ namespace Band.Personalize.App.Universal.ViewModels
         }
 
         /// <summary>
-        /// Strip invalid filename characters from a string.
-        /// </summary>
-        /// <param name="input">The <see cref="string"/> from which to remove the invalid filename characters.</param>
-        /// <returns>A string that does not contain any characters identified by <see cref="Path.GetInvalidFileNameChars()"/>.</returns>
-        private static string StripInvalidFileNameCharacters(string input)
-        {
-            if (input == null)
-            {
-                return null;
-            }
-
-            return Regex.Replace(input, $"[{string.Join(string.Empty, Path.GetInvalidFileNameChars())}]", string.Empty);
-        }
-
-        /// <summary>
         /// Gets the default filename for saving a Me Tile image, based on the name of the <see cref="CurrentBand"/>.
         /// </summary>
         /// <returns>The default save filename for a Me Tile image.</returns>
         private string GetDefaultSaveFileName()
         {
-            return string.Format(this.resourceLoader.GetString("DefaultSaveFileNameFormat"), Regex.Replace(StripInvalidFileNameCharacters(this.CurrentBand.Name), "\\s+", "-"));
+            return string.Format(this.resourceLoader.GetString("DefaultSaveFileNameFormat"), this.CurrentBand.Name.Trim().StripInvalidFileNameCharacters().ReplaceWhiteSpaceWithDash());
         }
 
         /// <summary>
