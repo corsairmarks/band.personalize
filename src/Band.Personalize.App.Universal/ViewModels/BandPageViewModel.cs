@@ -18,9 +18,7 @@ namespace Band.Personalize.App.Universal.ViewModels
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.ComponentModel;
-    using System.IO;
     using System.Linq;
-    using System.Text.RegularExpressions;
     using System.Threading;
     using System.Threading.Tasks;
     using System.Windows.Input;
@@ -52,6 +50,16 @@ namespace Band.Personalize.App.Universal.ViewModels
         /// The Band personalizer.
         /// </summary>
         private readonly IBandPersonalizer bandPersonalizer;
+
+        /// <summary>
+        /// The custom theme repository.
+        /// </summary>
+        private readonly ICustomThemeRepository customThemeRepository;
+
+        /// <summary>
+        /// The themes available for selection.
+        /// </summary>
+        private readonly ObservableCollection<IGrouping<string, TitledRgbColorTheme>> availableThemes;
 
         /// <summary>
         /// The collection of theme colors for editing.
@@ -100,8 +108,9 @@ namespace Band.Personalize.App.Universal.ViewModels
         /// <param name="navigationService">The navigation service.</param>
         /// <param name="resourceLoader">The resource loader.</param>
         /// <param name="bandPersonalizer">The Band personalizer.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="resourceLoader"/> or <paramref name="bandPersonalizer"/> is <c>null</c>.</exception>
-        public BandPageViewModel(INavigationService navigationService, IResourceLoader resourceLoader, IBandPersonalizer bandPersonalizer)
+        /// <param name="customThemeRepository">The custom theme repository.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="resourceLoader"/>, <paramref name="bandPersonalizer"/>, or <paramref name="customThemeRepository"/> is <c>null</c>.</exception>
+        public BandPageViewModel(INavigationService navigationService, IResourceLoader resourceLoader, IBandPersonalizer bandPersonalizer, ICustomThemeRepository customThemeRepository)
             : base(navigationService)
         {
             if (resourceLoader == null)
@@ -112,19 +121,22 @@ namespace Band.Personalize.App.Universal.ViewModels
             {
                 throw new ArgumentNullException(nameof(bandPersonalizer));
             }
+            else if (customThemeRepository == null)
+            {
+                throw new ArgumentNullException(nameof(customThemeRepository));
+            }
 
             this.resourceLoader = resourceLoader;
             this.bandPersonalizer = bandPersonalizer;
+            this.customThemeRepository = customThemeRepository;
 
-            // TODO: localize
-            var availableThemes = new ObservableCollection<IGrouping<string, TitledRgbColorTheme>>(new[]
+            this.AvailableThemes = new ReadOnlyObservableCollection<IGrouping<string, TitledRgbColorTheme>>(this.availableThemes = new ObservableCollection<IGrouping<string, TitledRgbColorTheme>>(new List<IGrouping<string, TitledRgbColorTheme>>
             {
                 new ReadOnlyGrouping<string, TitledRgbColorTheme>(resourceLoader.GetString("HardwareRevision/Band"), DefaultThemes.Band.DefaultThemes.ToList()),
                 new ReadOnlyGrouping<string, TitledRgbColorTheme>(resourceLoader.GetString("HardwareRevision/Band2"), DefaultThemes.Band2.DefaultThemes.ToList()),
-            });
-            this.AvailableThemes = new ReadOnlyObservableCollection<IGrouping<string, TitledRgbColorTheme>>(availableThemes);
-            this.currentThemeColors = new ObservableCollection<ThemeColorViewModel>();
-            this.CurrentThemeColors = new ReadOnlyObservableCollection<ThemeColorViewModel>(this.currentThemeColors);
+            }));
+
+            this.CurrentThemeColors = new ReadOnlyObservableCollection<ThemeColorViewModel>(this.currentThemeColors = new ObservableCollection<ThemeColorViewModel>());
 
             this.ChooseThemeCommand = new DelegateCommand<TitledRgbColorTheme>(this.UpdateThemeColors, t => this.NotIsThemeBusy)
                 .ObservesProperty(() => this.NotIsThemeBusy);
@@ -161,6 +173,36 @@ namespace Band.Personalize.App.Universal.ViewModels
                 .ObservesProperty(() => this.NotIsMeTileImageBusy));
             this.SaveMeTileImageCommand = saveMeTileImageCommand;
 
+            this.RefreshAvailableThemesCommand = DelegateCommand.FromAsyncHandler(async () =>
+            {
+                await Task
+                    .Run(async () => await this.customThemeRepository.GetThemesAsync())
+                    .ContinueWith(
+                        t =>
+                        {
+                            var key = resourceLoader.GetString("CustomThemes/Header");
+                            var stale = this.availableThemes.Where(g => g.Key == key).ToList();
+                            if (stale.Any())
+                            {
+                                foreach (var s in stale)
+                                {
+                                    this.availableThemes.Remove(s);
+                                }
+                            }
+
+                            this.availableThemes.Add(new ReadOnlyGrouping<string, TitledRgbColorTheme>(key, t.Result.Select(theme => theme.Value).ToList()));
+                        },
+                        CancellationToken.None,
+                        TaskContinuationOptions.OnlyOnRanToCompletion,
+                        TaskScheduler.FromCurrentSynchronizationContext());
+            });
+
+            this.PersistThemeCommand = DelegateCommand.FromAsyncHandler(async () =>
+            {
+                var currentColorTheme = this.CurrentThemeColorsToRgbColorTheme();
+                await Task.Run(async () => await this.customThemeRepository.PersistThemeAsync(currentColorTheme));
+            });
+
             this.PropertyChanged += this.OnIsUseOriginalBandHeightChanged;
         }
 
@@ -193,6 +235,16 @@ namespace Band.Personalize.App.Universal.ViewModels
         /// Gets the command to select a theme.
         /// </summary>
         public ICommand ChooseThemeCommand { get; }
+
+        /// <summary>
+        /// Gets th command to refresh the <see cref="AvailableThemes"/>.
+        /// </summary>
+        public ICommand RefreshAvailableThemesCommand { get; }
+
+        /// <summary>
+        /// Gets the command to persist a theme.
+        /// </summary>
+        public ICommand PersistThemeCommand { get; }
 
         /// <summary>
         /// Gets the current Band.
@@ -487,15 +539,7 @@ namespace Band.Personalize.App.Universal.ViewModels
         /// <returns>An asynchronous task that returns when work is complete.</returns>
         private Task BeginInvokeApplyTheme()
         {
-            var newRgbColorTheme = new RgbColorTheme
-            {
-                Base = this.CurrentThemeColors[0].Swatch,
-                HighContrast = this.CurrentThemeColors[1].Swatch,
-                Lowlight = this.CurrentThemeColors[2].Swatch,
-                Highlight = this.CurrentThemeColors[3].Swatch,
-                Muted = this.CurrentThemeColors[4].Swatch,
-                SecondaryText = this.CurrentThemeColors[5].Swatch,
-            };
+            var newRgbColorTheme = this.CurrentThemeColorsToRgbColorTheme();
 
             return Task.Run(async () => await this.bandPersonalizer.SetTheme(this.CurrentBand, newRgbColorTheme, CancellationToken.None));
         }
@@ -670,6 +714,24 @@ namespace Band.Personalize.App.Universal.ViewModels
                     Swatch = theme.SecondaryText,
                 },
             });
+        }
+
+        /// <summary>
+        /// Create a theme using the current theme colors.
+        /// </summary>
+        /// <returns>A color theme.</returns>
+        private TitledRgbColorTheme CurrentThemeColorsToRgbColorTheme()
+        {
+            return new TitledRgbColorTheme
+            {
+                Title = "Sample", // TODO: how to set title with UI? - prompt for name if unnamed?  Save/Save As... with flyout?
+                Base = this.CurrentThemeColors[0].Swatch,
+                HighContrast = this.CurrentThemeColors[1].Swatch,
+                Lowlight = this.CurrentThemeColors[2].Swatch,
+                Highlight = this.CurrentThemeColors[3].Swatch,
+                Muted = this.CurrentThemeColors[4].Swatch,
+                SecondaryText = this.CurrentThemeColors[5].Swatch,
+            };
         }
     }
 }

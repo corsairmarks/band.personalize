@@ -16,12 +16,14 @@ namespace Band.Personalize.App.Universal
 {
     using System;
     using System.Diagnostics;
+    using System.Linq;
     using System.Threading.Tasks;
     using Microsoft.Band;
     using Microsoft.Practices.Unity;
     using Model.Implementation.Repository;
     using Model.Library.Band;
     using Model.Library.Repository;
+    using Newtonsoft.Json;
     using Prism.Events;
     using Prism.Unity.Windows;
     using Prism.Windows;
@@ -32,6 +34,7 @@ namespace Band.Personalize.App.Universal
     using Windows.ApplicationModel;
     using Windows.ApplicationModel.Activation;
     using Windows.ApplicationModel.Resources;
+    using Windows.Storage;
     using Windows.UI.Popups;
     using Windows.UI.Xaml;
     using Windows.UI.Xaml.Data;
@@ -109,7 +112,25 @@ namespace Band.Personalize.App.Universal
             this.Container.RegisterInstance<IEventAggregator>(this.EventAggregator);
             this.Container.RegisterInstance<IResourceLoader>(new ResourceLoaderAdapter(new ResourceLoader()));
 
+            this.Container.RegisterType<StorageFolder>(
+                "RoamingStorageFolder",
+                new ContainerControlledLifetimeManager(),
+                new InjectionFactory(container => ApplicationData.Current.RoamingFolder));
+
+            // Register JSON serialization
+            this.Container.RegisterType<JsonConverter, RgbColorJsonConverter>(nameof(RgbColorJsonConverter), new ContainerControlledLifetimeManager());
+            this.Container.RegisterType<JsonSerializerSettings>(
+                new ContainerControlledLifetimeManager(),
+                new InjectionFactory(container => new JsonSerializerSettings { Converters = container.ResolveAll<JsonConverter>().ToList(), }));
+            this.Container.RegisterType<JsonSerializer>(
+                new ContainerControlledLifetimeManager(),
+                new InjectionFactory(container => JsonSerializer.Create(container.Resolve<JsonSerializerSettings>())));
+
             // Register repositories
+            this.Container.RegisterType<ICustomThemeRepository, CustomThemeRepository>(
+                new ContainerControlledLifetimeManager(),
+                new InjectionConstructor(new ResolvedParameter<StorageFolder>("RoamingStorageFolder"), new ResolvedParameter<JsonSerializer>()));
+
 #if DEBUG && STUB
             this.Container.RegisterInstance<IBandPersonalizer>(BandPersonalizerStub.Instance);
             this.Container.RegisterInstance<IBandRepository>(BandRepositoryStub.Instance);

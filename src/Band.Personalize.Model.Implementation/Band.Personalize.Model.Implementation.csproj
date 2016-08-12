@@ -102,9 +102,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Repository\ArgbColorJsonConverter.cs" />
     <Compile Include="Repository\Band.cs" />
     <Compile Include="Repository\BandPersonalizer.cs" />
     <Compile Include="Repository\BandRepository.cs" />
+    <Compile Include="Repository\CustomThemeRepository.cs" />
+    <Compile Include="Repository\RgbColorJsonConverter.cs" />
     <EmbeddedResource Include="Properties\Band.Personalize.Model.Implementation.rd.xml" />
   </ItemGroup>
   <ItemGroup>

@@ -98,6 +98,11 @@
                         </GridView>
                         <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
                             <Button x:Uid="ChooseThemeButton" Content="Choose…" Margin="4,0,4,0">
+                                <i:Interaction.Behaviors>
+                                    <core:EventTriggerBehavior EventName="Click">
+                                        <core:InvokeCommandAction Command="{Binding Path=RefreshAvailableThemesCommand}" />
+                                    </core:EventTriggerBehavior>
+                                </i:Interaction.Behaviors>
                                 <Button.Flyout>
                                     <Flyout Placement="Full">
                                         <ListView
@@ -119,6 +124,7 @@
                                     </Flyout>
                                 </Button.Flyout>
                             </Button>
+                            <Button x:Uid="SaveButton" Content="Save" Command="{Binding Path=PersistThemeCommand}" Margin="4,0,0,0" />
                         </StackPanel>
                     </StackPanel>
                 </Grid>

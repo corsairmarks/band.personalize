@@ -153,6 +153,9 @@
   <data name="ConfirmButton.Content" xml:space="preserve">
     <value>Confirm</value>
   </data>
+  <data name="CustomThemes.Header" xml:space="preserve">
+    <value>Custom Themes</value>
+  </data>
   <data name="DefaultSaveFileNameFormat" xml:space="preserve">
     <value>me-tile-{0}</value>
     <comment>{0} is the Band name</comment>

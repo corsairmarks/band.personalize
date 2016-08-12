@@ -115,6 +115,7 @@
     <Compile Include="Repository\IBandClientManagerExtensions.cs" />
     <Compile Include="Repository\IBandPersonalizer.cs" />
     <Compile Include="Repository\IBandRepository.cs" />
+    <Compile Include="Repository\ICustomThemeRepository.cs" />
     <Compile Include="Theme\DefaultThemes.cs" />
     <Compile Include="Theme\RgbColorTheme.cs" />
     <Compile Include="Theme\TitledRgbColorTheme.cs" />
