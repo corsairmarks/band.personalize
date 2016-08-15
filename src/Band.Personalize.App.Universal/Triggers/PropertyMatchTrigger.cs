@@ -21,7 +21,7 @@ namespace Band.Personalize.App.Universal.Triggers
     /// A custom visual state trigger that watches a property for changes.
     /// </summary>
     /// <typeparam name="TValue">The type of the property to watch.</typeparam>
-    public class PropertyMatchTrigger<TValue> : StateTriggerBase
+    public abstract class PropertyMatchTrigger<TValue> : StateTriggerBase
     {
         /// <summary>
         /// Value dependency property.
