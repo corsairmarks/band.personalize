@@ -112,6 +112,7 @@
     </Compile>
     <Compile Include="Behaviors\BindToControlHeightOrWidthBehavior.cs" />
     <Compile Include="Behaviors\CloseFlyoutAction.cs" />
+    <Compile Include="Behaviors\OpenFlyoutAction.cs" />
     <Compile Include="Behaviors\SquareBehavior.cs" />
     <Compile Include="Behaviors\UniformRowsOrColumnsBehavior.cs" />
     <Compile Include="Controls\BindableUserControl.cs" />
