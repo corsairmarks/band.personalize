@@ -25,7 +25,7 @@
                     <SolidColorBrush Color="{x:Bind Path=ColorOuter, Mode=OneWay}" />
                 </Rectangle.Fill>
             </Rectangle>
-            <TextBlock x:Uid="ChooseColorTextBlock" Text="Choose" />
+            <TextBlock x:Uid="ChooseColorTextBlock" Text="Choose…" />
         </StackPanel>
         <VisualStateManager.VisualStateGroups>
             <VisualStateGroup x:Name="OrientationStates">
