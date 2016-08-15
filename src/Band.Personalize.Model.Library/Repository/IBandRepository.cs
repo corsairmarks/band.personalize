@@ -20,7 +20,7 @@ namespace Band.Personalize.Model.Library.Repository
     using Band;
 
     /// <summary>
-    /// A facade for retrieveing infromation about Microsoft Bands.
+    /// A facade for retrieveing information about Microsoft Bands.
     /// </summary>
     public interface IBandRepository
     {
