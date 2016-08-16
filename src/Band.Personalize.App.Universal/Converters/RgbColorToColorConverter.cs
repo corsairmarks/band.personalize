@@ -43,20 +43,9 @@ namespace Band.Personalize.App.Universal.Converters
         public object Convert(object value, Type targetType, object parameter, string language)
         {
             var rgbColor = value as RgbColor;
-            if (rgbColor != null)
+            if (rgbColor != null && (targetType == typeof(object) || targetType == typeof(Color)))
             {
-                if (targetType == typeof(object) || targetType == typeof(Color))
-                {
-                    var argbColor = value as ArgbColor;
-                    if (argbColor != null)
-                    {
-                        return argbColor.ToColor();
-                    }
-                    else
-                    {
-                        return rgbColor.ToColor();
-                    }
-                }
+                return rgbColor.ToColor();
             }
 
             return DependencyProperty.UnsetValue;
@@ -74,18 +63,10 @@ namespace Band.Personalize.App.Universal.Converters
         /// <remarks><paramref name="parameter"/> and <paramref name="language"/> are ignored.</remarks>
         public object ConvertBack(object value, Type targetType, object parameter, string language)
         {
-            if (value != null && value.GetType() == typeof(Color))
+            if (value != null && value.GetType() == typeof(Color) && (targetType == typeof(object) || targetType == typeof(RgbColor)))
             {
-                if (targetType == typeof(RgbColor))
-                {
-                    var color = (Color)value;
-                    return color.ToRgbColor();
-                }
-                else if (targetType == typeof(object) || targetType == typeof(ArgbColor))
-                {
-                    var color = (Color)value;
-                    return color.ToArgbColor();
-                }
+                var color = (Color)value;
+                return color.ToRgbColor();
             }
 
             return DependencyProperty.UnsetValue;
