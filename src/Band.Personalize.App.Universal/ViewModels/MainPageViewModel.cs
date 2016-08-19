@@ -49,7 +49,7 @@ namespace Band.Personalize.App.Universal.ViewModels
         /// <summary>
         /// A semaphore to control access to <see cref="refreshCancellationTokenSource"/>.
         /// </summary>
-        private SemaphoreSlim refreshCancellationTokenSourceSemaphore = new SemaphoreSlim(1);
+        private SemaphoreSlim refreshCancellationTokenSourceSemaphore = new SemaphoreSlim(1, 1);
 
         /// <summary>
         /// A source for <see cref="CancellationToken"/> instances used when executing a "Refresh" operation.

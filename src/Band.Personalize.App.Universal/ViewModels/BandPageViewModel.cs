@@ -222,23 +222,25 @@ namespace Band.Personalize.App.Universal.ViewModels
                         TaskScheduler.FromCurrentSynchronizationContext());
             });
 
-            this.PersistThemeCommand = DelegateCommand.FromAsyncHandler(async () =>
-            {
-                var persisted = this.CurrentTheme as PersistedTitledThemeViewModel;
-                if (persisted != null)
+            this.PersistThemeCommand = DelegateCommand
+                .FromAsyncHandler(async () =>
                 {
-                    await this.customThemeRepository.PersistThemeAsync(persisted.Id, persisted.ToModel());
-                }
-                else
-                {
-                    var currentTheme = this.CurrentTheme;
-                    var id = await this.customThemeRepository.PersistThemeAsync(currentTheme.ToModel());
-                    this.CurrentTheme = persistedThemeViewModelFactory(id, currentTheme);
-                    // TODO: clear list of custom themes
-                }
+                    var persisted = this.CurrentTheme as PersistedTitledThemeViewModel;
+                    if (persisted != null)
+                    {
+                        await this.customThemeRepository.PersistThemeAsync(persisted.Id, persisted.ToModel());
+                    }
+                    else
+                    {
+                        var currentTheme = this.CurrentTheme;
+                        var id = await this.customThemeRepository.PersistThemeAsync(currentTheme.ToModel());
+                        this.CurrentTheme = persistedThemeViewModelFactory(id, currentTheme);
+                        // TODO: clear list of custom themes
+                    }
 
-                this.IsThemeEdited = false;
-            });
+                    this.IsThemeEdited = false;
+                })
+                .ObservesProperty(() => this.IsThemeEdited);
 
             this.PropertyChanged += this.OnIsUseOriginalBandHeightChanged;
         }

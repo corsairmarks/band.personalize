@@ -142,8 +142,12 @@ namespace Band.Personalize.App.Universal
 
             // Register repositories
             this.Container.RegisterType<ICustomThemeRepository, CustomThemeRepository>(
+                "UncachedCustomThemeRepository",
                 new ContainerControlledLifetimeManager(),
                 new InjectionConstructor(new ResolvedParameter<StorageFolder>("RoamingStorageFolder"), new ResolvedParameter<JsonSerializer>()));
+            this.Container.RegisterType<ICustomThemeRepository, CachingCustomThemeRepository>(
+                new ContainerControlledLifetimeManager(),
+                new InjectionConstructor(new ResolvedParameter<ICustomThemeRepository>("UncachedCustomThemeRepository")));
 
 #if DEBUG && STUB
             this.Container.RegisterInstance<IBandPersonalizer>(BandPersonalizerStub.Instance);
