@@ -14,12 +14,13 @@
 
 namespace Band.Personalize.Model.Library.Theme
 {
+    using System;
     using Color;
 
     /// <summary>
     /// A six-color theme for use on the Microsoft Band.
     /// </summary>
-    public class RgbColorTheme
+    public class RgbColorTheme : IEquatable<TitledRgbColorTheme>
     {
         /// <summary>
         /// Gets or sets the base Start Strip color, used as the default for tiles.
@@ -52,5 +53,25 @@ namespace Band.Personalize.Model.Library.Theme
         /// which itself is a static, predefined color.
         /// </summary>
         public RgbColor SecondaryText { get; set; }
+
+        /// <summary>
+        /// Indicates whether the current object is equal to another object of the same type.
+        /// </summary>
+        /// <param name="other">An object to compare with this object.</param>
+        /// <returns><c>true</c> if the current object is equal to the <paramref name="other"/> parameter; otherwise, <c>false</c>.</returns>
+        public bool Equals(TitledRgbColorTheme other)
+        {
+            if (other != null)
+            {
+                return this.Base == other.Base
+                    && this.HighContrast == other.HighContrast
+                    && this.Lowlight == other.Lowlight
+                    && this.Highlight == other.Highlight
+                    && this.Muted == other.Muted
+                    && this.SecondaryText == other.SecondaryText;
+            }
+
+            return false;
+        }
     }
 }
