@@ -59,7 +59,7 @@ namespace Band.Personalize.App.Universal.ViewModels
         /// <summary>
         /// The themes available for selection.
         /// </summary>
-        private readonly ObservableCollection<IGrouping<string, TitledThemeViewModel>> availableThemes;
+        private readonly IList<TitledThemeViewModel> availableCustomThemes;
 
         /// <summary>
         /// The current theme for editing.
@@ -150,11 +150,13 @@ namespace Band.Personalize.App.Universal.ViewModels
 
             var defaultBandThemes = DefaultThemes.Band.DefaultThemes.Select(t => t.ToViewModel(t.Title)).ToList();
             var defaultBand2Themes = DefaultThemes.Band2.DefaultThemes.Select(t => t.ToViewModel(t.Title)).ToList();
+            this.availableCustomThemes = new List<TitledThemeViewModel>();
 
-            this.AvailableThemes = new ReadOnlyObservableCollection<IGrouping<string, TitledThemeViewModel>>(this.availableThemes = new ObservableCollection<IGrouping<string, TitledThemeViewModel>>(new List<IGrouping<string, TitledThemeViewModel>>
+            this.AvailableThemes = new ReadOnlyObservableCollection<IGrouping<string, TitledThemeViewModel>>(new ObservableCollection<IGrouping<string, TitledThemeViewModel>>(new List<IGrouping<string, TitledThemeViewModel>>
             {
                 new ReadOnlyGrouping<string, TitledThemeViewModel>(this.resourceLoader.GetString("HardwareRevision/Band"), defaultBandThemes),
                 new ReadOnlyGrouping<string, TitledThemeViewModel>(this.resourceLoader.GetString("HardwareRevision/Band2"), defaultBand2Themes),
+                new ReadOnlyGrouping<string, TitledThemeViewModel>(this.resourceLoader.GetString("CustomThemes/Header"), this.availableCustomThemes),
             }));
 
             this.ChooseThemeCommand = new DelegateCommand<TitledThemeViewModel>(
@@ -205,17 +207,15 @@ namespace Band.Personalize.App.Universal.ViewModels
                     .ContinueWith(
                         t =>
                         {
-                            var key = this.resourceLoader.GetString("CustomThemes/Header");
-                            var stale = this.availableThemes.Where(g => g.Key == key).ToList();
-                            if (stale.Any())
+                            this.availableCustomThemes.Clear();
+
+                            var themeViewModels = t.Result.Select(theme => persistedThemeViewModelFactory(theme.Key, theme.Value.ToViewModel(theme.Value.Title))).ToList();
+                            foreach (var themeViewModel in themeViewModels)
                             {
-                                foreach (var s in stale)
-                                {
-                                    this.availableThemes.Remove(s);
-                                }
+                                this.availableCustomThemes.Add(themeViewModel);
                             }
 
-                            this.availableThemes.Add(new ReadOnlyGrouping<string, PersistedTitledThemeViewModel>(key, t.Result.Select(theme => persistedThemeViewModelFactory(theme.Key, theme.Value.ToViewModel(theme.Value.Title))).ToList()));
+                            this.OnPropertyChanged(nameof(this.AvailableThemes));
                         },
                         CancellationToken.None,
                         TaskContinuationOptions.OnlyOnRanToCompletion,
