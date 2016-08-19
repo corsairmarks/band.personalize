@@ -124,9 +124,7 @@
                         Visibility="{Binding Path=IsThemeBusy, Converter={StaticResource ResourceKey=BooleanToVisibilityConverter}}" />
                     <StackPanel Visibility="{Binding Path=NotIsThemeBusy, Converter={StaticResource ResourceKey=BooleanToVisibilityConverter}}">
                         <TextBox Text="{Binding Path=CurrentTheme.Title, Mode=TwoWay}" />
-                        <GridView
-                            ItemContainerStyle="{StaticResource ResourceKey=ThemeColorTileContainer}"
-                            ItemsSource="{Binding Path=CurrentThemeColors}">
+                        <GridView ItemContainerStyle="{StaticResource ResourceKey=ThemeColorTileContainer}">
                             <GridView.ItemsPanel>
                                 <ItemsPanelTemplate>
                                     <ItemsWrapGrid ItemWidth="120" MaximumRowsOrColumns="3" Orientation="Horizontal" />
