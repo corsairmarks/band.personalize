@@ -31,7 +31,12 @@ namespace Band.Personalize.App.Universal.ViewModels.Design
         /// Initializes a new instance of the <see cref="DesignBandPageViewModel"/> class.
         /// </summary>
         public DesignBandPageViewModel()
-            : base(NavigationServiceStub.Instance, new ResourceLoaderAdapter(new ResourceLoader()), BandPersonalizerStub.Instance, new CustomThemeRepository(ApplicationData.Current.RoamingFolder, JsonSerializer.Create(new JsonSerializerSettings { Converters = new[] { new RgbColorJsonConverter(), }, })))
+            : base(
+                  NavigationServiceStub.Instance,
+                  new ResourceLoaderAdapter(new ResourceLoader()),
+                  BandPersonalizerStub.Instance,
+                  new CustomThemeRepository(ApplicationData.Current.RoamingFolder, JsonSerializer.Create(new JsonSerializerSettings { Converters = new[] { new RgbColorJsonConverter(), }, })),
+                  (id, m) => new PersistedTitledThemeViewModel(id, null, null))
         {
             this.OnNavigatedTo(
                 new NavigatedToEventArgs

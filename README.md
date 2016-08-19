@@ -17,6 +17,10 @@ A personalization tool for the Microsoft Band and Microsoft Band 2, built on the
    2. To see what parts of the Band 2 are controlled by each color, see the [Microsoft Band 2 Experience Design Guidelines](https://developer.microsoftband.com/Content/docs/MicrosoftBandExperienceDesignGuidelines2.pdf)
    3. Be sure to apply your changes by clicking the save icon on the application bar
    4. You can cancel your unsaved changes by clicking the "refresh" icon on the application bar, which reads the current theme from your Band
+   5. You can select a default theme (as defined in the Microsoft Band experience design guidelines documents, above) or saved theme by clicking on the "Choose a theme…" button
+   6. You can save your theme for later re-use with the "Save" button
+      1. Saved themes are saved as roaming state and will automatically syncronize across all Windows 10 devices where you are logged in with the same Microsoft account
+      2. You can permanently delete any of your saved themes by clicking "Delete" button on the relevant theme under "Choose a theme…"
 6. Use the image picker under "Image" to change the Me Tile image on your Band
    1. Be sure to apply your changes by clicking the save icon on the application bar
    2. You can cancel your unsaved changes by clicking the "refresh" icon on the application bar, which reads the current Me Tile image from your Band

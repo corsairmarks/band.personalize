@@ -117,6 +117,20 @@ namespace Band.Personalize.App.Universal
                 new ContainerControlledLifetimeManager(),
                 new InjectionFactory(container => ApplicationData.Current.RoamingFolder));
 
+            this.Container.RegisterType<Func<Guid, TitledThemeViewModel, PersistedTitledThemeViewModel>>(new InjectionFactory(context =>
+            {
+                return new Func<Guid, TitledThemeViewModel, PersistedTitledThemeViewModel>((id, model) => new PersistedTitledThemeViewModel(id, context.Resolve<IResourceLoader>(), context.Resolve<ICustomThemeRepository>())
+                {
+                    Title = model.Title,
+                    Base = model.Base,
+                    HighContrast = model.HighContrast,
+                    Lowlight = model.Lowlight,
+                    Highlight = model.Highlight,
+                    Muted = model.Muted,
+                    SecondaryText = model.SecondaryText,
+                });
+            }));
+
             // Register JSON serialization
             this.Container.RegisterType<JsonConverter, RgbColorJsonConverter>(nameof(RgbColorJsonConverter), new ContainerControlledLifetimeManager());
             this.Container.RegisterType<JsonSerializerSettings>(
