@@ -129,7 +129,7 @@
   <data name="BandVersionToggle.Header" xml:space="preserve">
     <value>Use original Band height (102px)</value>
   </data>
-  <data name="BaseTextBox.Text" xml:space="preserve">
+  <data name="BaseTextBlock.Text" xml:space="preserve">
     <value>Base</value>
   </data>
   <data name="BlueChannel.Header" xml:space="preserve">
@@ -148,14 +148,39 @@
     <value>Choose…</value>
   </data>
   <data name="ChooseThemeButton.Content" xml:space="preserve">
-    <value>Choose…</value>
+    <value>Choose a theme…</value>
   </data>
   <data name="ConfirmButton.Content" xml:space="preserve">
     <value>Confirm</value>
   </data>
+  <data name="CurrentThemeTitle.DefaultFormat" xml:space="preserve">
+    <value>Current theme for {0}</value>
+    <comment>{0} is the Band name</comment>
+  </data>
+  <data name="Custom.Text" xml:space="preserve">
+    <value>Custom</value>
+  </data>
+  <data name="CustomThemes.Header" xml:space="preserve">
+    <value>Custom Themes</value>
+  </data>
   <data name="DefaultSaveFileNameFormat" xml:space="preserve">
     <value>me-tile-{0}</value>
     <comment>{0} is the Band name</comment>
+  </data>
+  <data name="DeleteButton.Content" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="DeleteThemeMessageDialog.Content" xml:space="preserve">
+    <value>Deleting a theme is permanent.  Do you want to delete this theme?</value>
+  </data>
+  <data name="DeleteThemeMessageDialog.PrimaryButtonText" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="DeleteThemeMessageDialog.SecondaryButtonText" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="DeleteThemeMessageDialog.Title" xml:space="preserve">
+    <value>Delete custom theme</value>
   </data>
   <data name="GreenChannel.Header" xml:space="preserve">
     <value>G</value>
@@ -166,23 +191,23 @@
   <data name="HardwareRevision.Band2" xml:space="preserve">
     <value>Band 2</value>
   </data>
-  <data name="HighContrastTextBox.Text" xml:space="preserve">
+  <data name="HighContrastTextBlock.Text" xml:space="preserve">
     <value>High Contrast</value>
   </data>
-  <data name="HighlightTextBox.Text" xml:space="preserve">
+  <data name="HighlightTextBlock.Text" xml:space="preserve">
     <value>Highlight</value>
   </data>
   <data name="ImagePivotItem.Header" xml:space="preserve">
     <value>Image</value>
   </data>
-  <data name="LowlightTextBox.Text" xml:space="preserve">
+  <data name="LowlightTextBlock.Text" xml:space="preserve">
     <value>Lowlight</value>
   </data>
   <data name="MeTileImageSaveFailedMessage" xml:space="preserve">
     <value>Unable to save the Me Tile image "{0}" ‒ please try again.</value>
     <comment>{0} is the name of the file</comment>
   </data>
-  <data name="MutedTextBox.Text" xml:space="preserve">
+  <data name="MutedTextBlock.Text" xml:space="preserve">
     <value>Muted</value>
   </data>
   <data name="NoSuchEncoderExceptionMessage" xml:space="preserve">
@@ -195,10 +220,13 @@
   <data name="RefreshAppBarButton.Label" xml:space="preserve">
     <value>Refresh</value>
   </data>
-  <data name="SaveButton.Content" xml:space="preserve">
+  <data name="SaveMeTileImageButton.Content" xml:space="preserve">
     <value>Save</value>
   </data>
-  <data name="SecondaryTextTextBox.Text" xml:space="preserve">
+  <data name="SaveThemeButton.Content" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="SecondaryTextTextBlock.Text" xml:space="preserve">
     <value>Secondary Text</value>
   </data>
   <data name="ThemePivotItem.Header" xml:space="preserve">

@@ -16,12 +16,14 @@ namespace Band.Personalize.App.Universal
 {
     using System;
     using System.Diagnostics;
+    using System.Linq;
     using System.Threading.Tasks;
     using Microsoft.Band;
     using Microsoft.Practices.Unity;
     using Model.Implementation.Repository;
     using Model.Library.Band;
     using Model.Library.Repository;
+    using Newtonsoft.Json;
     using Prism.Events;
     using Prism.Unity.Windows;
     using Prism.Windows;
@@ -32,6 +34,7 @@ namespace Band.Personalize.App.Universal
     using Windows.ApplicationModel;
     using Windows.ApplicationModel.Activation;
     using Windows.ApplicationModel.Resources;
+    using Windows.Storage;
     using Windows.UI.Popups;
     using Windows.UI.Xaml;
     using Windows.UI.Xaml.Data;
@@ -109,7 +112,51 @@ namespace Band.Personalize.App.Universal
             this.Container.RegisterInstance<IEventAggregator>(this.EventAggregator);
             this.Container.RegisterInstance<IResourceLoader>(new ResourceLoaderAdapter(new ResourceLoader()));
 
+            var applicationData = ApplicationData.Current;
+            applicationData.DataChanged += this.DataChanged; // TODO: inject?
+            this.Container.RegisterInstance<ApplicationData>(applicationData, new ExternallyControlledLifetimeManager());
+
+            this.Container.RegisterType<StorageFolder>(
+                "RoamingStorageFolder",
+                new ContainerControlledLifetimeManager(),
+                new InjectionFactory(container => container.Resolve<ApplicationData>().RoamingFolder));
+
+            this.Container.RegisterType<Func<Guid, TitledThemeViewModel, PersistedTitledThemeViewModel>>(new InjectionFactory(context =>
+            {
+                return new Func<Guid, TitledThemeViewModel, PersistedTitledThemeViewModel>((id, model) => new PersistedTitledThemeViewModel(id, context.Resolve<IResourceLoader>(), context.Resolve<ICustomThemeRepository>())
+                {
+                    Title = model.Title,
+                    Base = model.Base,
+                    HighContrast = model.HighContrast,
+                    Lowlight = model.Lowlight,
+                    Highlight = model.Highlight,
+                    Muted = model.Muted,
+                    SecondaryText = model.SecondaryText,
+                });
+            }));
+
+            // Register JSON serialization
+            this.Container.RegisterType<JsonConverter, RgbColorJsonConverter>(nameof(RgbColorJsonConverter), new ContainerControlledLifetimeManager());
+            this.Container.RegisterType<JsonSerializerSettings>(
+                new ContainerControlledLifetimeManager(),
+                new InjectionFactory(container => new JsonSerializerSettings { Converters = container.ResolveAll<JsonConverter>().ToList(), }));
+            this.Container.RegisterType<JsonSerializer>(
+                new ContainerControlledLifetimeManager(),
+                new InjectionFactory(container => JsonSerializer.Create(container.Resolve<JsonSerializerSettings>())));
+
             // Register repositories
+            this.Container.RegisterType<ICustomThemeRepository, CustomThemeRepository>(
+                "UncachedCustomThemeRepository",
+                new ContainerControlledLifetimeManager(),
+                new InjectionConstructor(new ResolvedParameter<StorageFolder>("RoamingStorageFolder"), new ResolvedParameter<JsonSerializer>()));
+            this.Container.RegisterType<ICustomThemeRepository, CachedCustomThemeRepository>(
+                new ContainerControlledLifetimeManager(),
+                new InjectionConstructor(new ResolvedParameter<ICustomThemeRepository>("UncachedCustomThemeRepository")));
+            this.Container.RegisterType<ICachedRepository>(
+                "CachedCustomThemeRepository",
+                new ContainerControlledLifetimeManager(),
+                new InjectionFactory(container => container.Resolve<ICustomThemeRepository>()));
+
 #if DEBUG && STUB
             this.Container.RegisterInstance<IBandPersonalizer>(BandPersonalizerStub.Instance);
             this.Container.RegisterInstance<IBandRepository>(BandRepositoryStub.Instance);
@@ -151,6 +198,17 @@ namespace Band.Personalize.App.Universal
                     await messageDialog.ShowAsync();
                 }
             }
+        }
+
+        /// <summary>
+        /// Occurs when roaming application data is synchronized.
+        /// </summary>
+        /// <param name="sender">The event source.</param>
+        /// <param name="args">The event data. If there is no event data, this parameter will be <c>null</c>.</param>
+        private void DataChanged(ApplicationData sender, object args)
+        {
+            var cached = this.Container.Resolve<ICachedRepository>("CachedCustomThemeRepository");
+            cached.Clear();
         }
     }
 }

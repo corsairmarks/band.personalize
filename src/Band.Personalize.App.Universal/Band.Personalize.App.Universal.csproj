@@ -121,6 +121,7 @@
     <Compile Include="Controls\RgbColorChannelUserControl.xaml.cs">
       <DependentUpon>RgbColorChannelUserControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\ThemeOptionTemplateSelector.cs" />
     <Compile Include="Converters\ByteToDoubleConverter.cs" />
     <Compile Include="Converters\HardwareRevisionToBooleanConverter.cs" />
     <Compile Include="Converters\ConnectionTypeToSymbolConverter.cs" />
@@ -143,7 +144,9 @@
     <Compile Include="ViewModels\Design\NavigationServiceStub.cs" />
     <Compile Include="ViewModels\MainPageViewModel.cs" />
     <Compile Include="ViewModels\PageNavigationTokens.cs" />
-    <Compile Include="ViewModels\ThemeColorViewModel.cs" />
+    <Compile Include="ViewModels\PersistedTitledThemeViewModel.cs" />
+    <Compile Include="ViewModels\ThemeConversionExtensions.cs" />
+    <Compile Include="ViewModels\TitledThemeViewModel.cs" />
     <Compile Include="Views\BandPage.xaml.cs">
       <DependentUpon>BandPage.xaml</DependentUpon>
     </Compile>

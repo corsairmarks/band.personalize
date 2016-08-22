@@ -21,7 +21,7 @@
         <DataTemplate x:Key="GroupKeyHeader">
             <TextBlock Text="{Binding Path=Key}" Style="{ThemeResource TitleTextBlockStyle}"/>
         </DataTemplate>
-        <DataTemplate x:Key="ThemeOption" x:DataType="theme:TitledRgbColorTheme">
+        <DataTemplate x:Key="TitledTheme" x:DataType="vm:TitledThemeViewModel">
             <StackPanel Orientation="Horizontal">
                 <VariableSizedWrapGrid Orientation="Horizontal" MaximumRowsOrColumns="4" ItemHeight="20" ItemWidth="20" Margin="0,4,4,4">
                     <Rectangle VariableSizedWrapGrid.ColumnSpan="2" VariableSizedWrapGrid.RowSpan="2">
@@ -58,9 +58,53 @@
                 <TextBlock Text="{x:Bind Path=Title}" FontSize="20" VerticalAlignment="Center" />
             </StackPanel>
         </DataTemplate>
+        <DataTemplate x:Key="PersistedTitledTheme" x:DataType="vm:PersistedTitledThemeViewModel">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <VariableSizedWrapGrid Grid.Column="0" Orientation="Horizontal" MaximumRowsOrColumns="4" ItemHeight="20" ItemWidth="20" Margin="0,4,4,4">
+                    <Rectangle VariableSizedWrapGrid.ColumnSpan="2" VariableSizedWrapGrid.RowSpan="2">
+                        <Rectangle.Fill>
+                            <SolidColorBrush Color="{x:Bind Path=Base, Converter={StaticResource ResourceKey=RgbColorToColorConverter}}" />
+                        </Rectangle.Fill>
+                    </Rectangle>
+                    <Rectangle VariableSizedWrapGrid.ColumnSpan="2" VariableSizedWrapGrid.RowSpan="2">
+                        <Rectangle.Fill>
+                            <SolidColorBrush Color="{x:Bind Path=Highlight, Converter={StaticResource ResourceKey=RgbColorToColorConverter}}" />
+                        </Rectangle.Fill>
+                    </Rectangle>
+                    <Rectangle>
+                        <Rectangle.Fill>
+                            <SolidColorBrush Color="{x:Bind Path=HighContrast, Converter={StaticResource ResourceKey=RgbColorToColorConverter}}" />
+                        </Rectangle.Fill>
+                    </Rectangle>
+                    <Rectangle>
+                        <Rectangle.Fill>
+                            <SolidColorBrush Color="{x:Bind Path=Lowlight, Converter={StaticResource ResourceKey=RgbColorToColorConverter}}" />
+                        </Rectangle.Fill>
+                    </Rectangle>
+                    <Rectangle>
+                        <Rectangle.Fill>
+                            <SolidColorBrush Color="{x:Bind Path=Muted, Converter={StaticResource ResourceKey=RgbColorToColorConverter}}" />
+                        </Rectangle.Fill>
+                    </Rectangle>
+                    <Rectangle>
+                        <Rectangle.Fill>
+                            <SolidColorBrush Color="{x:Bind Path=SecondaryText, Converter={StaticResource ResourceKey=RgbColorToColorConverter}}" />
+                        </Rectangle.Fill>
+                    </Rectangle>
+                </VariableSizedWrapGrid>
+                <TextBlock Grid.Column="1" Text="{x:Bind Path=Title}" FontSize="20" VerticalAlignment="Center" />
+                <Button Grid.Column="2" x:Uid="DeleteButton" Content="Delete" Command="{x:Bind Path=DeleteCommand}" VerticalAlignment="Center" />
+            </Grid>
+        </DataTemplate>
         <CollectionViewSource x:Name="AvailableThemeCollectionViewSource" Source="{Binding AvailableThemes}" IsSourceGrouped="True" />
+        <controls:ThemeOptionTemplateSelector x:Key="ThemeOptionTemplateSelector" PersistedTitled="{StaticResource ResourceKey=PersistedTitledTheme}" Titled="{StaticResource ResourceKey=TitledTheme}" />
     </Page.Resources>
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    <Grid Name="TheGrid" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Grid.RowDefinitions>
             <RowDefinition x:Name="TopGridRow" />
             <RowDefinition x:Name="BottomGridRow" />
@@ -77,27 +121,61 @@
                         MinWidth="76"
                         MinHeight="76"
                         IsActive="{Binding Path=IsThemeBusy}"
-                        Visibility="{Binding Path=IsThemeBusy, Mode=OneWay, Converter={StaticResource ResourceKey=BooleanToVisibilityConverter}}" />
-                    <StackPanel Visibility="{Binding Path=NotIsThemeBusy, Mode=OneWay, Converter={StaticResource ResourceKey=BooleanToVisibilityConverter}}">
-                        <GridView
-                            ItemContainerStyle="{StaticResource ResourceKey=ThemeColorTileContainer}"
-                            ItemsSource="{Binding Path=CurrentThemeColors, Mode=OneWay}">
+                        Visibility="{Binding Path=IsThemeBusy, Converter={StaticResource ResourceKey=BooleanToVisibilityConverter}}" />
+                    <StackPanel Visibility="{Binding Path=NotIsThemeBusy, Converter={StaticResource ResourceKey=BooleanToVisibilityConverter}}">
+                        <TextBox Text="{Binding Path=CurrentTheme.Title, Mode=TwoWay}" />
+                        <GridView ItemContainerStyle="{StaticResource ResourceKey=ThemeColorTileContainer}">
                             <GridView.ItemsPanel>
                                 <ItemsPanelTemplate>
                                     <ItemsWrapGrid ItemWidth="120" MaximumRowsOrColumns="3" Orientation="Horizontal" />
                                 </ItemsPanelTemplate>
                             </GridView.ItemsPanel>
-                            <GridView.ItemTemplate>
-                                <DataTemplate x:DataType="vm:ThemeColorViewModel">
+                            <GridView.Items>
+                                <GridViewItem>
                                     <StackPanel>
-                                        <TextBlock Text="{x:Bind Path=Title, Mode=OneWay}" />
-                                        <controls:ColorPickerFlyoutUserControl HorizontalContentAlignment="Stretch" ColorOuter="{x:Bind Path=Swatch, Mode=TwoWay, Converter={StaticResource ResourceKey=RgbColorToColorConverter}}" />
+                                        <TextBlock x:Uid="BaseTextBlock" />
+                                        <controls:ColorPickerFlyoutUserControl HorizontalContentAlignment="Stretch" ColorOuter="{Binding Path=CurrentTheme.Base, Mode=TwoWay, Converter={StaticResource ResourceKey=RgbColorToColorConverter}}" />
                                     </StackPanel>
-                                </DataTemplate>
-                            </GridView.ItemTemplate>
+                                </GridViewItem>
+                                <GridViewItem>
+                                    <StackPanel>
+                                        <TextBlock x:Uid="HighContrastTextBlock" />
+                                        <controls:ColorPickerFlyoutUserControl HorizontalContentAlignment="Stretch" ColorOuter="{Binding Path=CurrentTheme.HighContrast, Mode=TwoWay, Converter={StaticResource ResourceKey=RgbColorToColorConverter}}" />
+                                    </StackPanel>
+                                </GridViewItem>
+                                <GridViewItem>
+                                    <StackPanel>
+                                        <TextBlock x:Uid="LowlightTextBlock" />
+                                        <controls:ColorPickerFlyoutUserControl HorizontalContentAlignment="Stretch" ColorOuter="{Binding Path=CurrentTheme.Lowlight, Mode=TwoWay, Converter={StaticResource ResourceKey=RgbColorToColorConverter}}" />
+                                    </StackPanel>
+                                </GridViewItem>
+                                <GridViewItem>
+                                    <StackPanel>
+                                        <TextBlock x:Uid="HighlightTextBlock" />
+                                        <controls:ColorPickerFlyoutUserControl HorizontalContentAlignment="Stretch" ColorOuter="{Binding Path=CurrentTheme.Highlight, Mode=TwoWay, Converter={StaticResource ResourceKey=RgbColorToColorConverter}}" />
+                                    </StackPanel>
+                                </GridViewItem>
+                                <GridViewItem>
+                                    <StackPanel>
+                                        <TextBlock x:Uid="MutedTextBlock" />
+                                        <controls:ColorPickerFlyoutUserControl HorizontalContentAlignment="Stretch" ColorOuter="{Binding Path=CurrentTheme.Muted, Mode=TwoWay, Converter={StaticResource ResourceKey=RgbColorToColorConverter}}" />
+                                    </StackPanel>
+                                </GridViewItem>
+                                <GridViewItem>
+                                    <StackPanel>
+                                        <TextBlock x:Uid="SecondaryTextTextBlock" />
+                                        <controls:ColorPickerFlyoutUserControl HorizontalContentAlignment="Stretch" ColorOuter="{Binding Path=CurrentTheme.SecondaryText, Mode=TwoWay, Converter={StaticResource ResourceKey=RgbColorToColorConverter}}" />
+                                    </StackPanel>
+                                </GridViewItem>
+                            </GridView.Items>
                         </GridView>
-                        <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
-                            <Button x:Uid="ChooseThemeButton" Content="Choose…" Margin="4,0,4,0">
+                        <StackPanel Orientation="Horizontal" Margin="-4,4,-4,0">
+                            <Button x:Uid="ChooseThemeButton" Content="Choose a theme…" Margin="4,0,4,0">
+                                <i:Interaction.Behaviors>
+                                    <core:EventTriggerBehavior EventName="Click">
+                                        <core:InvokeCommandAction Command="{Binding Path=RefreshAvailableThemesCommand}" />
+                                    </core:EventTriggerBehavior>
+                                </i:Interaction.Behaviors>
                                 <Button.Flyout>
                                     <Flyout Placement="Full">
                                         <ListView
@@ -105,10 +183,15 @@
                                             ItemsSource="{Binding Source={StaticResource ResourceKey=AvailableThemeCollectionViewSource}}"
                                             SelectionMode="None"
                                             IsItemClickEnabled="True"
-                                            ItemTemplate="{StaticResource ResourceKey=ThemeOption}">
+                                            ItemTemplateSelector="{StaticResource ResourceKey=ThemeOptionTemplateSelector}">
                                             <ListView.GroupStyle>
                                                 <GroupStyle HidesIfEmpty="True" HeaderTemplate="{StaticResource ResourceKey=GroupKeyHeader}" />
                                             </ListView.GroupStyle>
+                                            <ListView.ItemContainerStyle>
+                                                <Style TargetType="ListViewItem">
+                                                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                                                </Style>
+                                            </ListView.ItemContainerStyle>
                                             <i:Interaction.Behaviors>
                                                 <core:EventTriggerBehavior EventName="ItemClick">
                                                     <core:InvokeCommandAction Command="{Binding Path=ChooseThemeCommand}" InputConverter="{StaticResource ResourceKey=ItemClickInputConverter}" />
@@ -119,6 +202,7 @@
                                     </Flyout>
                                 </Button.Flyout>
                             </Button>
+                            <Button x:Uid="SaveThemeButton" Content="Save" Command="{Binding Path=PersistThemeCommand}" IsEnabled="{Binding Path=IsThemeEdited}" Margin="4,0,4,0" />
                         </StackPanel>
                     </StackPanel>
                 </Grid>
@@ -129,8 +213,8 @@
                         MinWidth="76"
                         MinHeight="76"
                         IsActive="{Binding Path=IsMeTileImageBusy}"
-                        Visibility="{Binding Path=IsMeTileImageBusy, Mode=OneWay, Converter={StaticResource ResourceKey=BooleanToVisibilityConverter}}" />
-                    <StackPanel Visibility="{Binding Path=NotIsMeTileImageBusy, Mode=OneWay, Converter={StaticResource ResourceKey=BooleanToVisibilityConverter}}">
+                        Visibility="{Binding Path=IsMeTileImageBusy, Converter={StaticResource ResourceKey=BooleanToVisibilityConverter}}" />
+                    <StackPanel Visibility="{Binding Path=NotIsMeTileImageBusy, Converter={StaticResource ResourceKey=BooleanToVisibilityConverter}}">
                         <ToggleSwitch
                             x:Uid="BandVersionToggle"
                             Header="Use original Band height (102px)"
@@ -142,7 +226,7 @@
                         </Border>
                         <StackPanel Orientation="Horizontal" Margin="0,4">
                             <Button x:Uid="BrowseButton" Content="Browse" Command="{Binding Path=BrowserForMeTileImageCommand}" Margin="0,0,4,0" />
-                            <Button x:Uid="SaveButton" Content="Save" Command="{Binding Path=SaveMeTileImageCommand}" Margin="4,0,0,0" />
+                            <Button x:Uid="SaveMeTileImageButton" Content="Save" Command="{Binding Path=SaveMeTileImageCommand}" Margin="4,0,0,0" />
                         </StackPanel>
                         <TextBlock x:Name="SaveStatusTextBlock" Foreground="DarkRed" FontWeight="Bold" Text="{Binding Path=SaveStatusMessage}">
                             <TextBlock.Resources>

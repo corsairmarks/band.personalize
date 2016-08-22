@@ -14,10 +14,13 @@
 
 namespace Band.Personalize.App.Universal.ViewModels.Design
 {
+    using Model.Implementation.Repository;
     using Model.Library.Band;
+    using Newtonsoft.Json;
     using Prism.Windows.AppModel;
     using Prism.Windows.Navigation;
     using Windows.ApplicationModel.Resources;
+    using Windows.Storage;
 
     /// <summary>
     /// The design View Model for the Band Page.
@@ -28,7 +31,12 @@ namespace Band.Personalize.App.Universal.ViewModels.Design
         /// Initializes a new instance of the <see cref="DesignBandPageViewModel"/> class.
         /// </summary>
         public DesignBandPageViewModel()
-            : base(NavigationServiceStub.Instance, new ResourceLoaderAdapter(new ResourceLoader()), BandPersonalizerStub.Instance)
+            : base(
+                  NavigationServiceStub.Instance,
+                  new ResourceLoaderAdapter(new ResourceLoader()),
+                  BandPersonalizerStub.Instance,
+                  new CustomThemeRepository(ApplicationData.Current.RoamingFolder, JsonSerializer.Create(new JsonSerializerSettings { Converters = new[] { new RgbColorJsonConverter(), }, })),
+                  (id, m) => new PersistedTitledThemeViewModel(id, null, null))
         {
             this.OnNavigatedTo(
                 new NavigatedToEventArgs
