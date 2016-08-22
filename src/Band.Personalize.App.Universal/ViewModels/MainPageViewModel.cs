@@ -220,7 +220,7 @@ namespace Band.Personalize.App.Universal.ViewModels
 
             this.IsBusy = true;
             await Task
-                .Run(async () => await this.bandRepository.GetPairedBands(token), token)
+                .Run(async () => await this.bandRepository.GetPairedBandsAsync(token), token)
                 .ContinueWith(t => this.UpdatePairedBands(t.Result), CancellationToken.None, TaskContinuationOptions.OnlyOnRanToCompletion, TaskScheduler.FromCurrentSynchronizationContext())
                 .ContinueWith(t => this.IsBusy = false, TaskScheduler.FromCurrentSynchronizationContext());
         }

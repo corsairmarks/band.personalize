@@ -25,10 +25,18 @@ namespace Band.Personalize.Model.Library.Repository
     public interface IBandRepository
     {
         /// <summary>
+        /// Gets information about a specific Microsoft Band paired with the application host by <paramref name="name"/>.
+        /// </summary>
+        /// <param name="name">The name of the Band to retrieve.</param>
+        /// <param name="token">The <see cref="CancellationToken"/> to observe.</param>
+        /// <returns>An asynchronous task that when complete that returns, if successful, a paired Band; otherwise, <c>null</c>.</returns>
+        Task<IBand> GetPairedBandAsync(string name, CancellationToken token);
+
+        /// <summary>
         /// Gets information about all Microsoft Bands paired with the application host.
         /// </summary>
         /// <param name="token">The <see cref="CancellationToken"/> to observe.</param>
         /// <returns>An asynchronous task that returns a read-only collection of paired Bands when it completes.</returns>
-        Task<IReadOnlyList<IBand>> GetPairedBands(CancellationToken token);
+        Task<IReadOnlyList<IBand>> GetPairedBandsAsync(CancellationToken token);
     }
 }
