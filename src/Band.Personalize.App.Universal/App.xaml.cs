@@ -21,7 +21,6 @@ namespace Band.Personalize.App.Universal
     using Microsoft.Band;
     using Microsoft.Practices.Unity;
     using Model.Implementation.Repository;
-    using Model.Library.Band;
     using Model.Library.Repository;
     using Newtonsoft.Json;
     using Prism.Events;
@@ -31,7 +30,6 @@ namespace Band.Personalize.App.Universal
     using Prism.Windows.Navigation;
     using ViewModels;
     using ViewModels.Design;
-    using Windows.ApplicationModel;
     using Windows.ApplicationModel.Activation;
     using Windows.ApplicationModel.Resources;
     using Windows.Storage;
@@ -149,21 +147,31 @@ namespace Band.Personalize.App.Universal
                 "UncachedCustomThemeRepository",
                 new ContainerControlledLifetimeManager(),
                 new InjectionConstructor(new ResolvedParameter<StorageFolder>("RoamingStorageFolder"), new ResolvedParameter<JsonSerializer>()));
-            this.Container.RegisterType<ICustomThemeRepository, CachedCustomThemeRepository>(
+            this.Container.RegisterType<ICustomThemeRepository>(
+                new ContainerControlledLifetimeManager(),
+                new InjectionFactory(container => container.Resolve<ICachedRepository<ICustomThemeRepository>>().Repository));
+            this.Container.RegisterType<ICachedRepository<ICustomThemeRepository>, CachedCustomThemeRepository>(
                 new ContainerControlledLifetimeManager(),
                 new InjectionConstructor(new ResolvedParameter<ICustomThemeRepository>("UncachedCustomThemeRepository")));
-            this.Container.RegisterType<ICachedRepository>(
-                "CachedCustomThemeRepository",
+            this.Container.RegisterType<IBandRepository>(
                 new ContainerControlledLifetimeManager(),
-                new InjectionFactory(container => container.Resolve<ICustomThemeRepository>()));
+                new InjectionFactory(container => container.Resolve<ICachedRepository<IBandRepository>>().Repository));
+            this.Container.RegisterType<ICachedRepository<IBandRepository>, CachedBandRepository>(
+                new ContainerControlledLifetimeManager(),
+                new InjectionConstructor(new ResolvedParameter<IBandRepository>("UncachedBandRepository")));
 
 #if DEBUG && STUB
-            this.Container.RegisterInstance<IBandPersonalizer>(BandPersonalizerStub.Instance);
-            this.Container.RegisterInstance<IBandRepository>(BandRepositoryStub.Instance);
+            this.Container.RegisterInstance<IBandPersonalizer>(BandPersonalizerStub.Instance, new ExternallyControlledLifetimeManager());
+            this.Container.RegisterInstance<IBandRepository>(
+                "UncachedBandRepository",
+                BandRepositoryStub.Instance,
+                new ExternallyControlledLifetimeManager());
 #else
-            this.Container.RegisterInstance<IBandClientManager>(BandClientManager.Instance);
+            this.Container.RegisterInstance<IBandClientManager>(BandClientManager.Instance, new ExternallyControlledLifetimeManager());
             this.Container.RegisterType<IBandPersonalizer, BandPersonalizer>(new ContainerControlledLifetimeManager());
-            this.Container.RegisterType<IBandRepository, BandRepository>(new ContainerControlledLifetimeManager());
+            this.Container.RegisterType<IBandRepository, BandRepository>(
+                "UncachedBandRepository",
+                new ContainerControlledLifetimeManager());
 #endif
 
             return base.OnInitializeAsync(e);
@@ -207,7 +215,7 @@ namespace Band.Personalize.App.Universal
         /// <param name="args">The event data. If there is no event data, this parameter will be <c>null</c>.</param>
         private void DataChanged(ApplicationData sender, object args)
         {
-            var cached = this.Container.Resolve<ICachedRepository>("CachedCustomThemeRepository");
+            var cached = this.Container.Resolve<ICachedRepository<ICustomThemeRepository>>();
             cached.Clear();
         }
     }

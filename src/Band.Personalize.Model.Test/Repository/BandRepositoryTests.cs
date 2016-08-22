@@ -87,7 +87,7 @@ namespace Band.Personalize.Model.Test.Repository
         }
 
         /// <summary>
-        /// Verify the <see cref="BandRepository.GetPairedBands(CancellationToken)"/> method finds all paired Bands and returns
+        /// Verify the <see cref="BandRepository.GetPairedBandsAsync(CancellationToken)"/> method finds all paired Bands and returns
         /// information about then, including the hardware revision.
         /// </summary>
         /// <param name="hardwareVersion">The string hardware representation to return as sample data.</param>
@@ -114,7 +114,7 @@ namespace Band.Personalize.Model.Test.Repository
             var target = new BandRepository(bandClientManager);
 
             // Act
-            var results = await target.GetPairedBands(token);
+            var results = await target.GetPairedBandsAsync(token);
 
             // Assert
             Assert.NotNull(results);
@@ -130,7 +130,7 @@ namespace Band.Personalize.Model.Test.Repository
         }
 
         /// <summary>
-        /// Verify the <see cref="BandRepository.GetPairedBands(CancellationToken)"/> method finds all paired Bands and returns
+        /// Verify the <see cref="BandRepository.GetPairedBandsAsync(CancellationToken)"/> method finds all paired Bands and returns
         /// information about then, including the hardware revision.
         /// </summary>
         /// <returns>An asynchronous task that returns when the test is complete.</returns>
@@ -156,7 +156,7 @@ namespace Band.Personalize.Model.Test.Repository
             var target = new BandRepository(bandClientManager);
 
             // Act
-            var results = await target.GetPairedBands(token);
+            var results = await target.GetPairedBandsAsync(token);
 
             // Assert
             Assert.NotNull(results);

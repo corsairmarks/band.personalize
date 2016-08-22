@@ -14,6 +14,8 @@
 
 namespace Band.Personalize.App.Universal.ViewModels.Design
 {
+    using Model.Implementation.Repository;
+
     /// <summary>
     /// The design View Model for the Main Page.
     /// </summary>
@@ -23,7 +25,7 @@ namespace Band.Personalize.App.Universal.ViewModels.Design
         /// Initializes a new instance of the <see cref="DesignMainPageViewModel"/> class.
         /// </summary>
         public DesignMainPageViewModel()
-            : base(NavigationServiceStub.Instance, BandRepositoryStub.Instance)
+            : base(NavigationServiceStub.Instance, new CachedBandRepository(BandRepositoryStub.Instance))
         {
             this.RefreshPairedBandsCommand.Execute(null);
         }

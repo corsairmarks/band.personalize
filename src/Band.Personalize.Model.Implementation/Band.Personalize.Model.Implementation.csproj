@@ -106,6 +106,7 @@
     <Compile Include="Repository\Band.cs" />
     <Compile Include="Repository\BandPersonalizer.cs" />
     <Compile Include="Repository\BandRepository.cs" />
+    <Compile Include="Repository\CachedBandRepository.cs" />
     <Compile Include="Repository\CachedCustomThemeRepository.cs" />
     <Compile Include="Repository\CustomThemeRepository.cs" />
     <Compile Include="Repository\RgbColorJsonConverter.cs" />

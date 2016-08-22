@@ -17,6 +17,7 @@ namespace Band.Personalize.App.Universal.ViewModels.Design
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using Model.Library.Band;
@@ -82,11 +83,24 @@ namespace Band.Personalize.App.Universal.ViewModels.Design
         #region IBandRepository Members
 
         /// <summary>
+        /// Gets information about a specific Microsoft Band paired with the application host by <paramref name="name"/>.
+        /// </summary>
+        /// <param name="name">The name of the Band to retrieve.</param>
+        /// <param name="token">The <see cref="CancellationToken"/> to observe.</param>
+        /// <returns>An asynchronous task that when complete that returns, if successful, a paired Band; otherwise, <c>null</c>.</returns>
+        public async Task<IBand> GetPairedBandAsync(string name, CancellationToken token)
+        {
+            var bands = await this.GetPairedBandsAsync(token);
+
+            return bands.FirstOrDefault(band => string.Equals(name, band.Name, StringComparison.OrdinalIgnoreCase));
+        }
+
+        /// <summary>
         /// Gets information about all Microsoft Bands paired with the application host.
         /// </summary>
         /// <param name="token">The <see cref="CancellationToken"/> to observe.</param>
         /// <returns>An asynchronous task that returns a read-only collection of paired Bands when it completes.</returns>
-        public async Task<IReadOnlyList<IBand>> GetPairedBands(CancellationToken token)
+        public async Task<IReadOnlyList<IBand>> GetPairedBandsAsync(CancellationToken token)
         {
             if (DesignMode.DesignModeEnabled)
             {

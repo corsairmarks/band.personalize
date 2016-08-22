@@ -15,7 +15,6 @@
 namespace Band.Personalize.App.Universal.ViewModels.Design
 {
     using Model.Implementation.Repository;
-    using Model.Library.Band;
     using Newtonsoft.Json;
     using Prism.Windows.AppModel;
     using Prism.Windows.Navigation;
@@ -34,6 +33,7 @@ namespace Band.Personalize.App.Universal.ViewModels.Design
             : base(
                   NavigationServiceStub.Instance,
                   new ResourceLoaderAdapter(new ResourceLoader()),
+                  BandRepositoryStub.Instance,
                   BandPersonalizerStub.Instance,
                   new CustomThemeRepository(ApplicationData.Current.RoamingFolder, JsonSerializer.Create(new JsonSerializerSettings { Converters = new[] { new RgbColorJsonConverter(), }, })),
                   (id, m) => new PersistedTitledThemeViewModel(id, null, null))
@@ -41,13 +41,7 @@ namespace Band.Personalize.App.Universal.ViewModels.Design
             this.OnNavigatedTo(
                 new NavigatedToEventArgs
                 {
-                    Parameter = new BandStub
-                    {
-                        Name = "Band F0:F0",
-                        ConnectionType = ConnectionType.Usb,
-                        HardwareRevision = HardwareRevision.Band,
-                        HardwareVersion = 21,
-                    },
+                    Parameter = "Sample Band 2",
                 },
                 null);
         }
