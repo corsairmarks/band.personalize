@@ -112,10 +112,14 @@ namespace Band.Personalize.App.Universal
             this.Container.RegisterInstance<IEventAggregator>(this.EventAggregator);
             this.Container.RegisterInstance<IResourceLoader>(new ResourceLoaderAdapter(new ResourceLoader()));
 
+            var applicationData = ApplicationData.Current;
+            applicationData.DataChanged += this.DataChanged; // TODO: inject?
+            this.Container.RegisterInstance<ApplicationData>(applicationData, new ExternallyControlledLifetimeManager());
+
             this.Container.RegisterType<StorageFolder>(
                 "RoamingStorageFolder",
                 new ContainerControlledLifetimeManager(),
-                new InjectionFactory(container => ApplicationData.Current.RoamingFolder));
+                new InjectionFactory(container => container.Resolve<ApplicationData>().RoamingFolder));
 
             this.Container.RegisterType<Func<Guid, TitledThemeViewModel, PersistedTitledThemeViewModel>>(new InjectionFactory(context =>
             {
@@ -145,9 +149,13 @@ namespace Band.Personalize.App.Universal
                 "UncachedCustomThemeRepository",
                 new ContainerControlledLifetimeManager(),
                 new InjectionConstructor(new ResolvedParameter<StorageFolder>("RoamingStorageFolder"), new ResolvedParameter<JsonSerializer>()));
-            this.Container.RegisterType<ICustomThemeRepository, CachingCustomThemeRepository>(
+            this.Container.RegisterType<ICustomThemeRepository, CachedCustomThemeRepository>(
                 new ContainerControlledLifetimeManager(),
                 new InjectionConstructor(new ResolvedParameter<ICustomThemeRepository>("UncachedCustomThemeRepository")));
+            this.Container.RegisterType<ICachedRepository>(
+                "CachedCustomThemeRepository",
+                new ContainerControlledLifetimeManager(),
+                new InjectionFactory(container => container.Resolve<ICustomThemeRepository>()));
 
 #if DEBUG && STUB
             this.Container.RegisterInstance<IBandPersonalizer>(BandPersonalizerStub.Instance);
@@ -190,6 +198,17 @@ namespace Band.Personalize.App.Universal
                     await messageDialog.ShowAsync();
                 }
             }
+        }
+
+        /// <summary>
+        /// Occurs when roaming application data is synchronized.
+        /// </summary>
+        /// <param name="sender">The event source.</param>
+        /// <param name="args">The event data. If there is no event data, this parameter will be <c>null</c>.</param>
+        private void DataChanged(ApplicationData sender, object args)
+        {
+            var cached = this.Container.Resolve<ICachedRepository>("CachedCustomThemeRepository");
+            cached.Clear();
         }
     }
 }

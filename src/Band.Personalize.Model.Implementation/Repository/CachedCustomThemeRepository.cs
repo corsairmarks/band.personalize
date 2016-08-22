@@ -25,7 +25,7 @@ namespace Band.Personalize.Model.Implementation.Repository
     /// <summary>
     /// A caching repository for custom themes.
     /// </summary>
-    public class CachingCustomThemeRepository : ICustomThemeRepository, IDisposable
+    public class CachedCustomThemeRepository : ICustomThemeRepository, ICachedRepository, IDisposable
     {
         /// <summary>
         /// The uncached custom theme repository.
@@ -43,10 +43,10 @@ namespace Band.Personalize.Model.Implementation.Repository
         private Dictionary<Guid, TitledRgbColorTheme> cached;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CachingCustomThemeRepository"/> class.
+        /// Initializes a new instance of the <see cref="CachedCustomThemeRepository"/> class.
         /// </summary>
         /// <param name="uncached">The uncached custom theme repository.</param>
-        public CachingCustomThemeRepository(ICustomThemeRepository uncached)
+        public CachedCustomThemeRepository(ICustomThemeRepository uncached)
         {
             if (uncached == null)
             {
@@ -57,9 +57,9 @@ namespace Band.Personalize.Model.Implementation.Repository
         }
 
         /// <summary>
-        /// Finalizes an instance of the <see cref="CachingCustomThemeRepository"/> class.
+        /// Finalizes an instance of the <see cref="CachedCustomThemeRepository"/> class.
         /// </summary>
-        ~CachingCustomThemeRepository()
+        ~CachedCustomThemeRepository()
         {
             this.Dispose(false);
         }
@@ -135,6 +135,20 @@ namespace Band.Personalize.Model.Implementation.Repository
                 if (this.cached != null)
                 {
                     this.cached.Remove(id);
+                }
+            });
+        }
+
+        /// <summary>
+        /// Clear the cached data.
+        /// </summary>
+        public void Clear()
+        {
+            this.EnterCacheSemaphore(() =>
+            {
+                if (this.cached != null)
+                {
+                    this.cached = null;
                 }
             });
         }
