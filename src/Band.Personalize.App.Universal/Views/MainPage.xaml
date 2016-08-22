@@ -4,12 +4,12 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:behaviors="using:Band.Personalize.App.Universal.Behaviors"
     xmlns:controls="using:Band.Personalize.App.Universal.Controls"
-    xmlns:designViewModels="using:Band.Personalize.App.Universal.ViewModels.Design"
+    xmlns:dvm="using:Band.Personalize.App.Universal.ViewModels.Design"
     xmlns:prismMvvm="using:Prism.Windows.Mvvm"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:i="using:Microsoft.Xaml.Interactivity"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    d:DataContext="{d:DesignInstance Type=designViewModels:DesignMainPageViewModel, IsDesignTimeCreatable=True}"
+    d:DataContext="{d:DesignInstance Type=dvm:DesignMainPageViewModel, IsDesignTimeCreatable=True}"
     prismMvvm:ViewModelLocator.AutoWireViewModel="True"
     mc:Ignorable="d">
     <Page.Resources>
@@ -18,7 +18,7 @@
                 x:Name="BandTile"
                 Style="{StaticResource ResourceKey=BandTileButton}"
                 Command="{Binding Path=DataContext.NavigateToBandPageCommand, ElementName=TheGrid}"
-                CommandParameter="{Binding}"
+                CommandParameter="{Binding Path=Name}"
                 IsEnabled="{Binding Path=IsConnected}">
                 <RelativePanel>
                     <TextBlock

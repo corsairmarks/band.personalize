@@ -47,6 +47,11 @@ namespace Band.Personalize.App.Universal.ViewModels
         private readonly IResourceLoader resourceLoader;
 
         /// <summary>
+        /// The Band repository.
+        /// </summary>
+        private readonly IBandRepository bandRepository;
+
+        /// <summary>
         /// The Band personalizer.
         /// </summary>
         private readonly IBandPersonalizer bandPersonalizer;
@@ -112,16 +117,18 @@ namespace Band.Personalize.App.Universal.ViewModels
         /// </summary>
         /// <param name="navigationService">The navigation service.</param>
         /// <param name="resourceLoader">The resource loader.</param>
+        /// <param name="bandRepository">The Band repository.</param>
         /// <param name="bandPersonalizer">The Band personalizer.</param>
         /// <param name="customThemeRepository">The custom theme repository.</param>
         /// <param name="persistedThemeViewModelFactory">A factory function for transforming a <see cref="TitledRgbColorTheme"/> to a <see cref="PersistedTitledThemeViewModel"/>.</param>
         /// <exception cref="ArgumentNullException">
-        /// <paramref name="resourceLoader"/>, <paramref name="bandPersonalizer"/>, <paramref name="customThemeRepository"/>,
-        /// or <paramref name="persistedThemeViewModelFactory"/> is <c>null</c>.
+        /// <paramref name="resourceLoader"/>, <paramref name="bandRepository"/>, <paramref name="bandPersonalizer"/>
+        /// <paramref name="customThemeRepository"/>, or <paramref name="persistedThemeViewModelFactory"/> is <c>null</c>.
         /// </exception>
         public BandPageViewModel(
             INavigationService navigationService,
             IResourceLoader resourceLoader,
+            IBandRepository bandRepository,
             IBandPersonalizer bandPersonalizer,
             ICustomThemeRepository customThemeRepository,
             Func<Guid, TitledThemeViewModel, PersistedTitledThemeViewModel> persistedThemeViewModelFactory)
@@ -130,6 +137,10 @@ namespace Band.Personalize.App.Universal.ViewModels
             if (resourceLoader == null)
             {
                 throw new ArgumentNullException(nameof(resourceLoader));
+            }
+            else if (bandRepository == null)
+            {
+                throw new ArgumentNullException(nameof(bandRepository));
             }
             else if (bandPersonalizer == null)
             {
@@ -145,6 +156,7 @@ namespace Band.Personalize.App.Universal.ViewModels
             }
 
             this.resourceLoader = resourceLoader;
+            this.bandRepository = bandRepository;
             this.bandPersonalizer = bandPersonalizer;
             this.customThemeRepository = customThemeRepository;
 
@@ -433,7 +445,7 @@ namespace Band.Personalize.App.Universal.ViewModels
         /// <param name="e">The <see cref="NavigatedToEventArgs"/> instance containing the event data.</param>
         /// <param name="viewModelState">The state of the view model.</param>
         /// <exception cref="ArgumentNullException"><paramref name="e"/> is <c>null</c>.</exception>
-        /// <exception cref="ArgumentException">The <see cref="NavigatedToEventArgs.Parameter"/> of <paramref name="e"/> is <c>null</c> or is not castable to <see cref="IBand"/>.</exception>
+        /// <exception cref="ArgumentException">The <see cref="NavigatedToEventArgs.Parameter"/> of <paramref name="e"/> is not castable to <see cref="string"/>.</exception>
         public override async void OnNavigatedTo(NavigatedToEventArgs e, Dictionary<string, object> viewModelState)
         {
             base.OnNavigatedTo(e, viewModelState);
@@ -442,21 +454,21 @@ namespace Band.Personalize.App.Universal.ViewModels
             {
                 throw new ArgumentNullException(nameof(e));
             }
-            else if (e.Parameter == null || !(e.Parameter is IBand))
+            else if (e.Parameter != null && !(e.Parameter is string))
             {
-                throw new ArgumentException($"The {nameof(e.Parameter)} must be an instance of {typeof(IBand)}");
+                throw new ArgumentException($"The {nameof(e.Parameter)} must be an instance of {typeof(string)}");
             }
-
-            this.CurrentBand = e.Parameter as IBand;
 
             try
             {
                 this.IsThemeBusy = this.IsMeTileImageBusy = true;
+                this.CurrentBand = await this.bandRepository.GetPairedBandAsync(e.Parameter as string, CancellationToken.None);
                 await Task.WhenAll(this.BeginInvokeRefreshTheme(), this.BeginInvokeRefreshMeTileImage());
                 this.IsThemeBusy = this.IsMeTileImageBusy = false;
             }
             catch (Exception)
             {
+                this.NavigationService.RemoveAllPages(PageNavigationTokens.BandPage, e.Parameter);
                 if (this.NavigationService.CanGoBack())
                 {
                     this.NavigationService.GoBack();
@@ -465,8 +477,6 @@ namespace Band.Personalize.App.Universal.ViewModels
                 {
                     this.NavigationService.Navigate(PageNavigationTokens.MainPage, null);
                 }
-
-                this.NavigationService.RemoveLastPage(PageNavigationTokens.BandPage, e.Parameter);
 
                 throw;
             }

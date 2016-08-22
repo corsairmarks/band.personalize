@@ -32,9 +32,9 @@ namespace Band.Personalize.App.Universal.ViewModels
     public class MainPageViewModel : BaseNavigationViewModel, IDisposable
     {
         /// <summary>
-        /// The Band repository.
+        /// The cached Band repository.
         /// </summary>
-        private readonly IBandRepository bandRepository;
+        private readonly ICachedRepository<IBandRepository> bandRepository;
 
         /// <summary>
         /// A read-only collection of paired Bands.
@@ -60,9 +60,9 @@ namespace Band.Personalize.App.Universal.ViewModels
         /// Initializes a new instance of the <see cref="MainPageViewModel"/> class.
         /// </summary>
         /// <param name="navigationService">The navigation service.</param>
-        /// <param name="bandRepository">The Band repository.</param>
+        /// <param name="bandRepository">The cached Band repository.</param>
         /// <exception cref="ArgumentNullException"><paramref name="bandRepository"/> is <c>null</c>.</exception>
-        public MainPageViewModel(INavigationService navigationService, IBandRepository bandRepository)
+        public MainPageViewModel(INavigationService navigationService, ICachedRepository<IBandRepository> bandRepository)
             : base(navigationService)
         {
             if (bandRepository == null)
@@ -88,10 +88,16 @@ namespace Band.Personalize.App.Universal.ViewModels
             {
                 await this
                     .CancelRefreshPairedBands()
-                    .ContinueWith(async t => await this.RefreshPairedBands(), TaskScheduler.FromCurrentSynchronizationContext());
+                    .ContinueWith(
+                        async t =>
+                        {
+                            this.bandRepository.Clear();
+                            await this.RefreshPairedBands();
+                        },
+                        TaskScheduler.FromCurrentSynchronizationContext());
             });
 
-            this.NavigateToBandPageCommand = new DelegateCommand<IBand>(b => this.NavigationService.Navigate(PageNavigationTokens.BandPage, b));
+            this.NavigateToBandPageCommand = new DelegateCommand<string>(band => this.NavigationService.Navigate(PageNavigationTokens.BandPage, band));
         }
 
         /// <summary>
@@ -220,7 +226,7 @@ namespace Band.Personalize.App.Universal.ViewModels
 
             this.IsBusy = true;
             await Task
-                .Run(async () => await this.bandRepository.GetPairedBandsAsync(token), token)
+                .Run(async () => await this.bandRepository.Repository.GetPairedBandsAsync(token), token)
                 .ContinueWith(t => this.UpdatePairedBands(t.Result), CancellationToken.None, TaskContinuationOptions.OnlyOnRanToCompletion, TaskScheduler.FromCurrentSynchronizationContext())
                 .ContinueWith(t => this.IsBusy = false, TaskScheduler.FromCurrentSynchronizationContext());
         }
@@ -231,7 +237,7 @@ namespace Band.Personalize.App.Universal.ViewModels
         /// <param name="bands">The Bands to display in the UI.</param>
         private void UpdatePairedBands(IReadOnlyList<IBand> bands)
         {
-            if (bands != null && bands.Any())
+            if (bands != null)
             {
                 this.pairedBands.Clear();
                 foreach (var band in bands)

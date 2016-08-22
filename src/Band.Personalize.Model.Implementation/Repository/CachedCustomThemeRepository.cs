@@ -25,7 +25,7 @@ namespace Band.Personalize.Model.Implementation.Repository
     /// <summary>
     /// A caching repository for custom themes.
     /// </summary>
-    public class CachedCustomThemeRepository : ICustomThemeRepository, ICachedRepository, IDisposable
+    public class CachedCustomThemeRepository : ICustomThemeRepository, ICachedRepository<ICustomThemeRepository>, IDisposable
     {
         /// <summary>
         /// The uncached custom theme repository.
@@ -62,6 +62,14 @@ namespace Band.Personalize.Model.Implementation.Repository
         ~CachedCustomThemeRepository()
         {
             this.Dispose(false);
+        }
+
+        /// <summary>
+        /// Gets the repository that is being cached.
+        /// </summary>
+        public ICustomThemeRepository Repository
+        {
+            get { return this; }
         }
 
         /// <summary>

@@ -26,7 +26,7 @@ namespace Band.Personalize.Model.Implementation.Repository
     /// <summary>
     /// A caching repository for Bands.
     /// </summary>
-    public class CachedBandRepository : IBandRepository, ICachedRepository, IDisposable
+    public class CachedBandRepository : IBandRepository, ICachedRepository<IBandRepository>, IDisposable
     {
         /// <summary>
         /// The uncached Band repository.
@@ -63,6 +63,14 @@ namespace Band.Personalize.Model.Implementation.Repository
         ~CachedBandRepository()
         {
             this.Dispose(false);
+        }
+
+        /// <summary>
+        /// Gets the repository that is being cached.
+        /// </summary>
+        public IBandRepository Repository
+        {
+            get { return this; }
         }
 
         /// <summary>

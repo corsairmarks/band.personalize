@@ -17,8 +17,14 @@ namespace Band.Personalize.Model.Library.Repository
     /// <summary>
     /// A repository that caches data.
     /// </summary>
-    public interface ICachedRepository
+    /// <typeparam name="TRepository">The type of repository that is being cached.</typeparam>
+    public interface ICachedRepository<TRepository>
     {
+        /// <summary>
+        /// Gets the repository that is being cached.
+        /// </summary>
+        TRepository Repository { get; }
+
         /// <summary>
         /// Clear the cached data.
         /// </summary>
