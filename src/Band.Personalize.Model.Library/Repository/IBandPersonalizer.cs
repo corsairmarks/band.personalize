@@ -34,7 +34,7 @@ namespace Band.Personalize.Model.Library.Repository
         /// <param name="token">The <see cref="CancellationToken"/> to observe.</param>
         /// <returns>An asynchronous task that returns when work is complete.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="band"/> or <paramref name="theme"/> is <c>null</c>.</exception>
-        Task SetTheme(IBand band, RgbColorTheme theme, CancellationToken token);
+        Task SetThemeAsync(IBand band, RgbColorTheme theme, CancellationToken token);
 
         /// <summary>
         /// Gets the current color theme of the <paramref name="band"/>.
@@ -43,7 +43,7 @@ namespace Band.Personalize.Model.Library.Repository
         /// <param name="token">The <see cref="CancellationToken"/> to observe.</param>
         /// <returns>An asynchronous task that returns the current color theme when it completes.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="band"/> is <c>null</c>.</exception>
-        Task<RgbColorTheme> GetTheme(IBand band, CancellationToken token);
+        Task<RgbColorTheme> GetThemeAsync(IBand band, CancellationToken token);
 
         /// <summary>
         /// Sets the Me Tile image to the image contained in the <paramref name="bitmap"/>, which is assumed to be sized for the specified Band hardware.
@@ -53,7 +53,7 @@ namespace Band.Personalize.Model.Library.Repository
         /// <param name="token">The <see cref="CancellationToken"/> to observe.</param>
         /// <returns>An asynchronous task that returns when work is complete.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="band"/> or <paramref name="bitmap"/> is <c>null</c>.</exception>
-        Task SetMeTileImage(IBand band, WriteableBitmap bitmap, CancellationToken token);
+        Task SetMeTileImageAsync(IBand band, WriteableBitmap bitmap, CancellationToken token);
 
         /// <summary>
         /// Gets the current Me Tile image of the <paramref name="band"/>.
@@ -62,6 +62,6 @@ namespace Band.Personalize.Model.Library.Repository
         /// <param name="token">The <see cref="CancellationToken"/> to observe.</param>
         /// <returns>An asynchronous task that returns the current Me Tile image when it completes.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="band"/> is <c>null</c>.</exception>
-        Task<WriteableBitmap> GetMeTileImage(IBand band, CancellationToken token);
+        Task<WriteableBitmap> GetMeTileImageAsync(IBand band, CancellationToken token);
     }
 }

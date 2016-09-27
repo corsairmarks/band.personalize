@@ -555,7 +555,7 @@ namespace Band.Personalize.App.Universal.ViewModels
         private Task BeginInvokeRefreshTheme()
         {
             return this.bandPersonalizer
-                .GetTheme(this.CurrentBand, CancellationToken.None)
+                .GetThemeAsync(this.CurrentBand, CancellationToken.None)
                 .ContinueWith(
                     t =>
                     {
@@ -574,7 +574,7 @@ namespace Band.Personalize.App.Universal.ViewModels
         private Task BeginInvokeRefreshMeTileImage()
         {
             return this.bandPersonalizer
-                .GetMeTileImage(this.CurrentBand, CancellationToken.None)
+                .GetMeTileImageAsync(this.CurrentBand, CancellationToken.None)
                 .ContinueWith(
                     t => this.UpdateCurrentMeTileImage(t.Result),
                     CancellationToken.None,
@@ -648,7 +648,7 @@ namespace Band.Personalize.App.Universal.ViewModels
         {
             var newRgbColorTheme = this.CurrentTheme.ToModel();
 
-            return this.bandPersonalizer.SetTheme(this.CurrentBand, newRgbColorTheme, CancellationToken.None);
+            return this.bandPersonalizer.SetThemeAsync(this.CurrentBand, newRgbColorTheme, CancellationToken.None);
         }
 
         /// <summary>
@@ -658,7 +658,7 @@ namespace Band.Personalize.App.Universal.ViewModels
         private Task BeginInvokeApplyMeTileImage()
         {
             return this.bandPersonalizer
-                .SetMeTileImage(this.CurrentBand, this.CurrentMeTileImage, CancellationToken.None)
+                .SetMeTileImageAsync(this.CurrentBand, this.CurrentMeTileImage, CancellationToken.None)
                 .ContinueWith(
                     t => this.unresizedCurrentMeTileImage = this.CurrentMeTileImage,
                     CancellationToken.None,
