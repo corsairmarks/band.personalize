@@ -214,8 +214,8 @@ namespace Band.Personalize.App.Universal.ViewModels
 
             this.RefreshAvailableThemesCommand = DelegateCommand.FromAsyncHandler(async () =>
             {
-                await Task
-                    .Run(async () => await this.customThemeRepository.GetThemesAsync())
+                await this.customThemeRepository
+                    .GetThemesAsync()
                     .ContinueWith(
                         t =>
                         {
@@ -463,7 +463,12 @@ namespace Band.Personalize.App.Universal.ViewModels
             {
                 this.IsThemeBusy = this.IsMeTileImageBusy = true;
                 this.CurrentBand = await this.bandRepository.GetPairedBandAsync(e.Parameter as string, CancellationToken.None);
-                await Task.WhenAll(this.BeginInvokeRefreshTheme(), this.BeginInvokeRefreshMeTileImage());
+
+                // NOTE: the Band does not appear to support multiple concurrent connections - it leads to a "Only one usage of each
+                // socket address (protocol/network address/port) is normally permitted" error, and with continuations that error is
+                // obscured by an opaque "Task cancelled" error.
+                await this.BeginInvokeRefreshTheme();
+                await this.BeginInvokeRefreshMeTileImage();
                 this.IsThemeBusy = this.IsMeTileImageBusy = false;
             }
             catch (Exception)
@@ -549,8 +554,8 @@ namespace Band.Personalize.App.Universal.ViewModels
         /// <returns>An asynchronous task that returns when work is complete.</returns>
         private Task BeginInvokeRefreshTheme()
         {
-            return Task
-                .Run(async () => await this.bandPersonalizer.GetTheme(this.CurrentBand, CancellationToken.None))
+            return this.bandPersonalizer
+                .GetThemeAsync(this.CurrentBand, CancellationToken.None)
                 .ContinueWith(
                     t =>
                     {
@@ -568,9 +573,13 @@ namespace Band.Personalize.App.Universal.ViewModels
         /// <returns>An asynchronous task that returns when work is complete.</returns>
         private Task BeginInvokeRefreshMeTileImage()
         {
-            return Task
-                .Run(async () => await this.bandPersonalizer.GetMeTileImage(this.CurrentBand, CancellationToken.None))
-                .ContinueWith(t => this.UpdateCurrentMeTileImage(t.Result), CancellationToken.None, TaskContinuationOptions.OnlyOnRanToCompletion, TaskScheduler.FromCurrentSynchronizationContext());
+            return this.bandPersonalizer
+                .GetMeTileImageAsync(this.CurrentBand, CancellationToken.None)
+                .ContinueWith(
+                    t => this.UpdateCurrentMeTileImage(t.Result),
+                    CancellationToken.None,
+                    TaskContinuationOptions.OnlyOnRanToCompletion,
+                    TaskScheduler.FromCurrentSynchronizationContext());
         }
 
         /// <summary>
@@ -595,9 +604,14 @@ namespace Band.Personalize.App.Universal.ViewModels
         /// <param name="setBusy">An <see cref="Action{Boolean}"/> that updates a busy indicator before and after <paramref name="getAndBeginInvokeBlockingTask"/>.</param>
         /// <param name="getAndBeginInvokeBlockingTask">A function that begins invocation an action to perform while the UI is blocked.</param>
         /// <returns>An asynchronous task that returns when work is complete.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="setBusy"/> or <paramref name="getAndBeginInvokeBlockingTask"/> is <c>null</c>.</exception>
         private Task WrapWithUiBlockWhileExecuting(Action<bool> setBusy, Func<Task> getAndBeginInvokeBlockingTask)
         {
-            if (getAndBeginInvokeBlockingTask == null)
+            if (setBusy == null)
+            {
+                throw new ArgumentNullException(nameof(setBusy));
+            }
+            else if (getAndBeginInvokeBlockingTask == null)
             {
                 throw new ArgumentNullException(nameof(getAndBeginInvokeBlockingTask));
             }
@@ -634,7 +648,7 @@ namespace Band.Personalize.App.Universal.ViewModels
         {
             var newRgbColorTheme = this.CurrentTheme.ToModel();
 
-            return Task.Run(async () => await this.bandPersonalizer.SetTheme(this.CurrentBand, newRgbColorTheme, CancellationToken.None));
+            return this.bandPersonalizer.SetThemeAsync(this.CurrentBand, newRgbColorTheme, CancellationToken.None);
         }
 
         /// <summary>
@@ -643,9 +657,13 @@ namespace Band.Personalize.App.Universal.ViewModels
         /// <returns>An asynchronous task that returns when work is complete.</returns>
         private Task BeginInvokeApplyMeTileImage()
         {
-            return Task
-                .Run(async () => await this.bandPersonalizer.SetMeTileImage(this.CurrentBand, this.CurrentMeTileImage, CancellationToken.None))
-                .ContinueWith(t => this.unresizedCurrentMeTileImage = this.CurrentMeTileImage, CancellationToken.None, TaskContinuationOptions.OnlyOnRanToCompletion, TaskScheduler.FromCurrentSynchronizationContext());
+            return this.bandPersonalizer
+                .SetMeTileImageAsync(this.CurrentBand, this.CurrentMeTileImage, CancellationToken.None)
+                .ContinueWith(
+                    t => this.unresizedCurrentMeTileImage = this.CurrentMeTileImage,
+                    CancellationToken.None,
+                    TaskContinuationOptions.OnlyOnRanToCompletion,
+                    TaskScheduler.FromCurrentSynchronizationContext());
         }
 
         /// <summary>

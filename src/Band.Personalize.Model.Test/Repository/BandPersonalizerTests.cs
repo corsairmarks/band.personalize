@@ -74,7 +74,7 @@ namespace Band.Personalize.Model.Test.Repository
         }
 
         /// <summary>
-        /// Verify the <see cref="BandPersonalizer.SetTheme(IBand, RgbColorTheme, CancellationToken)"/> method throws an <see cref="ArgumentNullException"/>
+        /// Verify the <see cref="BandPersonalizer.SetThemeAsync(IBand, RgbColorTheme, CancellationToken)"/> method throws an <see cref="ArgumentNullException"/>
         /// when the <see cref="IBand"/> parameter is <c>null</c>.
         /// </summary>
         /// <returns>An asynchronous task that returns when the test is complete.</returns>
@@ -89,7 +89,7 @@ namespace Band.Personalize.Model.Test.Repository
             var target = new BandPersonalizer(bandClientManager);
 
             // Act
-            var expected = await Assert.ThrowsAsync<ArgumentNullException>(async () => await target.SetTheme(band, theme, token));
+            var expected = await Assert.ThrowsAsync<ArgumentNullException>(async () => await target.SetThemeAsync(band, theme, token));
 
             // Assert
             Assert.NotNull(expected);
@@ -97,7 +97,7 @@ namespace Band.Personalize.Model.Test.Repository
         }
 
         /// <summary>
-        /// Verify the <see cref="BandPersonalizer.SetTheme(IBand, RgbColorTheme, CancellationToken)"/> method throws an <see cref="ArgumentNullException"/>
+        /// Verify the <see cref="BandPersonalizer.SetThemeAsync(IBand, RgbColorTheme, CancellationToken)"/> method throws an <see cref="ArgumentNullException"/>
         /// when the <see cref="RgbColorTheme"/> parameter is <c>null</c>.
         /// </summary>
         /// <returns>An asynchronous task that returns when the test is complete.</returns>
@@ -112,7 +112,7 @@ namespace Band.Personalize.Model.Test.Repository
             var target = new BandPersonalizer(bandClientManager);
 
             // Act
-            var expected = await Assert.ThrowsAsync<ArgumentNullException>(async () => await target.SetTheme(band, theme, token));
+            var expected = await Assert.ThrowsAsync<ArgumentNullException>(async () => await target.SetThemeAsync(band, theme, token));
 
             // Assert
             Assert.NotNull(expected);
@@ -120,7 +120,7 @@ namespace Band.Personalize.Model.Test.Repository
         }
 
         /// <summary>
-        /// Verify the <see cref="BandPersonalizer.SetTheme(IBand, RgbColorTheme, CancellationToken)"/> method calls the associated
+        /// Verify the <see cref="BandPersonalizer.SetThemeAsync(IBand, RgbColorTheme, CancellationToken)"/> method calls the associated
         /// <see cref="IBandPersonalizationManager"/> method with passed-through parameters.
         /// </summary>
         /// <returns>An asynchronous task that returns when the test is complete.</returns>
@@ -137,14 +137,14 @@ namespace Band.Personalize.Model.Test.Repository
             var target = new BandPersonalizer(GetMockedBandClientManagerAsync(pm => pm.SetThemeAsync(It.IsNotNull<BandTheme>(), token)));
 
             // Act
-            await target.SetTheme(band, theme, token);
+            await target.SetThemeAsync(band, theme, token);
 
             // Assert: passes as long as an exception is not thrown
             // TODO: Verify the expected method was called? with the equivalent theme?
         }
 
         /// <summary>
-        /// Verify the <see cref="BandPersonalizer.GetTheme(IBand, CancellationToken)"/> method throws an <see cref="ArgumentNullException"/>
+        /// Verify the <see cref="BandPersonalizer.GetThemeAsync(IBand, CancellationToken)"/> method throws an <see cref="ArgumentNullException"/>
         /// when the <see cref="IBand"/> parameter is <c>null</c>.
         /// </summary>
         /// <returns>An asynchronous task that returns when the test is complete.</returns>
@@ -159,7 +159,7 @@ namespace Band.Personalize.Model.Test.Repository
             var target = new BandPersonalizer(bandClientManager);
 
             // Act
-            var expected = await Assert.ThrowsAsync<ArgumentNullException>(async () => await target.GetTheme(band, token));
+            var expected = await Assert.ThrowsAsync<ArgumentNullException>(async () => await target.GetThemeAsync(band, token));
 
             // Assert
             Assert.NotNull(expected);
@@ -167,7 +167,7 @@ namespace Band.Personalize.Model.Test.Repository
         }
 
         /// <summary>
-        /// Verify the <see cref="BandPersonalizer.GetTheme(IBand, CancellationToken)"/> method calls the associated
+        /// Verify the <see cref="BandPersonalizer.GetThemeAsync(IBand, CancellationToken)"/> method calls the associated
         /// <see cref="IBandPersonalizationManager"/> method with passed-through parameters.
         /// </summary>
         /// <returns>An asynchronous task that returns when the test is complete.</returns>
@@ -185,7 +185,7 @@ namespace Band.Personalize.Model.Test.Repository
             var target = new BandPersonalizer(GetMockedBandClientManagerAsync(pm => pm.GetThemeAsync(token), expectedBandTheme));
 
             // Act
-            var result = await target.GetTheme(band, token);
+            var result = await target.GetThemeAsync(band, token);
 
             // Assert
             // TODO: Verify the expected method was called?
@@ -195,7 +195,7 @@ namespace Band.Personalize.Model.Test.Repository
         }
 
         /// <summary>
-        /// Verify the <see cref="BandPersonalizer.SetMeTileImage(IBand, WriteableBitmap, CancellationToken)"/> method throws an <see cref="ArgumentNullException"/>
+        /// Verify the <see cref="BandPersonalizer.SetMeTileImageAsync(IBand, WriteableBitmap, CancellationToken)"/> method throws an <see cref="ArgumentNullException"/>
         /// when the <see cref="IBand"/> parameter is <c>null</c>.
         /// </summary>
         /// <returns>An asynchronous task that returns when the test is complete.</returns>
@@ -212,7 +212,7 @@ namespace Band.Personalize.Model.Test.Repository
                 var bitmap = new WriteableBitmap(1, 1);
 
                 // Act
-                var expected = await Assert.ThrowsAsync<ArgumentNullException>(async () => await target.SetMeTileImage(band, bitmap, token));
+                var expected = await Assert.ThrowsAsync<ArgumentNullException>(async () => await target.SetMeTileImageAsync(band, bitmap, token));
 
                 // Assert
                 Assert.NotNull(expected);
@@ -221,7 +221,7 @@ namespace Band.Personalize.Model.Test.Repository
         }
 
         /// <summary>
-        /// Verify the <see cref="BandPersonalizer.SetMeTileImage(IBand, WriteableBitmap, CancellationToken)"/> method throws an <see cref="ArgumentNullException"/>
+        /// Verify the <see cref="BandPersonalizer.SetMeTileImageAsync(IBand, WriteableBitmap, CancellationToken)"/> method throws an <see cref="ArgumentNullException"/>
         /// when the <see cref="WriteableBitmap"/> parameter is <c>null</c>.
         /// </summary>
         /// <returns>An asynchronous task that returns when the test is complete.</returns>
@@ -236,7 +236,7 @@ namespace Band.Personalize.Model.Test.Repository
             var target = new BandPersonalizer(bandClientManager);
 
             // Act
-            var expected = await Assert.ThrowsAsync<ArgumentNullException>(async () => await target.SetMeTileImage(band, bitmap, token));
+            var expected = await Assert.ThrowsAsync<ArgumentNullException>(async () => await target.SetMeTileImageAsync(band, bitmap, token));
 
             // Assert
             Assert.NotNull(expected);
@@ -244,7 +244,7 @@ namespace Band.Personalize.Model.Test.Repository
         }
 
         /// <summary>
-        /// Verify the <see cref="BandPersonalizer.SetMeTileImage(IBand, WriteableBitmap, CancellationToken)"/> method calls the associated
+        /// Verify the <see cref="BandPersonalizer.SetMeTileImageAsync(IBand, WriteableBitmap, CancellationToken)"/> method calls the associated
         /// <see cref="IBandPersonalizationManager"/> method with passed-through parameters.
         /// </summary>
         /// <returns>An asynchronous task that returns when the test is complete.</returns>
@@ -263,7 +263,7 @@ namespace Band.Personalize.Model.Test.Repository
                 var bitmap = new WriteableBitmap(1, 1);
 
                 // Act
-                await target.SetMeTileImage(band, bitmap, token);
+                await target.SetMeTileImageAsync(band, bitmap, token);
             });
 
             // Assert: passes as long as an exception is not thrown
@@ -271,7 +271,7 @@ namespace Band.Personalize.Model.Test.Repository
         }
 
         /// <summary>
-        /// Verify the <see cref="BandPersonalizer.GetMeTileImage(IBand, CancellationToken)"/> method throws an <see cref="ArgumentNullException"/>
+        /// Verify the <see cref="BandPersonalizer.GetMeTileImageAsync(IBand, CancellationToken)"/> method throws an <see cref="ArgumentNullException"/>
         /// when the <see cref="IBand"/> parameter is <c>null</c>.
         /// </summary>
         /// <returns>An asynchronous task that returns when the test is complete.</returns>
@@ -285,7 +285,7 @@ namespace Band.Personalize.Model.Test.Repository
             var target = new BandPersonalizer(bandClientManager);
 
             // Act
-            var expected = await Assert.ThrowsAsync<ArgumentNullException>(async () => await target.GetMeTileImage(band, token));
+            var expected = await Assert.ThrowsAsync<ArgumentNullException>(async () => await target.GetMeTileImageAsync(band, token));
 
             // Assert
             Assert.NotNull(expected);
@@ -293,7 +293,7 @@ namespace Band.Personalize.Model.Test.Repository
         }
 
         /// <summary>
-        /// Verify the <see cref="BandPersonalizer.GetMeTileImage(IBand, CancellationToken)"/> method calls the associated
+        /// Verify the <see cref="BandPersonalizer.GetMeTileImageAsync(IBand, CancellationToken)"/> method calls the associated
         /// <see cref="IBandPersonalizationManager"/> method with passed-through parameters.
         /// </summary>
         /// <returns>An asynchronous task that returns when the test is complete.</returns>
@@ -312,7 +312,7 @@ namespace Band.Personalize.Model.Test.Repository
                 var target = new BandPersonalizer(GetMockedBandClientManagerAsync(pm => pm.GetMeTileImageAsync(token), expectedBandImage));
 
                 // Act
-                var result = await target.GetMeTileImage(band, token);
+                var result = await target.GetMeTileImageAsync(band, token);
 
                 // Assert
                 // TODO: Verify the expected method was called?

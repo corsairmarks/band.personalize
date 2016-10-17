@@ -56,7 +56,7 @@ namespace Band.Personalize.Model.Implementation.Repository
         /// <param name="token">The <see cref="CancellationToken"/> to observe.</param>
         /// <returns>An asynchronous task that returns when work is complete.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="band"/> or <paramref name="theme"/> is <c>null</c>.</exception>
-        public async Task SetTheme(IBand band, RgbColorTheme theme, CancellationToken token)
+        public async Task SetThemeAsync(IBand band, RgbColorTheme theme, CancellationToken token)
         {
             if (band == null)
             {
@@ -87,7 +87,7 @@ namespace Band.Personalize.Model.Implementation.Repository
         /// <param name="token">The <see cref="CancellationToken"/> to observe.</param>
         /// <returns>An asynchronous task that returns the current color theme when it completes.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="band"/> is <c>null</c>.</exception>
-        public async Task<RgbColorTheme> GetTheme(IBand band, CancellationToken token)
+        public async Task<RgbColorTheme> GetThemeAsync(IBand band, CancellationToken token)
         {
             if (band == null)
             {
@@ -117,7 +117,7 @@ namespace Band.Personalize.Model.Implementation.Repository
         /// <param name="token">The <see cref="CancellationToken"/> to observe.</param>
         /// <returns>An asynchronous task that returns when work is complete.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="band"/> or <paramref name="bitmap"/> is <c>null</c>.</exception>
-        public async Task SetMeTileImage(IBand band, WriteableBitmap bitmap, CancellationToken token)
+        public async Task SetMeTileImageAsync(IBand band, WriteableBitmap bitmap, CancellationToken token)
         {
             if (band == null)
             {
@@ -138,7 +138,7 @@ namespace Band.Personalize.Model.Implementation.Repository
         /// <param name="token">The <see cref="CancellationToken"/> to observe.</param>
         /// <returns>An asynchronous task that returns the current Me Tile image when it completes.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="band"/> is <c>null</c>.</exception>
-        public async Task<WriteableBitmap> GetMeTileImage(IBand band, CancellationToken token)
+        public async Task<WriteableBitmap> GetMeTileImageAsync(IBand band, CancellationToken token)
         {
             if (band == null)
             {
