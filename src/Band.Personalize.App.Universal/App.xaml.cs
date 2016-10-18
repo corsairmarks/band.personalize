@@ -18,6 +18,7 @@ namespace Band.Personalize.App.Universal
     using System.Diagnostics;
     using System.Linq;
     using System.Threading.Tasks;
+    using Fake;
     using Microsoft.Band;
     using Microsoft.Practices.Unity;
     using Model.Implementation.Repository;
@@ -153,6 +154,10 @@ namespace Band.Personalize.App.Universal
             this.Container.RegisterType<ICachedRepository<ICustomThemeRepository>, CachedCustomThemeRepository>(
                 new ContainerControlledLifetimeManager(),
                 new InjectionConstructor(new ResolvedParameter<ICustomThemeRepository>("UncachedCustomThemeRepository")));
+
+            this.Container.RegisterType<IBandRepository, BandRepository>(
+                "UncachedBandRepository",
+                new ContainerControlledLifetimeManager());
             this.Container.RegisterType<IBandRepository>(
                 new ContainerControlledLifetimeManager(),
                 new InjectionFactory(container => container.Resolve<ICachedRepository<IBandRepository>>().Repository));
@@ -160,19 +165,41 @@ namespace Band.Personalize.App.Universal
                 new ContainerControlledLifetimeManager(),
                 new InjectionConstructor(new ResolvedParameter<IBandRepository>("UncachedBandRepository")));
 
-#if DEBUG && STUB
-            this.Container.RegisterInstance<IBandPersonalizer>(BandPersonalizerStub.Instance, new ExternallyControlledLifetimeManager());
-            this.Container.RegisterInstance<IBandRepository>(
-                "UncachedBandRepository",
-                BandRepositoryStub.Instance,
-                new ExternallyControlledLifetimeManager());
-#else
-            this.Container.RegisterInstance<IBandClientManager>(BandClientManager.Instance, new ExternallyControlledLifetimeManager());
             this.Container.RegisterType<IBandPersonalizer, BandPersonalizer>(new ContainerControlledLifetimeManager());
-            this.Container.RegisterType<IBandRepository, BandRepository>(
-                "UncachedBandRepository",
-                new ContainerControlledLifetimeManager());
+
+            // Register the IBandClientManager
+            IBandClientManager bandClientManager;
+#if DEBUG && STUB
+            var fakeBandInfos = new[]
+            {
+                new FakeBandInfo
+                {
+                    ConnectionType = BandConnectionType.Bluetooth,
+                    Name = "Sample Band",
+                    HardwareVersion = "10",
+                },
+                new FakeBandInfo
+                {
+                    ConnectionType = BandConnectionType.Usb,
+                    Name = "Sample Band 2",
+                    HardwareVersion = "26",
+                },
+                new FakeBandInfo
+                {
+                    ConnectionType = (BandConnectionType)(-1),
+                    Name = "Sample Unknown Band",
+                    IsConnected = false,
+                },
+            };
+
+            bandClientManager = new FakeBandClientManager(
+                1000,
+                new Random(),
+                fakeBandInfos);
+#else
+            bandClientManager = BandClientManager.Instance;
 #endif
+            this.Container.RegisterInstance<IBandClientManager>(bandClientManager, new ExternallyControlledLifetimeManager());
 
             return base.OnInitializeAsync(e);
         }

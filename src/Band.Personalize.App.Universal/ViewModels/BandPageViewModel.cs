@@ -229,9 +229,7 @@ namespace Band.Personalize.App.Universal.ViewModels
 
                             this.OnPropertyChanged(nameof(this.AvailableThemes));
                         },
-                        CancellationToken.None,
-                        TaskContinuationOptions.OnlyOnRanToCompletion,
-                        TaskScheduler.FromCurrentSynchronizationContext());
+                        TaskContinuationOptions.OnlyOnRanToCompletion);
             });
 
             this.PersistThemeCommand = DelegateCommand

@@ -184,6 +184,10 @@
     </ApplicationDefinition>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Band.Fake\Band.Fake.csproj">
+      <Project>{4B5170A4-E144-43CD-8182-8066B9D80A60}</Project>
+      <Name>Band.Fake</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Band.Personalize.Model.Library\Band.Personalize.Model.Library.csproj">
       <Project>{7e456fa6-ea2a-41cb-a400-b31dc97eb892}</Project>
       <Name>Band.Personalize.Model.Library</Name>
@@ -266,7 +270,7 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v$(VisualStudioVersion)\Microsoft.Windows.UI.Xaml.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target>
@@ -277,6 +281,6 @@
     <ItemGroup>
       <GeneratedFiles Include="**\*.g.cs;**\*.g.i.cs" />
     </ItemGroup>
-    <Exec Command="for %%f in (@(GeneratedFiles->'%22%(Identity)%22')) do echo #pragma warning disable CS1591 > %%f.pragmatemp &amp; type %%f >> %%f.pragmatemp &amp; echo #pragma warning restore CS1591 >> %%f.pragmatemp &amp; copy /y %%f.pragmatemp %%f &amp; del /F %%f.pragmatemp" />
+    <Exec Command="for %%f in (@(GeneratedFiles->'%22%(Identity)%22')) do echo #pragma warning disable CS1591 &gt; %%f.pragmatemp &amp; type %%f &gt;&gt; %%f.pragmatemp &amp; echo #pragma warning restore CS1591 &gt;&gt; %%f.pragmatemp &amp; copy /y %%f.pragmatemp %%f &amp; del /F %%f.pragmatemp" />
   </Target>
 </Project>
