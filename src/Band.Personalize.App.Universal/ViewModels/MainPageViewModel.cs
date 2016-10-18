@@ -29,7 +29,7 @@ namespace Band.Personalize.App.Universal.ViewModels
     /// <summary>
     /// The View Model for the Main Page.
     /// </summary>
-    public class MainPageViewModel : BaseNavigationViewModel, IDisposable
+    public class MainPageViewModel : BaseNavigationViewModel, IMainPageViewModel, IDisposable
     {
         /// <summary>
         /// The cached Band repository.

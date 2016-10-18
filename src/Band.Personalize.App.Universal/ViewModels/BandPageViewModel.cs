@@ -39,7 +39,7 @@ namespace Band.Personalize.App.Universal.ViewModels
     /// <summary>
     /// The View Model for the Main Page.
     /// </summary>
-    public class BandPageViewModel : BaseNavigationViewModel
+    public class BandPageViewModel : BaseNavigationViewModel, IBandPageViewModel
     {
         /// <summary>
         /// The resource loader.

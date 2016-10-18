@@ -12,44 +12,45 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Band.Personalize.App.Universal.ViewModels.Design
+namespace Band.Personalize.App.Universal.ViewModels
 {
-    using Microsoft.Band;
+    using System.Collections.ObjectModel;
+    using System.Windows.Input;
     using Model.Library.Band;
 
     /// <summary>
-    /// A stub for fake <see cref="IBand"/> data.
+    /// The View Model for the Main Page.
     /// </summary>
-    internal class BandStub : IBand
+    public interface IMainPageViewModel
     {
         /// <summary>
-        /// Gets or sets the name.
+        /// Gets the "Refresh" command.
         /// </summary>
-        public string Name { get; set; }
+        ICommand RefreshPairedBandsCommand { get; }
 
         /// <summary>
-        /// Gets or sets the hardware major revision level.
+        /// Gets the "Cancel" command.
         /// </summary>
-        public ConnectionType ConnectionType { get; set; }
+        ICommand CancelRefreshPairedBandsCommand { get; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether this Band is connected.
+        /// Gets the "Band Page" navigation command.
         /// </summary>
-        public bool IsConnected { get; set; }
+        ICommand NavigateToBandPageCommand { get; }
 
         /// <summary>
-        /// Gets or sets the actual hardware version.
+        /// Gets a value indicating whether the "Refresh" command is busy.
         /// </summary>
-        public HardwareRevision HardwareRevision { get; set; }
+        bool IsBusy { get; }
 
         /// <summary>
-        /// Gets or sets the connection type between the application host and the Microsoft Band.
+        /// Gets a value indicating whether the "Refresh" command is not busy.
         /// </summary>
-        public int? HardwareVersion { get; set; }
+        bool NotIsBusy { get; }
 
         /// <summary>
-        /// Gets or sets the Band info.
+        /// Gets a read-only collection of paired Microsoft Bands.
         /// </summary>
-        public IBandInfo BandInfo { get; set; }
+        ReadOnlyObservableCollection<IBand> PairedBands { get; }
     }
 }

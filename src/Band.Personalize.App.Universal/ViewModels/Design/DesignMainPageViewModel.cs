@@ -14,20 +14,55 @@
 
 namespace Band.Personalize.App.Universal.ViewModels.Design
 {
-    using Model.Implementation.Repository;
+    using System.Collections.ObjectModel;
+    using System.Windows.Input;
+    using Model.Library.Band;
 
     /// <summary>
     /// The design View Model for the Main Page.
     /// </summary>
-    public class DesignMainPageViewModel : MainPageViewModel
+    public class DesignMainPageViewModel : IMainPageViewModel
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="DesignMainPageViewModel"/> class.
         /// </summary>
         public DesignMainPageViewModel()
-            : base(NavigationServiceStub.Instance, new CachedBandRepository(BandRepositoryStub.Instance))
         {
-            this.RefreshPairedBandsCommand.Execute(null);
+            // TODO: PairedBands
+            this.PairedBands = null;
         }
+
+        /// <summary>
+        /// Gets the "Refresh" command.
+        /// </summary>
+        public ICommand RefreshPairedBandsCommand { get; }
+
+        /// <summary>
+        /// Gets the "Cancel" command.
+        /// </summary>
+        public ICommand CancelRefreshPairedBandsCommand { get; }
+
+        /// <summary>
+        /// Gets the "Band Page" navigation command.
+        /// </summary>
+        public ICommand NavigateToBandPageCommand { get; }
+
+        /// <summary>
+        /// Gets a value indicating whether the "Refresh" command is busy.
+        /// </summary>
+        public bool IsBusy { get; }
+
+        /// <summary>
+        /// Gets a value indicating whether the "Refresh" command is not busy.
+        /// </summary>
+        public bool NotIsBusy
+        {
+            get { return !this.IsBusy; }
+        }
+
+        /// <summary>
+        /// Gets a read-only collection of paired Microsoft Bands.
+        /// </summary>
+        public ReadOnlyObservableCollection<IBand> PairedBands { get; }
     }
 }

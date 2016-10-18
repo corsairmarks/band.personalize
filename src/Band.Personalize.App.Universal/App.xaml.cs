@@ -24,13 +24,12 @@ namespace Band.Personalize.App.Universal
     using Model.Implementation.Repository;
     using Model.Library.Repository;
     using Newtonsoft.Json;
-    using Prism.Events;
+    using Prism.Mvvm;
     using Prism.Unity.Windows;
-    using Prism.Windows;
     using Prism.Windows.AppModel;
-    using Prism.Windows.Navigation;
+    using Prism.Windows.Mvvm;
     using ViewModels;
-    using ViewModels.Design;
+    using Views;
     using Windows.ApplicationModel.Activation;
     using Windows.ApplicationModel.Resources;
     using Windows.Storage;
@@ -54,11 +53,6 @@ namespace Band.Personalize.App.Universal
             this.InitializeComponent();
             this.UnhandledException += this.OnUnhandledBandException;
         }
-
-        /// <summary>
-        /// Gets the Event Aggregator.
-        /// </summary>
-        public IEventAggregator EventAggregator { get; private set; }
 
         /// <summary>
         /// Logic that will be performed after the application is initialized. For example, navigating to the application's home page.
@@ -88,31 +82,51 @@ namespace Band.Personalize.App.Universal
         }
 
         /// <summary>
-        ///  Used for setting up the list of known types for the <see cref="PrismApplication.SessionStateService"/>,
-        ///  using the <see cref="ISessionStateService.RegisterKnownType(Type)"/> method.
+        /// Configures the <see cref="ViewModelLocator"/> used by Prism.
         /// </summary>
-        protected override void OnRegisterKnownTypesForSerialization()
+        protected override void ConfigureViewModelLocator()
         {
-            // Set up the list of known types for the SuspensionManager
-            // this.SessionStateService.RegisterKnownType(typeof(Type));
+            base.ConfigureViewModelLocator();
+
+            // TODO: could inject a lambda?
+            ViewModelLocationProvider.SetDefaultViewTypeToViewModelTypeResolver(viewType =>
+            {
+                // var xx = $"I{viewType.Name}ViewModel";
+                // Assembly.Load(null).GetTypes().SingleOrDefault(type => type.GetTypeInfo().Int);
+                if (viewType == typeof(MainPage))
+                {
+                    return typeof(IMainPageViewModel);
+                }
+                else if (viewType == typeof(BandPage))
+                {
+                    return typeof(IBandPageViewModel);
+                }
+
+                return null;
+            });
         }
 
         /// <summary>
-        /// The initialization logic of the application. Here you can initialize services, repositories, and so on.
+        /// Creates and configures the <see cref="PrismUnityApplication.Container"/> and service locator.
         /// </summary>
-        /// <param name="e">The <see cref="IActivatedEventArgs"/> instance containing the event data.</param>
-        /// <returns>The asynchronous task.</returns>
-        protected override Task OnInitializeAsync(IActivatedEventArgs e)
+        protected override void ConfigureContainer()
         {
-            this.EventAggregator = new EventAggregator();
+            base.ConfigureContainer();
 
-            this.Container.RegisterInstance<INavigationService>(this.NavigationService);
-            this.Container.RegisterInstance<ISessionStateService>(this.SessionStateService);
-            this.Container.RegisterInstance<IEventAggregator>(this.EventAggregator);
+            // NOTE: the PrismUnityApplication.ConfigureContainer() automatically registers singletons of:
+            // * IServiceLocator
+            // * ISessionStateService
+            // * IDeviceGestureService
+            // * IEventAggregator
+            // PrismApplication.CreateNavigationService() creates INavigationService after the container is initially configured
             this.Container.RegisterInstance<IResourceLoader>(new ResourceLoaderAdapter(new ResourceLoader()));
 
             var applicationData = ApplicationData.Current;
-            applicationData.DataChanged += this.DataChanged; // TODO: inject?
+            applicationData.DataChanged += (s, e) =>
+            {
+                var cached = this.Container.Resolve<ICachedRepository<ICustomThemeRepository>>();
+                cached.Clear();
+            };
             this.Container.RegisterInstance<ApplicationData>(applicationData, new ExternallyControlledLifetimeManager());
 
             this.Container.RegisterType<StorageFolder>(
@@ -201,7 +215,9 @@ namespace Band.Personalize.App.Universal
 #endif
             this.Container.RegisterInstance<IBandClientManager>(bandClientManager, new ExternallyControlledLifetimeManager());
 
-            return base.OnInitializeAsync(e);
+            // register ViewModels
+            this.Container.RegisterType<IMainPageViewModel, MainPageViewModel>();
+            this.Container.RegisterType<IBandPageViewModel, BandPageViewModel>();
         }
 
         /// <summary>
@@ -233,17 +249,6 @@ namespace Band.Personalize.App.Universal
                     await messageDialog.ShowAsync();
                 }
             }
-        }
-
-        /// <summary>
-        /// Occurs when roaming application data is synchronized.
-        /// </summary>
-        /// <param name="sender">The event source.</param>
-        /// <param name="args">The event data. If there is no event data, this parameter will be <c>null</c>.</param>
-        private void DataChanged(ApplicationData sender, object args)
-        {
-            var cached = this.Container.Resolve<ICachedRepository<ICustomThemeRepository>>();
-            cached.Clear();
         }
     }
 }
